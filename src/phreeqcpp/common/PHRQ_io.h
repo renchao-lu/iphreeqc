@@ -10,8 +10,8 @@
 #include <iostream>
 #include <exception>
 #include <list>
-#include "Keywords.h"
 #include <time.h>
+#include "phreeqcpp/PhreeqcKeywords/Keywords.h"
 
 #define ERROR_OSTREAM
 

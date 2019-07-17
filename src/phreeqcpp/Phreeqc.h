@@ -1180,9 +1180,8 @@ public:
 	std::map<int, cxxTemperature> & Get_Rxn_temperature_map() {return this->Rxn_temperature_map;}
 	std::map<int, cxxPressure> & Get_Rxn_pressure_map() {return this->Rxn_pressure_map;}
 
-
-protected:
-	void init(void);
+public:
+    void init(void);
 
 	//
 	//Data members
@@ -1235,10 +1234,13 @@ protected:
 	/* ----------------------------------------------------------------------
 	*   Kinetics
 	* ---------------------------------------------------------------------- */
-	std::map<int, cxxKinetics> Rxn_kinetics_map;
-	bool use_kinetics_limiter;
+public:
+    std::map<int, cxxKinetics> Rxn_kinetics_map;
 
-	/*----------------------------------------------------------------------
+protected:
+    bool use_kinetics_limiter;
+
+    /*----------------------------------------------------------------------
 	*   Save
 	*---------------------------------------------------------------------- */
 	int count_save_values;
@@ -1690,11 +1692,14 @@ protected:
 	int llnl_count_temp, llnl_count_adh, llnl_count_bdh, llnl_count_bdot,
 		llnl_count_co2_coefs;
 
-	//char *selected_output_file_name;
+public:
+    //char *selected_output_file_name;
 	std::map<int, SelectedOutput> SelectedOutput_map;
-	SelectedOutput * current_selected_output;
-	
-	std::map <int, UserPunch> UserPunch_map;
+
+protected:
+    SelectedOutput* current_selected_output;
+
+    std::map <int, UserPunch> UserPunch_map;
 	UserPunch * current_user_punch;
 
 	char *dump_file_name;

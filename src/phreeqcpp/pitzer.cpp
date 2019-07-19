@@ -147,8 +147,8 @@ pitzer_tidy(void)
 	{
 		for (j = i + 1; j < count_cations; j++)
 		{
-			sprintf(line, "%s %s 1", spec[i]->name, spec[j]->name);
-			pzp_ptr = pitz_param_read(line, 2);
+            sprintf(const_cast<char*>(line.c_str()), "%s %s 1", spec[i]->name, spec[j]->name);
+            pzp_ptr = pitz_param_read(const_cast<char*>(line.c_str()), 2);
 			pzp_ptr->type = TYPE_ETHETA;
 			if (count_pitz_param >= max_pitz_param)
 			{
@@ -163,8 +163,8 @@ pitzer_tidy(void)
 	{
 		for (j = i + 1; j < 2 * count_s + count_anions; j++)
 		{
-			sprintf(line, "%s %s 1", spec[i]->name, spec[j]->name);
-			pzp_ptr = pitz_param_read(line, 2);
+            sprintf(const_cast<char*>(line.c_str()), "%s %s 1", spec[i]->name, spec[j]->name);
+            pzp_ptr = pitz_param_read(const_cast<char*>(line.c_str()), 2);
 			pzp_ptr->type = TYPE_ETHETA;
 			if (count_pitz_param >= max_pitz_param)
 			{
@@ -647,7 +647,7 @@ read_pitzer(void)
 	pzp_type = TYPE_Other;
 	for (;;)
 	{
-		opt = get_option(opt_list, count_opt_list, &next_char);
+        opt = get_option(opt_list, count_opt_list, next_char);
 		if (opt == OPTION_DEFAULT)
 		{
 			opt = opt_save;
@@ -661,7 +661,7 @@ read_pitzer(void)
 			return_value = KEYWORD;
 			break;
 		case OPTION_DEFAULT:
-			pzp_ptr = pitz_param_read(line, n);
+            pzp_ptr = pitz_param_read(const_cast<char*>(line.c_str()), n);
 			if (pzp_ptr != NULL)
 			{
 				pzp_ptr->type = pzp_type;
@@ -679,7 +679,7 @@ read_pitzer(void)
 		case OPTION_ERROR:
 			input_error++;
 			error_msg("Unknown input in PITZER keyword.", CONTINUE);
-			error_msg(line_save, CONTINUE);
+            error_msg(line_save.c_str(), CONTINUE);
 			break;
 		case 0:				/* b0 */
 			pzp_type = TYPE_B0;

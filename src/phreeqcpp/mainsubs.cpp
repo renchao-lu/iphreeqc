@@ -2491,7 +2491,7 @@ run_simulations(void)
 			if (read_input() == EOF)
 				break;
 
-			if (title_x != NULL)
+            if (!title_x.empty())
 			{
 				sprintf(token, "TITLE");
 				dup_print(token, TRUE);

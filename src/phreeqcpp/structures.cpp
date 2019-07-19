@@ -330,8 +330,8 @@ clean_up(void)
 	elt_list = (struct elt_list *) free_check_null(elt_list);
 	trxn.token = (struct rxn_token_temp *) free_check_null(trxn.token);
 	mb_unknowns = (struct unknown_list *) free_check_null(mb_unknowns);
-	line = (char *) free_check_null(line);
-	line_save = (char *) free_check_null(line_save);
+//	line = (char *) free_check_null(line);
+//	line_save = (char *) free_check_null(line_save);
 
 	zeros = (LDBLE *) free_check_null(zeros);
 	scratch = (LDBLE *) free_check_null(scratch);
@@ -353,14 +353,14 @@ clean_up(void)
 
 
 /* free user database name if defined */
-	user_database = (char *) free_check_null(user_database);
+//	user_database = (char *) free_check_null(user_database);
 	//selected_output_file_name =
 	//	(char *) free_check_null(selected_output_file_name);
 	dump_file_name = (char *) free_check_null(dump_file_name);
 #ifdef PHREEQCI_GUI
 	free_spread();
 #endif
-	title_x = (char *) free_check_null(title_x);
+//	title_x = (char *) free_check_null(title_x);
 	last_title_x.clear();
 	count_elements = 0;
 	count_master = 0;
@@ -1185,7 +1185,7 @@ master_bsearch_primary(const char *ptr)
  */
 	char * temp_name = string_duplicate(ptr);
 	ptr1 = temp_name;
-	get_elt(&ptr1, elt, &l);
+    get_elt(ptr1, elt, &l);
 	free_check_null(temp_name);
 /*
  *   Search master species list
@@ -1218,7 +1218,7 @@ master_bsearch_secondary(char *ptr)
  *   Find element name
  */
 	ptr1 = ptr;
-	get_elt(&ptr1, elt, &l);
+    get_elt(ptr1, elt, &l);
 /*
  *   Search master species list
  */

@@ -108,15 +108,15 @@ get_line(void)
 	if (l >= (size_t) max_line)
 	{
 		max_line = (int) l * 2;
-		line_save =	(char *) PHRQ_realloc(line_save,
-			(size_t) max_line * sizeof(char));
-		if (line_save == NULL)
+//		line_save =	(char *) PHRQ_realloc(line_save,
+//			(size_t) max_line * sizeof(char));
+        if (line_save.empty())
 			malloc_error();
-		line = (char *) PHRQ_realloc(line, (size_t) max_line * sizeof(char));
-		if (line == NULL)
+//		line = (char *) PHRQ_realloc(line, (size_t) max_line * sizeof(char));
+        if (line.empty())
 			malloc_error();
 	}
-	strcpy(line, phrq_io->Get_m_line().c_str());
-	strcpy(line_save, phrq_io->Get_m_line_save().c_str());
+    line = phrq_io->Get_m_line();
+    line_save = phrq_io->Get_m_line_save();
 	return j;
 }

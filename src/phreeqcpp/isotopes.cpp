@@ -28,7 +28,7 @@ read_isotopes(void)
 	struct element *elt_ptr;
 
 	int return_value, opt, opt_save;
-	char *next_char;
+    std::string next_char;
 	const char *opt_list[] = {
 		"isotope",				/* 0 */
 		"total_is_major"		/* 1 */
@@ -44,7 +44,7 @@ read_isotopes(void)
 	return_value = UNKNOWN;
 	for (;;)
 	{
-		opt = get_option(opt_list, count_opt_list, &next_char);
+        opt = get_option(opt_list, count_opt_list, next_char);
 		if (opt == OPTION_DEFAULT)
 		{
 			opt = opt_save;
@@ -60,7 +60,7 @@ read_isotopes(void)
 		case OPTION_ERROR:
 			input_error++;
 			error_msg("Unknown input in SPECIES keyword.", CONTINUE);
-			error_msg(line_save, CONTINUE);
+            error_msg(line_save.c_str(), CONTINUE);
 			break;
 		case 0:				/* isotope */
 			if (elt_ptr == NULL)
@@ -76,7 +76,7 @@ read_isotopes(void)
 			 *  Save an isotope
 			 */
 			master_isotope_ptr = NULL;
-			copy_token(token, &next_char, &l);
+            copy_token(token, next_char, &l);
 			master_isotope_ptr = master_isotope_store(token, TRUE);
 			master_isotope_ptr->elt = elt_ptr;
 			master_isotope_ptr->minor_isotope = TRUE;
@@ -84,7 +84,7 @@ read_isotopes(void)
 			/*
 			 *  Read units
 			 */
-			if (copy_token(token, &next_char, &l) == EMPTY)
+            if (copy_token(token, next_char, &l) == EMPTY)
 			{
 				error_string = sformatf(
 						"Expecting units for isotopic values, %s. ISOTOPES data block.",
@@ -97,7 +97,7 @@ read_isotopes(void)
 			/*
 			 *  Read standard 
 			 */
-			if (copy_token(token, &next_char, &l) == EMPTY)
+            if (copy_token(token, next_char, &l) == EMPTY)
 			{
 				error_string = sformatf(
 						"Expecting isotope ratio of standard, %s. ISOTOPES data block.",
@@ -119,7 +119,7 @@ read_isotopes(void)
 /*
  *   Read and element name
  */
-			if (copy_token(token, &next_char, &l) == EMPTY)
+            if (copy_token(token, next_char, &l) == EMPTY)
 			{
 				error_string = sformatf(
 						"Expecting an element name for isotope definition, %s. ISOTOPES data block.",
@@ -160,7 +160,7 @@ read_calculate_values(void)
  *         ERROR   if error occurred reading data
  *
  */
-	char *ptr;
+    std::string ptr;
 	int l, length, line_length;
 	int return_value, opt, opt_save;
 	char token[MAX_LENGTH];
@@ -176,8 +176,8 @@ read_calculate_values(void)
 /*
  *   Read advection number (not currently used)
  */
-	ptr = line;
-	read_number_description(ptr, &n_user, &n_user_end, &description);
+    ptr = line;
+    read_number_description(const_cast<char*>(ptr.c_str()), &n_user, &n_user_end, &description);
 	description = (char *) free_check_null(description);
 	opt_save = OPTION_DEFAULT;
 /*
@@ -187,7 +187,7 @@ read_calculate_values(void)
 	calculate_value_ptr = NULL;
 	for (;;)
 	{
-		opt = get_option(opt_list, count_opt_list, &next_char);
+        opt = get_option(opt_list, count_opt_list, next_char);
 		if (opt == OPTION_DEFAULT)
 		{
 			opt = opt_save;
@@ -203,7 +203,7 @@ read_calculate_values(void)
 		case OPTION_ERROR:
 			input_error++;
 			error_msg("Unknown input in CALCULATE_VALUE keyword.", CONTINUE);
-			error_msg(line_save, CONTINUE);
+            error_msg(line_save.c_str(), CONTINUE);
 			break;
 		case 0:				/* start */
 			opt_save = OPT_1;
@@ -215,7 +215,7 @@ read_calculate_values(void)
 /*
  *   Read calculate_value name
  */
-			if (copy_token(token, &next_char, &l) == EMPTY)
+            if (copy_token(token, next_char, &l) == EMPTY)
 			{
 				error_string = sformatf(
 						"Expecting a name for calculate_value definition, %s. CALCULATE_VALUES data block.",
@@ -228,7 +228,7 @@ read_calculate_values(void)
 			calculate_value_ptr->new_def = TRUE;
 			calculate_value_ptr->commands =
 				(char *) PHRQ_malloc(sizeof(char));
-			if (calculate_value_ptr->commands == NULL)
+            if (calculate_value_ptr->commands.empty())
 			{
 				malloc_error();
 			}
@@ -245,17 +245,17 @@ read_calculate_values(void)
 		case OPT_1:			/* read command */
 			if (calculate_value_ptr)
 			{
-			length = (int) strlen(calculate_value_ptr->commands);
-			line_length = (int) strlen(line);
-			calculate_value_ptr->commands =
-				(char *) PHRQ_realloc(calculate_value_ptr->commands,
-									  (size_t) (length + line_length +
-												2) * sizeof(char));
-			if (calculate_value_ptr->commands == NULL)
+            length = (int) calculate_value_ptr->commands.size();
+            line_length = (int) line.size();
+//			calculate_value_ptr->commands =
+//				(char *) PHRQ_realloc(calculate_value_ptr->commands,
+//									  (size_t) (length + line_length +
+//												2) * sizeof(char));
+            if (calculate_value_ptr->commands.empty())
 				malloc_error();
 			calculate_value_ptr->commands[length] = ';';
 			calculate_value_ptr->commands[length + 1] = '\0';
-			strcat((calculate_value_ptr->commands), line);
+            calculate_value_ptr->commands += line;
 			opt_save = OPT_1;
 			}
 			else
@@ -294,7 +294,7 @@ read_isotope_ratios(void)
  *         ERROR   if error occurred reading data
  *
  */
-	char *ptr;
+    std::string ptr;
 	int l;
 	int return_value, opt, opt_save;
 	char token[MAX_LENGTH];
@@ -310,7 +310,7 @@ read_isotope_ratios(void)
  *   Read number (not currently used)
  */
 	ptr = line;
-	read_number_description(ptr, &n_user, &n_user_end, &description);
+    read_number_description(const_cast<char*>(ptr.c_str()), &n_user, &n_user_end, &description);
 	description = (char *) free_check_null(description);
 	opt_save = OPTION_DEFAULT;
 /*
@@ -320,7 +320,7 @@ read_isotope_ratios(void)
 	isotope_ratio_ptr = NULL;
 	for (;;)
 	{
-		opt = get_option(opt_list, count_opt_list, &next_char);
+        opt = get_option(opt_list, count_opt_list, next_char);
 		if (opt == OPTION_DEFAULT)
 		{
 			opt = opt_save;
@@ -336,13 +336,13 @@ read_isotope_ratios(void)
 		case OPTION_ERROR:
 			input_error++;
 			error_msg("Unknown input in ISOTOPE_RATIOS keyword.", CONTINUE);
-			error_msg(line_save, CONTINUE);
+            error_msg(line_save.c_str(), CONTINUE);
 			break;
 		case OPTION_DEFAULT:	/* read isotope_ratio name */
 /*
  *   Read isotope_ratio name
  */
-			if (copy_token(token, &next_char, &l) == EMPTY)
+            if (copy_token(token, next_char, &l) == EMPTY)
 			{
 				error_string = sformatf(
 						"Expecting a name for isotope_ratio definition, %s. ISOTOPE_RATIOS data block.",
@@ -355,7 +355,7 @@ read_isotope_ratios(void)
 			/*
 			 *  Read isotope
 			 */
-			if (copy_token(token, &next_char, &l) == EMPTY)
+            if (copy_token(token, next_char, &l) == EMPTY)
 			{
 				error_string = sformatf(
 						"Expecting a name of isotope for an isotope_ratio definition, %s. ISOTOPE_RATIOS data block.",
@@ -393,7 +393,7 @@ read_isotope_alphas(void)
  *         ERROR   if error occurred reading data
  *
  */
-	char *ptr;
+    std::string ptr;
 	int l;
 	int return_value, opt, opt_save;
 	char token[MAX_LENGTH];
@@ -409,7 +409,7 @@ read_isotope_alphas(void)
  *   Read number (not currently used)
  */
 	ptr = line;
-	read_number_description(ptr, &n_user, &n_user_end, &description);
+    read_number_description(const_cast<char*>(ptr.c_str()), &n_user, &n_user_end, &description);
 	description = (char *) free_check_null(description);
 	opt_save = OPTION_DEFAULT;
 /*
@@ -419,7 +419,7 @@ read_isotope_alphas(void)
 	isotope_alpha_ptr = NULL;
 	for (;;)
 	{
-		opt = get_option(opt_list, count_opt_list, &next_char);
+        opt = get_option(opt_list, count_opt_list, next_char);
 		if (opt == OPTION_DEFAULT)
 		{
 			opt = opt_save;
@@ -435,13 +435,13 @@ read_isotope_alphas(void)
 		case OPTION_ERROR:
 			input_error++;
 			error_msg("Unknown input in ISOTOPE_ALPHAS keyword.", CONTINUE);
-			error_msg(line_save, CONTINUE);
+            error_msg(line_save.c_str(), CONTINUE);
 			break;
 		case OPTION_DEFAULT:	/* read isotope_alpha name */
 /*
  *   Read isotope_alpha name
  */
-			if (copy_token(token, &next_char, &l) == EMPTY)
+            if (copy_token(token, next_char, &l) == EMPTY)
 			{
 				error_string = sformatf(
 						"Expecting a name for isotope_alpha definition, %s. ISOTOPE_ALPHAS data block.",
@@ -452,7 +452,7 @@ read_isotope_alphas(void)
 			}
 			isotope_alpha_ptr = isotope_alpha_store(token, TRUE);
 			isotope_alpha_ptr->name = string_hsave(token);
-			if (copy_token(token, &next_char, &l) != EMPTY)
+            if (copy_token(token, next_char, &l) != EMPTY)
 			{
 				isotope_alpha_ptr->named_logk = string_hsave(token);
 			}
@@ -1731,7 +1731,7 @@ calculate_value_init(struct calculate_value *calculate_value_ptr)
 	{
 		calculate_value_ptr->name = NULL;
 		calculate_value_ptr->value = 0.0;
-		calculate_value_ptr->commands = NULL;
+        calculate_value_ptr->commands = "";
 		calculate_value_ptr->new_def = TRUE;
 		calculate_value_ptr->calculated = FALSE;
 		calculate_value_ptr->linebase = NULL;
@@ -1791,8 +1791,8 @@ calculate_value_free(struct calculate_value *calculate_value_ptr)
 
 	if (calculate_value_ptr == NULL)
 		return (ERROR);
-	calculate_value_ptr->commands =
-		(char *) free_check_null(calculate_value_ptr->commands);
+//	calculate_value_ptr->commands =
+//		(char *) free_check_null(calculate_value_ptr->commands);
 	basic_run(cmd, calculate_value_ptr->linebase,
 			  calculate_value_ptr->varbase, calculate_value_ptr->loopbase);
 	calculate_value_ptr->linebase = NULL;

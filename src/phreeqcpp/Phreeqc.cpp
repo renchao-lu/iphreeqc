@@ -649,7 +649,7 @@ void Phreeqc::init(void)
 	/*----------------------------------------------------------------------
 	*   Global solution
 	*---------------------------------------------------------------------- */
-	title_x                 = NULL;
+    title_x                 = "";
 	new_x                   = FALSE;
 	description_x			= NULL;
 	tc_x                    = 0;
@@ -948,8 +948,8 @@ void Phreeqc::init(void)
 	run_reactions_iterations= 0;
 	overall_iterations      = 0;
 	max_line				= MAX_LINE;
-	line                    = NULL;
-	line_save				= NULL;
+    line                    = "";
+    line_save				= "";
 	LOG_10                  = log(10.0);
 	debug_model             = FALSE;
 	debug_prep              = FALSE;
@@ -1045,7 +1045,7 @@ void Phreeqc::init(void)
 
 	phreeqc_mpi_myself		= 0;
 	first_read_input		= TRUE;
-	user_database			= NULL;
+    user_database			= "";
 	//have_punch_name			= FALSE;
 	print_density		    = 0;
 	print_viscosity		    = 0;
@@ -1324,7 +1324,7 @@ void Phreeqc::init(void)
 	int FirstCallToUSER_GRAPH;
 #endif
 	/* read.cpp */
-	prev_next_char          = NULL;
+    prev_next_char          = "";
 #if defined PHREEQ98 
 	int shifts_as_points;
 #endif
@@ -1881,8 +1881,8 @@ Phreeqc::InternalCopy(const Phreeqc *pSrc)
 			count_elts = 0;
 			paren_count = 0;
 			char * string = string_duplicate(s_ptr->mole_balance);
-			char * ptr = string;
-			get_secondary_in_species(&ptr, 1.0);
+            std::string ptr = string;
+            get_secondary_in_species(ptr, 1.0);
 			s_ptr->next_secondary = elt_list_save();
 			free_check_null(string);
 		}
@@ -2446,9 +2446,9 @@ Phreeqc::InternalCopy(const Phreeqc *pSrc)
 		//memcpy(calculate_value_ptr, pSrc->calculate_value[i], sizeof(struct calculate_value));
 		calculate_value_ptr->value = pSrc->calculate_value[i]->value;
 		//calculate_value_ptr->commands = NULL;
-		if (pSrc->calculate_value[i]->commands)
+        if (!pSrc->calculate_value[i]->commands.empty())
 		{
-			calculate_value_ptr->commands = string_duplicate(pSrc->calculate_value[i]->commands);
+            calculate_value_ptr->commands = pSrc->calculate_value[i]->commands;
 		}
 		//calculate_value_ptr->new_def = TRUE;
 		//calculate_value_ptr->calculated = FALSE;
@@ -2485,7 +2485,7 @@ Phreeqc::InternalCopy(const Phreeqc *pSrc)
 
 	phreeqc_mpi_myself		= 0;
 	first_read_input		= TRUE;
-	user_database			= string_duplicate(pSrc->user_database);
+    user_database			= pSrc->user_database;
 	//have_punch_name			= pSrc->have_punch_name;
 	print_density		    = pSrc->print_density;
 	print_viscosity         = pSrc->print_viscosity;
@@ -2737,7 +2737,7 @@ protected:
 	int FirstCallToUSER_GRAPH;
 #endif
 	/* read.cpp */
-	prev_next_char          = NULL;
+    prev_next_char          = "";
 #if defined PHREEQ98 
 	int shifts_as_points;
 #endif

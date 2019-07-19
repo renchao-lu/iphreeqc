@@ -340,7 +340,7 @@ compute_gfw(const char *string, LDBLE * gfw)
 
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-copy_token(char *token_ptr, char **ptr, int *length)
+copy_token(std::string token_ptr, std::string ptr, int *length)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -419,7 +419,7 @@ copy_token(char *token_ptr, char **ptr, int *length)
 }
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-copy_token(std::string &token, char **ptr)
+copy_token(std::string &token, std::string ptr)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -659,7 +659,7 @@ free_check_null(void *ptr)
 
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-get_token(char **eqnaddr, char *string, LDBLE * l_z, int *l)
+get_token(std::string eqnaddr, char *string, LDBLE * l_z, int *l)
 /* ---------------------------------------------------------------------- */
 /*
  *   Function finds next species in equation, coefficient has already

@@ -781,7 +781,7 @@ build_ss_assemblage(void)
 		paren_count = 0;
 		char * token = string_duplicate(x[i]->phase->formula);
 		ptr = token;
-		get_elts_in_species(&ptr, 1.0);
+        get_elts_in_species(ptr, 1.0);
 		free_check_null(token);
 /*
  *   Go through elements in phase
@@ -1515,14 +1515,14 @@ build_pure_phases(void)
 		{
 			char * char_name = string_duplicate(comp_ptr->Get_add_formula().c_str());
 			ptr = char_name;
-			get_elts_in_species(&ptr, 1.0);
+            get_elts_in_species(ptr, 1.0);
 			free_check_null(char_name);
 		}
 		else
 		{
 			char * char_name = string_duplicate(x[i]->phase->formula);
 			ptr = char_name;
-			get_elts_in_species(&ptr, 1.0);
+            get_elts_in_species(ptr, 1.0);
 			free_check_null(char_name);
 		}
 /*
@@ -2001,7 +2001,7 @@ convert_units(cxxSolution *solution_ptr)
 			{
 				char * temp_desc = string_duplicate(comp_ref.Get_description().c_str());
 				char *ptr = temp_desc;
-				copy_token(token, &ptr);
+                copy_token(token, ptr);
 				master_ptr = master_bsearch(token.c_str());
 				free_check_null(temp_desc);
 				if (master_ptr != NULL)
@@ -2175,7 +2175,7 @@ get_list_master_ptrs(char *ptr, struct master *master_ptr)
  *   First in list is secondary species, Include all valences from input
  */
 		master_ptr_list[count_list++] = master_ptr0;
-		while (copy_token(token, &ptr, &l) != EMPTY)
+        while (copy_token(token, ptr, &l) != EMPTY)
 		{
 			master_ptr = master_bsearch(token);
 			if (master_ptr != NULL)
@@ -3137,7 +3137,7 @@ add_surface_charge_balance(void)
  */
 	char * temp_name = string_duplicate(master_ptr->elt->name);
 	ptr = temp_name;
-	get_secondary_in_species(&ptr, 1.0);
+    get_secondary_in_species(ptr, 1.0);
 	free_check_null(temp_name);
 
 	return (OK);
@@ -3200,7 +3200,7 @@ add_cd_music_charge_balances(int n)
 	{
 		char * temp_name = string_duplicate( master_ptr->elt->name);
 		char *ptr = temp_name;
-		get_secondary_in_species(&ptr, s[n]->dz[0]);
+        get_secondary_in_species(ptr, s[n]->dz[0]);
 		free_check_null(temp_name);
 	}
 	/*
@@ -3215,7 +3215,7 @@ add_cd_music_charge_balances(int n)
 	{
 		char * temp_name = string_duplicate( master_ptr->elt->name);
 		char *ptr = temp_name;
-		get_secondary_in_species(&ptr, s[n]->dz[1]);
+        get_secondary_in_species(ptr, s[n]->dz[1]);
 		free_check_null(temp_name);
 	}
 	/*
@@ -3230,7 +3230,7 @@ add_cd_music_charge_balances(int n)
 	{
 		char * temp_name = string_duplicate(master_ptr->elt->name);
 		char *ptr = temp_name;
-		get_secondary_in_species(&ptr, s[n]->dz[2]);
+        get_secondary_in_species(ptr, s[n]->dz[2]);
 		free_check_null(temp_name);
 	}
 
@@ -4355,7 +4355,7 @@ setup_solution(void)
 		}
 		char * temp_desc = string_duplicate(it->first.c_str());
 		ptr = temp_desc;
-		copy_token(token, &ptr);
+        copy_token(token, ptr);
 		master_ptr = master_bsearch(token.c_str());
 /*
  *   Check that total not <= zero
@@ -4420,7 +4420,7 @@ setup_solution(void)
 		free_check_null(temp_desc);
 		temp_desc = string_duplicate(it->first.c_str());
 		ptr = temp_desc;
-		copy_token(token, &ptr);
+        copy_token(token, ptr);
 		Utilities::str_tolower(token);
 		if (strstr(token.c_str(), "alk") != NULL)
 		{
@@ -4479,7 +4479,7 @@ setup_solution(void)
 		{
 			char * temp_eq_name = string_duplicate(comp_ptr->Get_equation_name().c_str());
 			ptr = temp_eq_name;
-			copy_token(token, &ptr);
+            copy_token(token, ptr);
 			Utilities::str_tolower(token);
 			if (strstr(token.c_str(), "charge") != NULL)
 			{
@@ -5314,7 +5314,7 @@ write_mb_eqn_x(void)
 		j = count_elts;
 		char * temp_name = string_duplicate(trxn.token[i].s->name);
 		char * ptr = temp_name;
-		get_elts_in_species(&ptr, trxn.token[i].coef);
+        get_elts_in_species(ptr, trxn.token[i].coef);
 		free_check_null(temp_name);
 		for (k = j; k < count_elts; k++)
 		{
@@ -5336,14 +5336,14 @@ write_mb_eqn_x(void)
 		{
 			char * temp_name = string_duplicate(trxn.token[i].s->primary->elt->name);
 			char *ptr = temp_name;
-			get_secondary_in_species(&ptr, trxn.token[i].coef);
+            get_secondary_in_species(ptr, trxn.token[i].coef);
 			free_check_null(temp_name);
 		}
 		else
 		{
 			char * temp_name = string_duplicate(trxn.token[i].s->secondary->elt->name);
 			ptr = temp_name;
-			get_secondary_in_species(&ptr, trxn.token[i].coef);
+            get_secondary_in_species(ptr, trxn.token[i].coef);
 			free_check_null(temp_name);
 		}
 	}
@@ -5382,14 +5382,14 @@ write_mb_for_species_list(int n)
 		{
 			char * temp_name = string_duplicate(trxn.token[i].s->primary->elt->name);
 			char * ptr = temp_name;
-			get_secondary_in_species(&ptr, trxn.token[i].coef);
+            get_secondary_in_species(ptr, trxn.token[i].coef);
 			free_check_null(temp_name);
 		}
 		else
 		{
 			char * temp_name = string_duplicate(trxn.token[i].s->secondary->elt->name);
 			char * ptr = temp_name;
-			if (get_secondary_in_species(&ptr, trxn.token[i].coef) == ERROR)
+            if (get_secondary_in_species(ptr, trxn.token[i].coef) == ERROR)
 			{
 				input_error++;
 				error_string = sformatf( "Error parsing %s.", trxn.token[i].s->secondary->elt->name);
@@ -5450,14 +5450,14 @@ write_phase_sys_total(int n)
 		{
 			char * temp_name = string_duplicate(trxn.token[i].s->primary->elt->name);
 			char *ptr = temp_name;
-			get_secondary_in_species(&ptr, trxn.token[i].coef);
+            get_secondary_in_species(ptr, trxn.token[i].coef);
 			free_check_null(temp_name);
 		}
 		else
 		{
 			char * temp_name = string_duplicate(trxn.token[i].s->secondary->elt->name);
 			char *ptr = temp_name;
-			get_secondary_in_species(&ptr, trxn.token[i].coef);
+            get_secondary_in_species(ptr, trxn.token[i].coef);
 			free_check_null(temp_name);
 		}
 	}
@@ -6309,7 +6309,7 @@ build_min_exch(void)
 		{
 			char * formula = string_duplicate(comp_ref.Get_formula().c_str());
 			char * ptr = formula;
-			get_elts_in_species(&ptr, 1.0);
+            get_elts_in_species(ptr, 1.0);
 			free_check_null(formula);
 		}
 #ifdef COMBINE
@@ -6442,8 +6442,8 @@ build_min_surface(void)
 		{
 			/* Add specified formula for all types of surfaces */
 			char * formula = string_duplicate(comp_ptr->Get_formula().c_str());
-			char *ptr1 = formula;
-			get_elts_in_species(&ptr1, 1.0);
+            std::string ptr1 = formula;
+            get_elts_in_species(ptr1, 1.0);
 			free_check_null(formula);
 		}
 #ifdef COMBINE

@@ -26,7 +26,7 @@ parse_eq(char *eqn, struct elt_list **elt_ptr, int association)
 	int i;
 	LDBLE coef, l_z;
 	char c;
-	char *ptr;
+    std::string ptr;
 	char token[MAX_LENGTH];
 
 	paren_count = 0;
@@ -65,7 +65,7 @@ parse_eq(char *eqn, struct elt_list **elt_ptr, int association)
 			error_msg(error_string, CONTINUE);
 			return (ERROR);
 		}
-		if (get_species(&ptr) == ERROR)
+        if (get_species(ptr) == ERROR)
 		{
 			return (ERROR);
 		}
@@ -79,10 +79,10 @@ parse_eq(char *eqn, struct elt_list **elt_ptr, int association)
 /*
  *   Get coefficient, name, and charge of species for dissociation reaction
  */
-	ptr++;
+//	ptr++;
 	if (association == TRUE)
 	{
-		if (get_species(&ptr) == ERROR)
+        if (get_species(ptr) == ERROR)
 		{
 			return (ERROR);
 		}
@@ -107,7 +107,7 @@ parse_eq(char *eqn, struct elt_list **elt_ptr, int association)
 	{
 		if (c == '\0')
 			break;
-		if (get_species(&ptr) == ERROR)
+        if (get_species(ptr) == ERROR)
 		{
 			return (ERROR);
 		}
@@ -131,9 +131,9 @@ parse_eq(char *eqn, struct elt_list **elt_ptr, int association)
 	replace("(S)", "", token);
 	replace("(g)", "", token);
 	replace("(G)", "", token);
-	char *char_ptr = token;
+    std::string char_ptr = token;
 
-	if (get_elts_in_species(&char_ptr, trxn.token[0].coef) == ERROR)
+    if (get_elts_in_species(char_ptr, trxn.token[0].coef) == ERROR)
 	{
 		return (ERROR);
 	}
@@ -217,8 +217,8 @@ check_eqn(int association)
 	{
 		sumcharge += (trxn.token[i].coef) * (trxn.token[i].z);
 		char * temp_name = string_duplicate(trxn.token[i].name);
-		char *t_ptr = temp_name;
-		if (get_elts_in_species(&t_ptr, trxn.token[i].coef) == ERROR)
+        std::string t_ptr = temp_name;
+        if (get_elts_in_species(t_ptr, trxn.token[i].coef) == ERROR)
 		{
 			free_check_null(temp_name);
 			return (ERROR);
@@ -390,7 +390,7 @@ get_charge(char *charge, LDBLE * l_z)
 
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-get_coef(LDBLE * coef, char **eqnaddr)
+get_coef(LDBLE * coef, std::string eqnaddr)
 /* ---------------------------------------------------------------------- */
 /*
  *   Function reads through eqn and determines the coefficient of the next
@@ -412,8 +412,8 @@ get_coef(LDBLE * coef, char **eqnaddr)
 	char *ptr, *ptr1, *rest;
 	char token[MAX_LENGTH];;
 
-	rest = *eqnaddr;
-	ptr = *eqnaddr;				/* address of a position in eqn */
+//	rest = *eqnaddr;
+//	ptr = *eqnaddr;				/* address of a position in eqn */
 	c = *ptr;					/* character in eqn */
 	*coef = 0.0;
 /*
@@ -433,7 +433,7 @@ get_coef(LDBLE * coef, char **eqnaddr)
 		(isalpha((int) c1) ||
 		 (c1 == '(') || (c1 == ')') || (c1 == '[') || (c1 == ']')))
 	{
-		*eqnaddr = ++ptr;
+//		*eqnaddr = ++ptr;
 		*coef = 1.0;
 		return (OK);
 	}
@@ -444,7 +444,7 @@ get_coef(LDBLE * coef, char **eqnaddr)
 		(isalpha((int) c1) ||
 		 (c1 == '(') || (c1 == ')') || (c1 == '[') || (c1 == ']')))
 	{
-		*eqnaddr = ++ptr;
+//		*eqnaddr = ++ptr;
 		*coef = -1.0;
 		return (OK);
 	}
@@ -467,7 +467,7 @@ get_coef(LDBLE * coef, char **eqnaddr)
 			c = *(++ptr);
 		}
 		token[i] = '\0';
-		*eqnaddr = ptr;
+//		*eqnaddr = ptr;
 		errno = 0;
 		*coef = strtod(token, &ptr1);
 		if ((errno == ERANGE) || (*ptr1 != '\0'))
@@ -490,7 +490,7 @@ get_coef(LDBLE * coef, char **eqnaddr)
 
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-get_elt(char **t_ptr, char *element, int *i)
+get_elt(std::string t_ptr, char *element, int *i)
 /* ---------------------------------------------------------------------- */
 /*
  *      Function reads an element name out of the equation string.
@@ -506,63 +506,63 @@ get_elt(char **t_ptr, char *element, int *i)
 {
 	char c;
 
-	c = *(*t_ptr)++;
-	if (c == '\0')
-	{
-		error_string = sformatf(
-				"Empty string in get_elt.  Expected an element name.");
-		error_msg(error_string, CONTINUE);
-		return (ERROR);
-	}
-/*
- *   Load name into char array element
- */
-	element[0] = c;
-	*i = 1;
-	if (c == '[')
-	{
-		while ((c = (**t_ptr)) != ']')
-		{
-			element[*i] = c;
-			(*i)++;
-			(*t_ptr)++;
-			if ((c = (**t_ptr)) == ']')
-			{
-				element[*i] = c;
-				(*i)++;
-				(*t_ptr)++;
-				break;
-			}
-			else if (**t_ptr == '\0')
-			{
-				error_msg("No ending bracket (]) for element name", CONTINUE);
-				input_error++;
-				break;
-			}
-		}
-		while (islower((int) (c = (**t_ptr))) || c == '_')
-		{
-			element[*i] = c;
-			(*i)++;
-			(*t_ptr)++;
-		}
-	}
-	else
-	{
-		while (islower((int) (c = (**t_ptr))) || c == '_')
-		{
-			element[*i] = c;
-			(*i)++;
-			(*t_ptr)++;
-		}
-	}
+//	c = *(*t_ptr)++;
+//	if (c == '\0')
+//	{
+//		error_string = sformatf(
+//				"Empty string in get_elt.  Expected an element name.");
+//		error_msg(error_string, CONTINUE);
+//		return (ERROR);
+//	}
+///*
+// *   Load name into char array element
+// */
+//	element[0] = c;
+//	*i = 1;
+//	if (c == '[')
+//	{
+//		while ((c = (**t_ptr)) != ']')
+//		{
+//			element[*i] = c;
+//			(*i)++;
+//			(*t_ptr)++;
+//			if ((c = (**t_ptr)) == ']')
+//			{
+//				element[*i] = c;
+//				(*i)++;
+//				(*t_ptr)++;
+//				break;
+//			}
+//			else if (**t_ptr == '\0')
+//			{
+//				error_msg("No ending bracket (]) for element name", CONTINUE);
+//				input_error++;
+//				break;
+//			}
+//		}
+//		while (islower((int) (c = (**t_ptr))) || c == '_')
+//		{
+//			element[*i] = c;
+//			(*i)++;
+//			(*t_ptr)++;
+//		}
+//	}
+//	else
+//	{
+//		while (islower((int) (c = (**t_ptr))) || c == '_')
+//		{
+//			element[*i] = c;
+//			(*i)++;
+//			(*t_ptr)++;
+//		}
+//	}
 	element[*i] = '\0';
 	return (OK);
 }
 
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-get_elts_in_species(char **t_ptr, LDBLE coef)
+get_elts_in_species(std::string t_ptr, LDBLE coef)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -581,112 +581,112 @@ get_elts_in_species(char **t_ptr, LDBLE coef)
 	LDBLE d;
 	char element[MAX_LENGTH];
 
-	while (((c = **t_ptr) != '+') && (c != '-') && (c != '\0'))
-	{
-		/* close parenthesis */
-		if (c == ')')
-		{
-			paren_count--;
-			if (paren_count < 0)
-			{
-				error_string = sformatf( "Too many right parentheses.");
-				error_msg(error_string, CONTINUE);
-				return (ERROR);
-			}
-			(*t_ptr)++;
-			return (OK);
-		}
-		c1 = *((*t_ptr) + 1);
-		/* beginning of element name */
-		if (isupper((int) c) || (c == 'e' && c1 == '-') || (c == '['))
-		{
-/*
- *   Get new element and subscript
- */
-			if (get_elt(t_ptr, element, &l) == ERROR)
-			{
-				return (ERROR);
-			}
-			if (count_elts >= max_elts)
-			{
-				space((void **) ((void *) &elt_list), count_elts, &max_elts,
-					  sizeof(struct elt_list));
-			}
-			elt_list[count_elts].elt = element_store(element);
-			if (get_num(t_ptr, &d) == ERROR)
-			{
-				return (ERROR);
-			}
-			elt_list[count_elts].coef = d * coef;
-			count_elts++;
-/*
- *   Expand working space for elements if necessary
- */
-			if (count_elts >= max_elts)
-			{
-				space((void **) ((void *) &elt_list), count_elts, &max_elts,
-					  sizeof(struct elt_list));
-			}
-			continue;
-		}
-/*
- *   Open parentheses
- */
-		if (c == '(')
-		{
-			count = count_elts;
-			if (c1 == ')')
-			{
-				error_string = sformatf( "Empty parentheses.");
-				warning_msg(error_string);
-			}
-			paren_count++;
-			(*t_ptr)++;
-			if (get_elts_in_species(t_ptr, coef) == ERROR)
-			{
-				return (ERROR);
-			}
-			if (get_num(t_ptr, &d) == ERROR)
-			{
-				return (ERROR);
-			}
-			for (i = count; i < count_elts; i++)
-			{
-				elt_list[i].coef *= d;
-			}
-			continue;
-		}
-/*
- *   Colon
- */
-		if (c == ':')
-		{
-			count = count_elts;
-			(*t_ptr)++;
-			if (get_num(t_ptr, &d) == ERROR)
-			{
-				return (ERROR);
-			}
-			if (get_elts_in_species(t_ptr, coef) == ERROR)
-			{
-				return (ERROR);
-			}
-			for (i = count; i < count_elts; i++)
-			{
-				elt_list[i].coef *= d;
-			}
-			continue;
-		}
-/*
- *   Not beginning of element and not opening paren
- */
-		error_string = sformatf(
-				"Parsing error in get_elts_in_species, unexpected character, %c.",
-				c);
-		error_msg(error_string, CONTINUE);
-		input_error++;
-		return (ERROR);
-	}
+//	while (((c = **t_ptr) != '+') && (c != '-') && (c != '\0'))
+//	{
+//		/* close parenthesis */
+//		if (c == ')')
+//		{
+//			paren_count--;
+//			if (paren_count < 0)
+//			{
+//				error_string = sformatf( "Too many right parentheses.");
+//				error_msg(error_string, CONTINUE);
+//				return (ERROR);
+//			}
+//			(*t_ptr)++;
+//			return (OK);
+//		}
+//		c1 = *((*t_ptr) + 1);
+//		/* beginning of element name */
+//		if (isupper((int) c) || (c == 'e' && c1 == '-') || (c == '['))
+//		{
+///*
+// *   Get new element and subscript
+// */
+//			if (get_elt(t_ptr, element, &l) == ERROR)
+//			{
+//				return (ERROR);
+//			}
+//			if (count_elts >= max_elts)
+//			{
+//				space((void **) ((void *) &elt_list), count_elts, &max_elts,
+//					  sizeof(struct elt_list));
+//			}
+//			elt_list[count_elts].elt = element_store(element);
+//			if (get_num(t_ptr, &d) == ERROR)
+//			{
+//				return (ERROR);
+//			}
+//			elt_list[count_elts].coef = d * coef;
+//			count_elts++;
+///*
+// *   Expand working space for elements if necessary
+// */
+//			if (count_elts >= max_elts)
+//			{
+//				space((void **) ((void *) &elt_list), count_elts, &max_elts,
+//					  sizeof(struct elt_list));
+//			}
+//			continue;
+//		}
+///*
+// *   Open parentheses
+// */
+//		if (c == '(')
+//		{
+//			count = count_elts;
+//			if (c1 == ')')
+//			{
+//				error_string = sformatf( "Empty parentheses.");
+//				warning_msg(error_string);
+//			}
+//			paren_count++;
+//			(*t_ptr)++;
+//			if (get_elts_in_species(t_ptr, coef) == ERROR)
+//			{
+//				return (ERROR);
+//			}
+//			if (get_num(t_ptr, &d) == ERROR)
+//			{
+//				return (ERROR);
+//			}
+//			for (i = count; i < count_elts; i++)
+//			{
+//				elt_list[i].coef *= d;
+//			}
+//			continue;
+//		}
+///*
+// *   Colon
+// */
+//		if (c == ':')
+//		{
+//			count = count_elts;
+//			(*t_ptr)++;
+//			if (get_num(t_ptr, &d) == ERROR)
+//			{
+//				return (ERROR);
+//			}
+//			if (get_elts_in_species(t_ptr, coef) == ERROR)
+//			{
+//				return (ERROR);
+//			}
+//			for (i = count; i < count_elts; i++)
+//			{
+//				elt_list[i].coef *= d;
+//			}
+//			continue;
+//		}
+///*
+// *   Not beginning of element and not opening paren
+// */
+//		error_string = sformatf(
+//				"Parsing error in get_elts_in_species, unexpected character, %c.",
+//				c);
+//		error_msg(error_string, CONTINUE);
+//		input_error++;
+//		return (ERROR);
+//	}
 	if (paren_count != 0)
 	{
 		error_string = sformatf( "Unbalanced parentheses.");
@@ -819,7 +819,7 @@ get_secondary(char **t_ptr, char *element, int *i)
 
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-get_secondary_in_species(char **t_ptr, LDBLE coef)
+get_secondary_in_species(std::string t_ptr, LDBLE coef)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -838,107 +838,107 @@ get_secondary_in_species(char **t_ptr, LDBLE coef)
 	LDBLE d;
 	char element[MAX_LENGTH];
 
-	while (((c = **t_ptr) != '+') && (c != '-') && (c != '\0'))
-	{
-		/* close parenthesis */
-		if (c == ')')
-		{
-			paren_count--;
-			if (paren_count < 0)
-			{
-				error_string = sformatf( "Too many right parentheses.");
-				error_msg(error_string, CONTINUE);
-				input_error++;
-				return (ERROR);
-			}
-			(*t_ptr)++;
-			return (OK);
-		}
-		c1 = *((*t_ptr) + 1);
-		/* beginning of element name */
-		if (isupper((int) c) || c == '[' || (c == 'e' && c1 == '-'))
-		{
-/*
- *   Get new element and subscript
- */
-			if (get_secondary(t_ptr, element, &l) == ERROR)
-			{
-				return (ERROR);
-			}
-			elt_list[count_elts].elt = element_store(element);
-			if (get_num(t_ptr, &d) == ERROR)
-			{
-				return (ERROR);
-			}
-			elt_list[count_elts].coef = d * coef;
-			count_elts++;
-/*
- *   Expand working space for elements if necessary
- */
-			if (count_elts >= max_elts)
-			{
-				space((void **) ((void *) &elt_list), count_elts, &max_elts,
-					  sizeof(struct elt_list));
-			}
-			continue;
-		}
-/*
- *   Open parentheses
- */
-		if (c == '(')
-		{
-			count = count_elts;
-			if (c1 == ')')
-			{
-				error_string = sformatf( "Empty parentheses.");
-				warning_msg(error_string);
-			}
-			paren_count++;
-			(*t_ptr)++;
-			if (get_secondary_in_species(t_ptr, coef) == ERROR)
-			{
-				return (ERROR);
-			}
-			if (get_num(t_ptr, &d) == ERROR)
-			{
-				return (ERROR);
-			}
-			for (i = count; i < count_elts; i++)
-			{
-				elt_list[i].coef *= d;
-			}
-			continue;
-		}
-/*
- *   Colon
- */
-		if (c == ':')
-		{
-			count = count_elts;
-			(*t_ptr)++;
-			if (get_num(t_ptr, &d) == ERROR)
-			{
-				return (ERROR);
-			}
-			if (get_secondary_in_species(t_ptr, coef) == ERROR)
-			{
-				return (ERROR);
-			}
-			for (i = count; i < count_elts; i++)
-			{
-				elt_list[i].coef *= d;
-			}
-			continue;
-		}
-/*
- *   Not beginning of element and not opening paren
- */
-		error_string = sformatf(
-				"Parsing error in get_secondary_in_species, unexpected character, %c.",
-				c);
-		error_msg(error_string, CONTINUE);
-		return (ERROR);
-	}
+//	while (((c = **t_ptr) != '+') && (c != '-') && (c != '\0'))
+//	{
+//		/* close parenthesis */
+//		if (c == ')')
+//		{
+//			paren_count--;
+//			if (paren_count < 0)
+//			{
+//				error_string = sformatf( "Too many right parentheses.");
+//				error_msg(error_string, CONTINUE);
+//				input_error++;
+//				return (ERROR);
+//			}
+//			(*t_ptr)++;
+//			return (OK);
+//		}
+//		c1 = *((*t_ptr) + 1);
+//		/* beginning of element name */
+//		if (isupper((int) c) || c == '[' || (c == 'e' && c1 == '-'))
+//		{
+///*
+// *   Get new element and subscript
+// */
+//			if (get_secondary(t_ptr, element, &l) == ERROR)
+//			{
+//				return (ERROR);
+//			}
+//			elt_list[count_elts].elt = element_store(element);
+//			if (get_num(t_ptr, &d) == ERROR)
+//			{
+//				return (ERROR);
+//			}
+//			elt_list[count_elts].coef = d * coef;
+//			count_elts++;
+///*
+// *   Expand working space for elements if necessary
+// */
+//			if (count_elts >= max_elts)
+//			{
+//				space((void **) ((void *) &elt_list), count_elts, &max_elts,
+//					  sizeof(struct elt_list));
+//			}
+//			continue;
+//		}
+///*
+// *   Open parentheses
+// */
+//		if (c == '(')
+//		{
+//			count = count_elts;
+//			if (c1 == ')')
+//			{
+//				error_string = sformatf( "Empty parentheses.");
+//				warning_msg(error_string);
+//			}
+//			paren_count++;
+//			(*t_ptr)++;
+//			if (get_secondary_in_species(t_ptr, coef) == ERROR)
+//			{
+//				return (ERROR);
+//			}
+//			if (get_num(t_ptr, &d) == ERROR)
+//			{
+//				return (ERROR);
+//			}
+//			for (i = count; i < count_elts; i++)
+//			{
+//				elt_list[i].coef *= d;
+//			}
+//			continue;
+//		}
+///*
+// *   Colon
+// */
+//		if (c == ':')
+//		{
+//			count = count_elts;
+//			(*t_ptr)++;
+//			if (get_num(t_ptr, &d) == ERROR)
+//			{
+//				return (ERROR);
+//			}
+//			if (get_secondary_in_species(t_ptr, coef) == ERROR)
+//			{
+//				return (ERROR);
+//			}
+//			for (i = count; i < count_elts; i++)
+//			{
+//				elt_list[i].coef *= d;
+//			}
+//			continue;
+//		}
+///*
+// *   Not beginning of element and not opening paren
+// */
+//		error_string = sformatf(
+//				"Parsing error in get_secondary_in_species, unexpected character, %c.",
+//				c);
+//		error_msg(error_string, CONTINUE);
+//		return (ERROR);
+//	}
 	if (paren_count != 0)
 	{
 		error_string = sformatf( "Unbalanced parentheses.");
@@ -950,7 +950,7 @@ get_secondary_in_species(char **t_ptr, LDBLE coef)
 
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-get_num(char **t_ptr, LDBLE * num)
+get_num(std::string t_ptr, LDBLE * num)
 /* ---------------------------------------------------------------------- */
 /*
  *      Function reads through a string looking for leading numeric field
@@ -975,7 +975,7 @@ get_num(char **t_ptr, LDBLE * num)
 
 	*num = 1.0;
 	i = 0;
-	c = **t_ptr;
+//	c = **t_ptr;
 	decimal = 0;
 	if (isdigit((int) c) || (c == '.'))
 	{
@@ -995,7 +995,7 @@ get_num(char **t_ptr, LDBLE * num)
 				input_error++;
 				return (ERROR);
 			}
-			c = *(++(*t_ptr));
+//			c = *(++(*t_ptr));
 		}
 		token[i] = '\0';
 		errno = 0;
@@ -1013,7 +1013,7 @@ get_num(char **t_ptr, LDBLE * num)
 
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-get_species(char **ptr)
+get_species(std::string ptr)
 /* ---------------------------------------------------------------------- */
 {
 /*   Function reads next species out of the equation, including optional

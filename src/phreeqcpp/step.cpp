@@ -699,7 +699,7 @@ add_pp_assemblage(cxxPPassemblage *pp_assemblage_ptr)
 		{
 			strcpy(token, comp_ptr->Get_add_formula().c_str());
 			ptr = &(token[0]);
-			get_elts_in_species(&ptr, 1.0);
+            get_elts_in_species(ptr, 1.0);
 		}
 		else
 		{
@@ -972,7 +972,7 @@ reaction_calc(cxxReaction *reaction_ptr)
 		{
 			char * token = string_duplicate(it->first.c_str());
 			ptr = token;
-			get_elts_in_species(&ptr, coef);
+            get_elts_in_species(ptr, coef);
 			free_check_null(token);
 		}
 	}
@@ -1103,7 +1103,7 @@ add_ss_assemblage(cxxSSassemblage *ss_assemblage_ptr)
 				char * token = string_duplicate(phase_ptr->formula);
 				ptr = &(token[0]);
 				count_elts = 0; // appt
-				get_elts_in_species(&ptr, 1.0);
+                get_elts_in_species(ptr, 1.0);
 				free_check_null(token);
 				for (k = 0; k < count_elts; k++)
 				{
@@ -1305,7 +1305,7 @@ pp_assemblage_check(cxxPPassemblage *pp_assemblage_ptr)
 			{
 				token = comp_ptr->Get_add_formula();
 				ptr = &(token[0]);
-				get_elts_in_species(&ptr, 1.0);
+                get_elts_in_species(ptr, 1.0);
 			}
 			else
 			{

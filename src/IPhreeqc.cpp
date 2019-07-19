@@ -1254,7 +1254,7 @@ void IPhreeqc::do_run(const char* sz_routine, std::istream* pis, PFN_PRERUN_CALL
 		}
 		ASSERT(this->PhreeqcPtr->SelectedOutput_map.size() == this->SelectedOutputMap.size());
 		ASSERT(this->PhreeqcPtr->SelectedOutput_map.size() == this->SelectedOutputStringMap.size());
-		if (this->PhreeqcPtr->title_x != NULL)
+        if (!this->PhreeqcPtr->title_x.empty())
 		{
 			::sprintf(token, "TITLE");
 			this->PhreeqcPtr->dup_print(token, TRUE);

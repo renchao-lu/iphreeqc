@@ -205,7 +205,7 @@ read_sit(void)
   pitzer_pe = TRUE;
   for (;;)
   {
-    opt = get_option(opt_list, count_opt_list, &next_char);
+    opt = get_option(opt_list, count_opt_list, next_char);
     if (opt == OPTION_DEFAULT)
     {
       opt = opt_save;
@@ -219,7 +219,7 @@ read_sit(void)
       return_value = KEYWORD;
       break;
     case OPTION_DEFAULT:
-      pzp_ptr = pitz_param_read(line, n);
+      pzp_ptr = pitz_param_read(const_cast<char*>(line.c_str()), n);
 	  if (pzp_ptr != NULL)
 	  {
 		  pzp_ptr->type = pzp_type;
@@ -229,7 +229,7 @@ read_sit(void)
     case OPTION_ERROR:
       input_error++;
       error_msg("Unknown input in SIT keyword.", CONTINUE);
-      error_msg(line_save, CONTINUE);
+      error_msg(line_save.c_str(), CONTINUE);
       break;
     case 0:				/* epsilon */
       pzp_type = TYPE_SIT_EPSILON;

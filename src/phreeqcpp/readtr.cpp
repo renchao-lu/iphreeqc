@@ -35,7 +35,7 @@ read_transport(void)
 	*         ERROR   if error occurred reading data
 	*
 	*/
-	char *ptr;
+    std::string ptr;
 	int i, j, l;
 	int count_length, count_disp, count_punch, count_print, count_por;
 	int count_length_alloc, count_disp_alloc, count_por_alloc;
@@ -140,7 +140,7 @@ read_transport(void)
 	*   Read transport number (not currently used)
 	*/
 	ptr = line;
-	read_number_description(ptr, &n_user, &n_user_end, &description);
+    read_number_description(const_cast<char*>(ptr.c_str()), &n_user, &n_user_end, &description);
 	description = (char *)free_check_null(description);
 	/*
 	*   Set use data to last read
@@ -153,7 +153,7 @@ read_transport(void)
 	return_value = UNKNOWN;
 	for (;;)
 	{
-		opt = get_option(opt_list, count_opt_list, &next_char);
+        opt = get_option(opt_list, count_opt_list, next_char);
 		if (opt == OPTION_DEFAULT)
 			opt = opt_save;
 		switch (opt)
@@ -168,14 +168,14 @@ read_transport(void)
 		case OPTION_DEFAULT:
 			input_error++;
 			error_msg("Unknown input in TRANSPORT keyword.", CONTINUE);
-			error_msg(line_save, CONTINUE);
+            error_msg(line_save.c_str(), CONTINUE);
 			break;
 		case 0:				/* cells */
 			sscanf(next_char, "%d", &count_cells);
 			opt_save = OPTION_DEFAULT;
 			break;
 		case 1:				/* shifts */
-			if (copy_token(token, &next_char, &l) == DIGIT)
+            if (copy_token(token, next_char, &l) == DIGIT)
 				sscanf(token, "%d", &count_shifts);
 			else
 			{
@@ -183,7 +183,7 @@ read_transport(void)
 					("Expected the number of shifts. One shift is assumed.");
 				count_shifts = 1;
 			}
-			j = copy_token(token, &next_char, &l);
+            j = copy_token(token, next_char, &l);
 			if (j != EMPTY)
 			{
 				if (j == DIGIT)
@@ -202,7 +202,7 @@ read_transport(void)
 		case 2:				/* print */
 		case 20:				/* print_cells */
 			print_temp =
-				read_list_ints_range(&next_char, &count_print, FALSE,
+                read_list_ints_range(next_char, &count_print, FALSE,
 				print_temp);
 			opt_save = 2;
 			break;
@@ -224,7 +224,7 @@ read_transport(void)
 		case 12:				/* bc */
 		case 13:				/* boundary_conditions */
 			/* first cell boundary condition */
-			i = copy_token(token, &next_char, &l);
+            i = copy_token(token, next_char, &l);
 			str_tolower(token);
 			if (i == DIGIT)
 			{
@@ -254,7 +254,7 @@ read_transport(void)
 			}
 
 			/* last cell boundary condition */
-			i = copy_token(token, &next_char, &l);
+            i = copy_token(token, next_char, &l);
 			str_tolower(token);
 			if (i == DIGIT)
 			{
@@ -286,15 +286,15 @@ read_transport(void)
 			break;
 		case 5:					/* timest */
 		case 14:				/* time_step */
-			if (copy_token(token, &next_char, &l) == DIGIT)
+            if (copy_token(token, next_char, &l) == DIGIT)
 				sscanf(token, SCANFORMAT, &timest);
 			{
 				std::string stdtoken;
-				j = copy_token(stdtoken, &next_char);
+                j = copy_token(stdtoken, next_char);
 				if (j == UPPER || j == LOWER)
 				{
 					timest = Utilities::convert_time(timest, stdtoken, "s");
-					j = copy_token(stdtoken, &next_char);
+                    j = copy_token(stdtoken, next_char);
 				}
 				if (j == DIGIT)
 				{
@@ -320,7 +320,7 @@ read_transport(void)
 		case 15:				/* temp_retardation_factor */
 		case 19:				/* temperature_retardation_factor */
 		case 39:				/* thermal_diffusion */
-			if (copy_token(token, &next_char, &l) == DIGIT)
+            if (copy_token(token, next_char, &l) == DIGIT)
 				sscanf(token, SCANFORMAT, &tempr);
 			if (tempr < 1)
 			{
@@ -329,7 +329,7 @@ read_transport(void)
 					("Temperature retardation factor < 1 is not possible.\n"
 					"Temperature retardation factor = 1 assumed.");
 			}
-			j = copy_token(token, &next_char, &l);
+            j = copy_token(token, next_char, &l);
 			if (j == DIGIT)
 				sscanf(token, SCANFORMAT, &heat_diffc);
 			opt_save = OPTION_DEFAULT;
@@ -362,12 +362,12 @@ read_transport(void)
 		case 21:				/* selected_cells */
 		case 30:				/* punch_cells */
 			punch_temp =
-				read_list_ints_range(&next_char, &count_punch, FALSE,
+                read_list_ints_range(next_char, &count_punch, FALSE,
 				punch_temp);
 			opt_save = 10;
 			break;
 		case 11:				/* stagnant */
-			if (copy_token(token, &next_char, &l) != EMPTY)
+            if (copy_token(token, next_char, &l) != EMPTY)
 			{
 				/* exchange factor */
 				if (sscanf(token, "%d", &(stag_data->count_stag)) != 1)
@@ -380,7 +380,7 @@ read_transport(void)
 				}
 
 				/* exchange factor */
-				j = copy_token(token, &next_char, &l);
+                j = copy_token(token, next_char, &l);
 				if (j != EMPTY)
 				{
 					if (sscanf(token, SCANFORMAT, &(stag_data->exch_f)) != 1)
@@ -391,7 +391,7 @@ read_transport(void)
 						error_msg(error_string, CONTINUE);
 						break;
 					}
-					copy_token(token, &next_char, &l);
+                    copy_token(token, next_char, &l);
 					if (sscanf(token, SCANFORMAT, &(stag_data->th_m)) != 1)
 					{
 						input_error++;
@@ -400,7 +400,7 @@ read_transport(void)
 						error_msg(error_string, CONTINUE);
 						break;
 					}
-					copy_token(token, &next_char, &l);
+                    copy_token(token, next_char, &l);
 					if (sscanf(token, SCANFORMAT, &(stag_data->th_im)) != 1)
 					{
 						input_error++;
@@ -416,7 +416,7 @@ read_transport(void)
 		case 18:				/* direction */
 		case 22:				/* flow_direction */
 		case 23:				/* flow */
-			copy_token(token, &next_char, &l);
+            copy_token(token, next_char, &l);
 			str_tolower(token);
 			if (strstr(token, "f") == token)
 				ishift = 1;
@@ -438,7 +438,7 @@ read_transport(void)
 		case 26:				/* dump */
 			dump_in = TRUE;
 			next_char_save = next_char;
-			if (copy_token(file_name, &next_char, &l) == EMPTY)
+            if (copy_token(file_name, next_char, &l) == EMPTY)
 				strcpy(file_name, "phreeqc.dmp");
 			else
 			{
@@ -462,7 +462,7 @@ read_transport(void)
 			break;
 		case 31:				/* dump_frequency */
 			dump_in = TRUE;
-			if (copy_token(token, &next_char, &l) == DIGIT)
+            if (copy_token(token, next_char, &l) == DIGIT)
 				sscanf(token, "%d", &dump_modulus);
 			else
 			{
@@ -473,7 +473,7 @@ read_transport(void)
 			break;
 		case 32:				/* dump_restart */
 			dump_in = TRUE;
-			if (copy_token(token, &next_char, &l) == DIGIT)
+            if (copy_token(token, next_char, &l) == DIGIT)
 				sscanf(token, "%d", &transport_start);
 			else
 			{
@@ -488,11 +488,11 @@ read_transport(void)
 			opt_save = OPTION_DEFAULT;
 			break;
 		case 36:				/* initial_time */
-			if (copy_token(token, &next_char, &l) == DIGIT)
+            if (copy_token(token, next_char, &l) == DIGIT)
 				sscanf(token, SCANFORMAT, &initial_total_time);
 			{
 				std::string stdtoken;
-				j = copy_token(stdtoken, &next_char);
+                j = copy_token(stdtoken, next_char);
 				if (j == UPPER || j == LOWER)
 				{
 					initial_total_time = Utilities::convert_time(initial_total_time, stdtoken, "s");
@@ -505,7 +505,7 @@ read_transport(void)
 			transport_warnings = get_true_false(next_char, TRUE);
 			break;
 		case 40:				/* multicomponent diffusion */
-			copy_token(token, &next_char, &l);
+            copy_token(token, next_char, &l);
 			str_tolower(token);
 			if (strstr(token, "f") == token)
 				multi_Dflag = 0;
@@ -523,7 +523,7 @@ read_transport(void)
 			multi_Dpor_lim = 0.0;
 			multi_Dn = 1.0;
 			correct_Dw = 0;
-			if (copy_token(token, &next_char, &l) == EMPTY)
+            if (copy_token(token, next_char, &l) == EMPTY)
 				break;
 			else
 			{
@@ -537,7 +537,7 @@ read_transport(void)
 					break;
 				}
 			}
-			if (copy_token(token, &next_char, &l) == EMPTY)
+            if (copy_token(token, next_char, &l) == EMPTY)
 				break;
 			else
 			{
@@ -551,7 +551,7 @@ read_transport(void)
 					break;
 				}
 			}
-			if (copy_token(token, &next_char, &l) == EMPTY)
+            if (copy_token(token, next_char, &l) == EMPTY)
 				break;
 			else
 			{
@@ -565,7 +565,7 @@ read_transport(void)
 					break;
 				}
 			}
-			if (copy_token(token, &next_char, &l) == EMPTY)
+            if (copy_token(token, next_char, &l) == EMPTY)
 				break;
 			else
 			{
@@ -578,7 +578,7 @@ read_transport(void)
 					break;
 				}
 			}
-			if (copy_token(token, &next_char, &l) == EMPTY)
+            if (copy_token(token, next_char, &l) == EMPTY)
 				break;
 			else
 			{
@@ -598,7 +598,7 @@ read_transport(void)
 			opt_save = OPTION_DEFAULT;
 			break;
 		case 41:				/* interlayer diffusion */
-			copy_token(token, &next_char, &l);
+            copy_token(token, next_char, &l);
 			str_tolower(token);
 			if (strstr(token, "f") == token)
 				interlayer_Dflag = 0;
@@ -614,7 +614,7 @@ read_transport(void)
 			interlayer_Dpor = 0.1;
 			interlayer_Dpor_lim = 0.0;
 			interlayer_tortf = 100.0;
-			if (copy_token(token, &next_char, &l) == EMPTY)
+            if (copy_token(token, next_char, &l) == EMPTY)
 				break;
 			else
 			{
@@ -627,7 +627,7 @@ read_transport(void)
 					break;
 				}
 			}
-			if (copy_token(token, &next_char, &l) == EMPTY)
+            if (copy_token(token, next_char, &l) == EMPTY)
 				break;
 			else
 			{
@@ -641,7 +641,7 @@ read_transport(void)
 					break;
 				}
 			}
-			if (copy_token(token, &next_char, &l) == EMPTY)
+            if (copy_token(token, next_char, &l) == EMPTY)
 				break;
 			else
 			{
@@ -670,7 +670,7 @@ read_transport(void)
 			break;
 		case 44:				/* fix_current */
 		case 45:                /* current     */
-			if (copy_token(token, &next_char, &l) == DIGIT)
+            if (copy_token(token, next_char, &l) == DIGIT)
 			{
 				sscanf(token, SCANFORMAT, &fix_current);
 //				fix_current = fabs(fix_current);
@@ -1071,7 +1071,7 @@ read_line_LDBLEs(char *next_char, LDBLE ** d, int *count_d, int *count_alloc)
 
 	for (;;)
 	{
-		j = copy_token(token, &next_char, &l);
+        j = copy_token(token, next_char, &l);
 		if (j == EMPTY)
 			break;
 		if (j != DIGIT)

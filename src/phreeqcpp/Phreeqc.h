@@ -147,7 +147,7 @@ public:
 	LDBLE sum_match_species(const char *stemplate, const char *name);
 	LDBLE sum_match_ss(const char *stemplate, const char *name);
 	int match_elts_in_species(const char *name, const char *stemplate);
-	int extract_bracket(char **string, char *bracket_string);
+    int extract_bracket(std::string string, char *bracket_string);
 	LDBLE surf_total(const char *total_name, const char *surface_name);
 	LDBLE surf_total_no_redox(const char *total_name, const char *surface_name);
 	static int system_species_compare(const void *ptr1, const void *ptr2);
@@ -503,14 +503,14 @@ public:
 	// parse.cpp -------------------------------
 	int check_eqn(int association);
 	int get_charge(char *charge, LDBLE * z);
-	int get_elt(char **t_ptr, char *element, int *i);
-	int get_elts_in_species(char **t_ptr, LDBLE coef);
-	int get_num(char **t_ptr, LDBLE * num);
-	int get_secondary_in_species(char **t_ptr, LDBLE coef);
+    int get_elt(std::string t_ptr, char *element, int *i);
+    int get_elts_in_species(std::string t_ptr, LDBLE coef);
+    int get_num(std::string t_ptr, LDBLE * num);
+    int get_secondary_in_species(std::string t_ptr, LDBLE coef);
 	int parse_eq(char *eqn, struct elt_list **elt_ptr, int association);
-	int get_coef(LDBLE * coef, char **eqnaddr);
+    int get_coef(LDBLE * coef, std::string eqnaddr);
 	int get_secondary(char **t_ptr, char *element, int *i);
-	int get_species(char **ptr);
+    int get_species(std::string ptr);
 
 	// phqalloc.cpp -------------------------------
 public:
@@ -690,7 +690,7 @@ public:
 	// read.cpp -------------------------------
 	int read_input(void);
 	int read_conc(cxxSolution *solution_ptr, int count_mass_balance, char *str);
-	int *read_list_ints_range(char **ptr, int *count_ints, int positive,
+    int *read_list_ints_range(std::string ptr, int *count_ints, int positive,
 		int *int_list);
 	int read_log_k_only(char *ptr, LDBLE * log_k);
 	int read_t_c_only(char *ptr, LDBLE *t_c);
@@ -703,8 +703,8 @@ public:
 			const char *default_units, bool print);
 	int find_option(const char *item, int *n, const char **list, int count_list,
 		int exact);
-	int get_option(const char **opt_list, int count_opt_list, char **next_char);
-	int get_true_false(char *string, int default_value);
+    int get_option(const char **opt_list, int count_opt_list, std::string next_char);
+    int get_true_false(std::string string, int default_value);
 
 	int add_psi_master_species(char *token);
 	int read_advection(void);
@@ -729,18 +729,18 @@ public:
 	int read_gas_phase(void);
 	int read_incremental_reactions(void);
 	int read_inverse(void);
-	int read_inv_balances(struct inverse *inverse_ptr, char *next_char);
-	int read_inv_isotopes(struct inverse *inverse_ptr, char *ptr);
-	int read_inv_phases(struct inverse *inverse_ptr, char *next_char);
+    int read_inv_balances(struct inverse *inverse_ptr, std::string next_char);
+    int read_inv_isotopes(struct inverse *inverse_ptr, std::string ptr);
+    int read_inv_phases(struct inverse *inverse_ptr, std::string next_char);
 	int read_kinetics(void);
 	int read_line_doubles(char *next_char, LDBLE ** d, int *count_d,
 		int *count_alloc);
 	int read_lines_doubles(char *next_char, LDBLE ** d, int *count_d,
 		int *count_alloc, const char **opt_list,
 		int count_opt_list, int *opt);
-	LDBLE *read_list_doubles(char **ptr, int *count_doubles);
-	int *read_list_ints(char **ptr, int *count_ints, int positive);
-	int *read_list_t_f(char **ptr, int *count_ints);
+    LDBLE *read_list_doubles(std::string ptr, int *count_doubles);
+    int *read_list_ints(std::string ptr, int *count_ints, int positive);
+    int *read_list_t_f(std::string ptr, int *count_ints);
 	int read_master_species(void);
 	int read_mix(void);
 	int read_entity_mix(std::map<int, cxxMix> &mix_map);
@@ -825,7 +825,7 @@ public:
 
 	// spread.cpp -------------------------------
 	int read_solution_spread(void);
-	int copy_token_tab(char *token_ptr, char **ptr, int *length);
+    int copy_token_tab(std::string token_ptr, std::string ptr, int *length);
 	int get_option_string(const char **opt_list, int count_opt_list,
 		char **next_char);
 	int spread_row_free(struct spread_row *spread_row_ptr);
@@ -1098,15 +1098,15 @@ public:
 #if defined PHREEQ98 
 	int copy_title(char *token_ptr, char **ptr, int *length);
 #endif
-	int copy_token(char *token_ptr, char **ptr, int *length);
-	int copy_token(std::string &token, char **ptr);
+    int copy_token(std::string token_ptr, std::string ptr, int *length);
+    int copy_token(std::string &token, std::string ptr);
 	int dup_print(const char *ptr, int emphasis);
 	int equal(LDBLE a, LDBLE b, LDBLE eps);
 public:
 	void *free_check_null(void *ptr);
 protected:
 	void free_hash_strings(HashTable * Table);
-	int get_token(char **eqnaddr, char *string, LDBLE * z, int *l);
+    int get_token(std::string eqnaddr, char *string, LDBLE * z, int *l);
 	int hcreate_multi(unsigned Count, HashTable ** HashTable_ptr);
 	void hdestroy_multi(HashTable * HashTable_ptr);
 	ENTRY *hsearch_multi(HashTable * Table, ENTRY item, ACTION action);
@@ -1367,7 +1367,7 @@ protected:
 	/*----------------------------------------------------------------------
 	*   Global solution
 	*---------------------------------------------------------------------- */
-	char *title_x;
+    std::string title_x;
 	std::string last_title_x;
 	int new_x;
 	char *description_x;
@@ -1653,8 +1653,8 @@ protected:
 	int overall_iterations;
 
 	int max_line;
-	char *line;
-	char *line_save;
+    std::string line;
+    std::string line_save;
 
 	LDBLE LOG_10;
 
@@ -1753,7 +1753,7 @@ protected:
 	HashTable *isotope_alpha_hash_table;
 	int phreeqc_mpi_myself;
 	int first_read_input;
-	char *user_database;
+    std::string user_database;
 
 	//int have_punch_name;
 	/* VP: Density Start */
@@ -1940,7 +1940,7 @@ protected:
 #endif
 
 	/* read.cpp */
-	char *prev_next_char;
+    std::string prev_next_char;
 #if defined PHREEQ98 
 	int shifts_as_points;
 #endif

@@ -187,8 +187,8 @@ RESTART:   // if limiting rates, jump to here
 			else
 			{
 				char * temp_name = string_duplicate(name.c_str());
-				char * ptr = temp_name;
-				get_elts_in_species(&ptr, coef * coef1);
+                std::string ptr = temp_name;
+                get_elts_in_species(ptr, coef * coef1);
 				free_check_null(temp_name);
 			}
 		}
@@ -207,8 +207,8 @@ RESTART:   // if limiting rates, jump to here
 					{
 						/* found kinetics component */
 						char * formula = string_duplicate(exchange_ptr->Get_exchange_comps()[j].Get_formula().c_str());
-						char * ptr = formula;
-						get_elts_in_species(&ptr, -coef*exchange_ptr->Get_exchange_comps()[j].Get_phase_proportion());
+                        std::string ptr = formula;
+                        get_elts_in_species(ptr, -coef*exchange_ptr->Get_exchange_comps()[j].Get_phase_proportion());
 						free_check_null(formula);
 					}
 				}
@@ -228,7 +228,7 @@ RESTART:   // if limiting rates, jump to here
 					{
 						/* found kinetics component */
 						char * temp_formula = string_duplicate(surface_comp_ptr->Get_formula().c_str());
-						char *ptr = temp_formula;
+                        std::string ptr = temp_formula;
 						/* Surface = 0 when m becomes low ...
 						*/
 						if (0.9 * surface_comp_ptr->Get_phase_proportion() *
@@ -243,7 +243,7 @@ RESTART:   // if limiting rates, jump to here
 						}
 						else
 						{
-							get_elts_in_species(&ptr, -coef * surface_comp_ptr->Get_phase_proportion());
+                            get_elts_in_species(ptr, -coef * surface_comp_ptr->Get_phase_proportion());
 						}
 						free_check_null(temp_formula);
 					}

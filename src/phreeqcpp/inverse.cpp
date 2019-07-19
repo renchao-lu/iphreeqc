@@ -4125,7 +4125,7 @@ dump_netpath(struct inverse *inverse_ptr)
 		/* flags and description */
 		char * description = string_duplicate(it->second.Get_description().c_str());
 		ptr = description;
-		j = copy_token(string, &ptr);
+        j = copy_token(string, ptr);
 		if (j != EMPTY)
 		{
 			string = sformatf("%s", description);
@@ -4566,7 +4566,7 @@ dump_netpath_pat(struct inverse *inv_ptr)
 		char * description = string_duplicate(solution_ptr_orig->Get_description().c_str());
 		ptr = description;
 		std::string string;
-		if (copy_token(string, &ptr) != EMPTY)
+        if (copy_token(string, ptr) != EMPTY)
 		{
 			fprintf(netpath_file, "%d. %s\n", count_inverse_models,
 					solution_ptr_orig->Get_description().c_str());

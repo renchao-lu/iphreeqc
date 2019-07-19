@@ -37,7 +37,7 @@ read_solution_spread(void)
 	struct spread_row *heading, *row_ptr, *units;
 	int count, strings, numbers;
 	int spread_lines;
-	char *ptr;
+    std::string ptr;
 	struct defaults soln_defaults;
 	int return_value, opt;
 	char *next_char;
@@ -99,14 +99,14 @@ read_solution_spread(void)
 	for (;;)
 	{
 		std::string token, token1;
-		opt = get_option(opt_list, count_opt_list, &next_char);
+        opt = get_option(opt_list, count_opt_list, next_char);
 		if (spread_lines == 0 && opt != OPTION_DEFAULT)
 		{
-			row_ptr = string_to_spread_row(line);
+            row_ptr = string_to_spread_row(const_cast<char*>(line.c_str()));
 			ptr = line;
 			count = numbers = strings = 0;
 			int j;
-			while (((j = copy_token(token, &ptr)) != EMPTY))
+            while (((j = copy_token(token, ptr)) != EMPTY))
 			{
 				count++;
 				if (j == UPPER || j == LOWER)
@@ -118,13 +118,13 @@ read_solution_spread(void)
 			 * Is 2nd token all number
 			 */
 			ptr = line;
-			copy_token(token, &ptr);
-			j = copy_token(token, &ptr);
+            copy_token(token, ptr);
+            j = copy_token(token, ptr);
 			bool num = false;
 			if (j == DIGIT)
 			{
-				strtod(token.c_str(), &ptr);
-				int j1 = copy_token(token1, &ptr);
+                ptr = std::atof(token.c_str());
+                int j1 = copy_token(token1, ptr);
 				if (j1 != EMPTY)
 				{
 					num = FALSE;
@@ -139,7 +139,7 @@ read_solution_spread(void)
 			 *   Starts with hyphen
 			 */
 			ptr = line;
-			copy_token(token, &ptr);
+            copy_token(token, ptr);
 			if (token[0] == '-')
 			{
 				/* opt = opt; */
@@ -235,10 +235,10 @@ read_solution_spread(void)
 		case OPTION_ERROR:
 			input_error++;
 			error_msg("Unknown input in SOLUTION keyword.", CONTINUE);
-			error_msg(line_save, CONTINUE);
+            error_msg(line_save.c_str(), CONTINUE);
 			break;
 		case OPTION_DEFAULT:	/* solution definition */
-			row_ptr = string_to_spread_row(line);
+            row_ptr = string_to_spread_row(const_cast<char*>(line.c_str()));
 			if (spread_lines == 2)
 			{
 				numbers = 0;
@@ -275,24 +275,24 @@ read_solution_spread(void)
 		case 3:
 			//sscanf(next_char, SCANFORMAT, &(soln_defaults.density));
 			{
-				copy_token(token, &next_char);
+                copy_token(token, next_char);
 				if (sscanf(token.c_str(), SCANFORMAT, &dummy) != 1)
 				{
 						error_msg("Expecting numeric value for density.", PHRQ_io::OT_CONTINUE);
-						error_msg(line_save, PHRQ_io::OT_CONTINUE);
+                        error_msg(line_save.c_str(), PHRQ_io::OT_CONTINUE);
 						input_error++;
 				}
 				else
 				{
 					soln_defaults.density = dummy;
 				}
-				int j = copy_token(token, &next_char);
+                int j = copy_token(token, next_char);
 				if (j != EMPTY)
 				{
 					if (token[0] != 'c' && token[0] != 'C')
 					{
 						error_msg("Only option following density is c[alculate].", PHRQ_io::OT_CONTINUE);
-						error_msg(line_save, PHRQ_io::OT_CONTINUE);
+                        error_msg(line_save.c_str(), PHRQ_io::OT_CONTINUE);
 						input_error++;
 					}
 					else
@@ -304,7 +304,7 @@ read_solution_spread(void)
 			break;
 		case 4:				/* units */
 		case 8:				/* unit */
-			if (copy_token(token, &next_char) == EMPTY)
+            if (copy_token(token, next_char) == EMPTY)
 				break;
 			{
 				if (check_units(token, FALSE, FALSE, NULL, TRUE) == OK)
@@ -318,7 +318,7 @@ read_solution_spread(void)
 			}
 			break;
 		case 5:				/* redox */
-			if (copy_token(token, &next_char) == EMPTY)
+            if (copy_token(token, next_char) == EMPTY)
 				break;
 			if (parser.parse_couple(token) == OK)
 			{
@@ -330,18 +330,18 @@ read_solution_spread(void)
 			}
 			break;
 		case 6:				/* ph */
-			copy_token(token, &next_char);
+            copy_token(token, next_char);
 			sscanf(token.c_str(), SCANFORMAT, &(soln_defaults.ph));
-			if (copy_token(token, &next_char) != EMPTY)
+            if (copy_token(token, next_char) != EMPTY)
 			{
 				warning_msg
 					("Not possible to use phase name or saturation index in definition of default pH in SOLUTION_SPREAD.");
 			}
 			break;
 		case 7:				/* pe */
-			copy_token(token, &next_char);
+            copy_token(token, next_char);
 			sscanf(token.c_str(), SCANFORMAT, &(soln_defaults.pe));
-			if (copy_token(token, &next_char) != EMPTY)
+            if (copy_token(token, next_char) != EMPTY)
 			{
 				warning_msg
 					("Not possible to use phase name or saturation index in definition of default pe in SOLUTION_SPREAD.");
@@ -351,7 +351,7 @@ read_solution_spread(void)
 		case 12:				/* uncertainty */
 		case 13:				/* uncertainties */
 			{
-				if (copy_token(token, &next_char) != DIGIT)
+                if (copy_token(token, next_char) != DIGIT)
 				{
 					input_error++;
 					error_string = sformatf( "Expected isotope name to"
@@ -397,7 +397,7 @@ read_solution_spread(void)
 
 				/* read and store isotope ratio uncertainty */
 				int j;
-				if ((j = copy_token(token, &next_char)) != EMPTY)
+                if ((j = copy_token(token, next_char)) != EMPTY)
 				{
 					if (j != DIGIT)
 					{
@@ -421,7 +421,7 @@ read_solution_spread(void)
 			break;
 		case 10:				/* water */
 			{
-				int j = copy_token(token, &next_char);
+                int j = copy_token(token, next_char);
 				if (j != DIGIT)
 				{
 					input_error++;
@@ -437,7 +437,7 @@ read_solution_spread(void)
 			break;
 		case 9:				/* isotope */
 			{
-				if (copy_token(token, &next_char) != DIGIT)
+                if (copy_token(token, next_char) != DIGIT)
 				{
 					input_error++;
 					error_string = sformatf( "Expected isotope name to"
@@ -481,7 +481,7 @@ read_solution_spread(void)
 					}
 				}
 				/* read and store isotope ratio */
-				if (copy_token(token, &next_char) != DIGIT)
+                if (copy_token(token, next_char) != DIGIT)
 				{
 					input_error++;
 					error_string = sformatf(
@@ -492,7 +492,7 @@ read_solution_spread(void)
 				sscanf(token.c_str(), SCANFORMAT, &(soln_defaults.iso[i].value));
 				/* read and store isotope ratio uncertainty */
 				int j;
-				if ((j = copy_token(token, &next_char)) != EMPTY)
+                if ((j = copy_token(token, next_char)) != EMPTY)
 				{
 					if (j != DIGIT)
 					{
@@ -514,7 +514,7 @@ read_solution_spread(void)
 			sscanf(next_char, SCANFORMAT, &(soln_defaults.pressure));
 			break;
 		case 100:				/* read headings */
-			heading = string_to_spread_row(line);
+            heading = string_to_spread_row(const_cast<char*>(line.c_str()));
 			{
 				int i;
 				for (i = 0; i < heading->count; i++)
@@ -716,7 +716,7 @@ spread_row_to_solution(struct spread_row *heading, struct spread_row *units,
 		case OPTION_ERROR:
 			input_error++;
 			error_msg("Unknown input in SOLUTION keyword.", CONTINUE);
-			error_msg(line_save, CONTINUE);
+            error_msg(line_save.c_str(), CONTINUE);
 			break;
 		case 0:				/* temperature */
 		case 1:
@@ -726,16 +726,16 @@ spread_row_to_solution(struct spread_row *heading, struct spread_row *units,
 		case 2:				/* density */
 		case 3:
 			{
-				int j = copy_token(token, &next_char);
+                int j = copy_token(token, next_char);
 				sscanf(token.c_str(), SCANFORMAT, &dummy);
 				temp_solution.Set_density(dummy);
-				j = copy_token(token, &next_char);
+                j = copy_token(token, next_char);
 				if (j != EMPTY)
 				{
 					if (token[0] != 'c' && token[0] != 'C')
 					{
 						error_msg("Only option following density is c[alculate].", PHRQ_io::OT_CONTINUE);
-						error_msg(line_save, PHRQ_io::OT_CONTINUE);
+                        error_msg(line_save.c_str(), PHRQ_io::OT_CONTINUE);
 						input_error++;
 					}
 					else
@@ -747,7 +747,7 @@ spread_row_to_solution(struct spread_row *heading, struct spread_row *units,
 			break;
 		case 4:				/* units */
 		case 8:				/* unit */
-			if (copy_token(token, &next_char) == EMPTY)
+            if (copy_token(token, next_char) == EMPTY)
 				break;
 			{
 				if (check_units(token, false, false, initial_data_ptr->Get_units().c_str(), true) == OK)
@@ -761,7 +761,7 @@ spread_row_to_solution(struct spread_row *heading, struct spread_row *units,
 			}
 			break;
 		case 5:				/* redox */
-			if (copy_token(token, &next_char) == EMPTY)
+            if (copy_token(token, next_char) == EMPTY)
 				break;
 			if (parser.parse_couple(token) == OK)
 			{
@@ -815,7 +815,7 @@ spread_row_to_solution(struct spread_row *heading, struct spread_row *units,
 			{
 				next_char = char_string;
 				cxxSolutionIsotope temp_isotope;
-				if (copy_token(token, &next_char) !=  CParser::TT_DIGIT)
+                if (copy_token(token, next_char) !=  CParser::TT_DIGIT)
 				{
 					input_error++;
 					error_string = sformatf( "Expected isotope name to"
@@ -890,23 +890,23 @@ spread_row_to_solution(struct spread_row *heading, struct spread_row *units,
 				/* read and save element name */
 				{
 					char *temp_iso_name = string_duplicate(token.c_str());
-					char *ptr1 = temp_iso_name;
-					get_num(&ptr1, &dummy);
+                    std::string ptr1 = temp_iso_name;
+                    get_num(ptr1, &dummy);
 					temp_isotope.Set_isotope_number(dummy);
 					if (ptr1[0] == '\0' || isupper((int) ptr1[0]) == FALSE)
 					{
 						error_msg("Expecting element name.", PHRQ_io::OT_CONTINUE);
-						error_msg(line_save, PHRQ_io::OT_CONTINUE);
+                        error_msg(line_save.c_str(), PHRQ_io::OT_CONTINUE);
 						input_error++;
 						temp_iso_name = (char*)free_check_null(temp_iso_name);
 						char_string = (char*)free_check_null(char_string);
 						return (CParser::PARSER_ERROR);
 					}
-					temp_isotope.Set_elt_name(ptr1);
+                    temp_isotope.Set_elt_name(ptr1.c_str());
 					temp_iso_name = (char*)free_check_null(temp_iso_name);
 				}
 				/* read and store isotope ratio */
-				if (copy_token(token, &next_char) != CParser::TT_DIGIT)
+                if (copy_token(token, next_char) != CParser::TT_DIGIT)
 				{
 					input_error++;
 					error_string = sformatf(
@@ -921,7 +921,7 @@ spread_row_to_solution(struct spread_row *heading, struct spread_row *units,
 
 				/* read and store isotope ratio uncertainty */
 				int j;
-				if ((j = copy_token(token, &next_char)) != CParser::TT_EMPTY)
+                if ((j = copy_token(token, next_char)) != CParser::TT_EMPTY)
 				{
 					if (j != DIGIT)
 					{
@@ -942,7 +942,7 @@ spread_row_to_solution(struct spread_row *heading, struct spread_row *units,
 			{
 				//next_char = char_string;
 				//int j = copy_token(token, &next_char); // read identifier "water"
-				int j = copy_token(token, &next_char);
+                int j = copy_token(token, next_char);
 				if (j == EMPTY)
 				{
 					temp_solution.Set_mass_water(1.0);
@@ -991,7 +991,7 @@ spread_row_to_solution(struct spread_row *heading, struct spread_row *units,
  */
 			{
 				next_char = char_string;
-				if (copy_token(token, &next_char) == LOWER)
+                if (copy_token(token, next_char) == LOWER)
 				{
 					free_check_null(char_string);
 					continue;
@@ -1066,14 +1066,14 @@ string_to_spread_row(char *string)
 {
 	int j, l;
 	/* possible memory error if length of line is smaller than previous line */
-	char *token;
-	char *ptr;
+    std::string token;
+    std::string ptr;
 	struct spread_row *spread_row_ptr = NULL;
 /*
  *   Allocate space
  */
-	token = (char *) PHRQ_malloc(strlen(line) + 1);
-	if (token == NULL)
+//	token = (char *) PHRQ_malloc(strlen(line) + 1);
+    if (token == "")
 	{
 		malloc_error();
 		return spread_row_ptr;
@@ -1147,11 +1147,11 @@ string_to_spread_row(char *string)
 				return spread_row_ptr;
 			}
 		}
-		j = copy_token_tab(token, &ptr, &l);
+        j = copy_token_tab(token, ptr, &l);
 		if (j == EOL)
 			break;
 		spread_row_ptr->char_vector[spread_row_ptr->count] =
-			string_duplicate(token);
+            string_duplicate(const_cast<char*>(token.c_str()));
 		spread_row_ptr->d_vector[spread_row_ptr->count] = NAN;
 		if (j == EMPTY || l == 0)
 		{
@@ -1166,8 +1166,8 @@ string_to_spread_row(char *string)
 		else if (j == DIGIT)
 		{
 			spread_row_ptr->number++;
-			spread_row_ptr->d_vector[spread_row_ptr->count] =
-				strtod(token, NULL);
+//			spread_row_ptr->d_vector[spread_row_ptr->count] =
+//                std::strtod(token, NULL);
 			spread_row_ptr->type_vector[spread_row_ptr->count] = NUMBER;
 		}
 		else
@@ -1176,7 +1176,7 @@ string_to_spread_row(char *string)
 			error_msg("Unknown input in string_to_spread_row keyword.", CONTINUE);
 			error_string = sformatf("\tcopy_token j: %d, token: %s\n", j, token);
 			error_msg(error_string, CONTINUE);
-			error_msg(line_save, CONTINUE);
+            error_msg(line_save.c_str(), CONTINUE);
 		}
 		spread_row_ptr->count++;
 	}
@@ -1215,7 +1215,7 @@ string_to_spread_row(char *string)
       malloc_error ();
 */
 	}
-	token = (char *) free_check_null(token);
+//	token = (char *) free_check_null(token);
 	return (spread_row_ptr);
 }
 
@@ -1246,7 +1246,7 @@ spread_row_free(struct spread_row *spread_row_ptr)
 
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-copy_token_tab(char *token_ptr, char **ptr, int *length)
+copy_token_tab(std::string token_ptr, std::string ptr, int *length)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -1273,8 +1273,8 @@ copy_token_tab(char *token_ptr, char **ptr, int *length)
 /*
  *   Strip leading spaces
  */
-	while ((c = **ptr) == ' ')
-		(*ptr)++;
+//	while ((c = **ptr) == ' ')
+//		(*ptr)++;
 /*
  *   Check what we have
  */
@@ -1307,25 +1307,25 @@ copy_token_tab(char *token_ptr, char **ptr, int *length)
  *   Begin copying to token
  */
 	i = 0;
-	for (;;)
-	{
-		c = **ptr;
-		if (c == '\t')
-		{
-			(*ptr)++;
-			break;
-		}
-		else if (c == '\0')
-		{
-			break;
-		}
-		else
-		{
-			token_ptr[i] = c;
-			(*ptr)++;
-			i++;
-		}
-	}
+//	for (;;)
+//	{
+//		c = **ptr;
+//		if (c == '\t')
+//		{
+//			(*ptr)++;
+//			break;
+//		}
+//		else if (c == '\0')
+//		{
+//			break;
+//		}
+//		else
+//		{
+//			token_ptr[i] = c;
+//			(*ptr)++;
+//			i++;
+//		}
+//	}
 	token_ptr[i] = '\0';
 	*length = i;
 /*
@@ -1361,7 +1361,7 @@ get_option_string(const char **opt_list, int count_opt_list, char **next_char)
 	if (opt_ptr[0] == '-')
 	{
 		opt_ptr++;
-		copy_token(option, &opt_ptr, &opt_l);
+        copy_token(option, opt_ptr, &opt_l);
 		if (find_option(&(option[1]), &opt, opt_list, count_opt_list, FALSE)
 			== OK)
 		{
@@ -1378,7 +1378,7 @@ get_option_string(const char **opt_list, int count_opt_list, char **next_char)
 	}
 	else
 	{
-		copy_token(option, &opt_ptr, &opt_l);
+        copy_token(option, opt_ptr, &opt_l);
 		if (find_option(&(option[0]), &opt, opt_list, count_opt_list, TRUE)
 			== OK)
 		{

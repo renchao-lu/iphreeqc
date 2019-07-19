@@ -916,8 +916,8 @@ struct prints
  * ---------------------------------------------------------------------- */
 struct rate
 {
-	const char *name;
-	char *commands;
+        std::string name;
+        std::string commands;
 	int new_def;
 	void *linebase;
 	void *varbase;

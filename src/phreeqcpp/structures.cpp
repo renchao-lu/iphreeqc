@@ -1630,7 +1630,7 @@ rate_compare(const void *ptr1, const void *ptr2)
 	const struct rate *rate_ptr1, *rate_ptr2;
 	rate_ptr1 = *(const struct rate **) ptr1;
 	rate_ptr2 = *(const struct rate **) ptr2;
-	return (strcmp_nocase(rate_ptr1->name, rate_ptr2->name));
+    return (strcmp_nocase(rate_ptr1->name.c_str(), rate_ptr2->name.c_str()));
 }
 
 /* ---------------------------------------------------------------------- */
@@ -1642,7 +1642,7 @@ rate_compare_string(const void *ptr1, const void *ptr2)
 	const struct rate *rate_ptr;
 	char_ptr = (const char *) ptr1;
 	rate_ptr = *(const struct rate **) ptr2;
-	return (strcmp_nocase(char_ptr, rate_ptr->name));
+    return (strcmp_nocase(char_ptr, rate_ptr->name.c_str()));
 }
 
 /* ---------------------------------------------------------------------- */
@@ -1726,7 +1726,7 @@ rate_search(const char *name_in, int *n)
 	*n = -1;
 	for (i = 0; i < count_rates; i++)
 	{
-		if (strcmp_nocase(rates[i].name, name) == 0)
+        if (strcmp_nocase(rates[i].name.c_str(), name) == 0)
 		{
 			*n = i;
 			rates_map[name] = i;

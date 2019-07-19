@@ -2156,8 +2156,8 @@ Phreeqc::InternalCopy(const Phreeqc *pSrc)
 		if (rates == NULL) malloc_error();
 		for (int i = 0; i < count_rates; i++)
 		{
-			rates[i].name = string_hsave(pSrc->rates[i].name);
-			rates[i].commands = string_duplicate(pSrc->rates[i].commands); 
+            rates[i].name = string_hsave(pSrc->rates[i].name.c_str());
+            rates[i].commands = string_duplicate(pSrc->rates[i].commands.c_str());
 			rates[i].new_def = TRUE;
 			rates[i].linebase = NULL;
 			rates[i].varbase = NULL;
@@ -2172,11 +2172,11 @@ Phreeqc::InternalCopy(const Phreeqc *pSrc)
 	user_print				= NULL;
 	*/
 	{
-		user_print->name = NULL;
-		user_print->commands = NULL;
-		if (pSrc->user_print->commands != NULL)
+        user_print->name = "";
+        user_print->commands = "";
+        if (pSrc->user_print->commands != "")
 		{
-			user_print->commands = string_duplicate(pSrc->user_print->commands); 
+            user_print->commands = string_duplicate(pSrc->user_print->commands.c_str());
 		}
 		user_print->new_def = TRUE;
 		user_print->linebase = NULL;

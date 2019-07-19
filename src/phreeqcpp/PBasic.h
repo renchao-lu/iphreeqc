@@ -463,7 +463,7 @@ public:
 	void cmderase(struct LOC_exec *LINK);
 	void cmdpoke(struct LOC_exec *LINK);
 	int basic_main(char *commands);
-	int basic_compile(char *commands, void **lnbase, void **vbase, void **lpbase);
+    int basic_compile(std::string commands, void **lnbase, void **vbase, void **lpbase);
 	int basic_run(char *commands, void *lnbase, void *vbase, void *lpbase);
 	int basic_init(void);
 #ifdef PHREEQ98

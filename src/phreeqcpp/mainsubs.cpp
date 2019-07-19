@@ -199,7 +199,7 @@ initialize(void)
 	user_print = (struct rate *) PHRQ_malloc((size_t) sizeof(struct rate));
 	if (user_print == NULL)
 		malloc_error();
-	user_print->commands = NULL;
+    user_print->commands = "";
 	user_print->linebase = NULL;
 	user_print->varbase = NULL;
 	user_print->loopbase = NULL;

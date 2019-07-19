@@ -72,10 +72,10 @@ PBasic::~PBasic(void)
 }
 
 int PBasic::
-basic_compile(char *commands, void **lnbase, void **vbase, void **lpbase)
+basic_compile(std::string commands, void **lnbase, void **vbase, void **lpbase)
 {								/*main */
 	int l;
-	char *ptr;
+    const char *ptr;
 
 	P_escapecode = 0;
 	P_ioresult = 0;
@@ -86,15 +86,15 @@ basic_compile(char *commands, void **lnbase, void **vbase, void **lpbase)
 	varbase = NULL;
 	loopbase = NULL;
 	exitflag = false;
-	ptr = commands;
+    ptr = commands.c_str();
 	do
 	{
 		try
 		{
-			ptr = commands;
+            ptr = commands.c_str();
 			do
 			{
-				if (sget_logical_line(&ptr, &l, inbuf) == EOF)
+                if (sget_logical_line(const_cast<char**>(&ptr), &l, inbuf) == EOF)
 				{
 					strcpy(inbuf, "bye");
 				}

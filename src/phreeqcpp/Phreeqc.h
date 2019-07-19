@@ -84,7 +84,7 @@ public:
 	int advection(void);
 
 	// basicsubs.cpp -------------------------------
-	int basic_compile(char *commands, void **lnbase, void **vbase, void **lpbase);
+    int basic_compile(std::string commands, void **lnbase, void **vbase, void **lpbase);
 	int basic_run(char *commands, void *lnbase, void *vbase, void *lpbase);
 	void basic_free(void);
 #ifdef IPHREEQC_NO_FORTRAN_MODULE
@@ -1133,7 +1133,7 @@ public:
 #else
 	char *string_duplicate(const char *token);
 #endif
-	const char *string_hsave(const char *str);
+    const char *string_hsave(const char * str);
 	void strings_map_clear();
 #ifdef HASH
 	void strings_hash_clear();
@@ -1358,8 +1358,10 @@ protected:
 	/*----------------------------------------------------------------------
 	*   Solution
 	*---------------------------------------------------------------------- */
+public:
 	std::map<int, cxxSolution> Rxn_solution_map;
-	std::vector<cxxSolution> unnumbered_solutions;
+protected:
+    std::vector<cxxSolution> unnumbered_solutions;
 	bool save_species;
 
 	/*----------------------------------------------------------------------

@@ -4371,7 +4371,7 @@ iso_unit(const char *total_name)
 }
 
 int Phreeqc::
-basic_compile(char *commands, void **lnbase, void **vbase, void **lpbase)
+basic_compile(std::string commands, void **lnbase, void **vbase, void **lpbase)
 {
 	return this->basic_interpreter->basic_compile(commands, lnbase, vbase, lpbase);
 }

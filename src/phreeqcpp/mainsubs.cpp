@@ -28,37 +28,22 @@ initialize(void)
 	struct logk *logk_ptr;
 	char token[MAX_LENGTH];
 
-	moles_per_kilogram_string = string_duplicate("Mol/kgw");
-	pe_string = string_duplicate("pe");
+    moles_per_kilogram_string = "Mol/kgw";
+    pe_string = "pe";
 /*
  *   Initialize advection
  */
-	advection_punch = (int *) PHRQ_malloc(sizeof(int));
-	if (advection_punch == NULL)
-		malloc_error();
-	advection_punch[0] = TRUE;
-	advection_print = (int *) PHRQ_malloc(sizeof(int));
-	if (advection_print == NULL)
-		malloc_error();
-	advection_print[0] = TRUE;
+    advection_punch.push_back(TRUE);
+    advection_print.push_back(TRUE);
 /*
  *   Allocate space
  */
 	cell_data_max_cells = count_cells + 2;
-	space((void **) ((void *) &cell_data), INIT, &cell_data_max_cells,
-		  sizeof(struct cell_data));
-	for (int i = 0; i < cell_data_max_cells; i++)
-	{
-		cell_data[i].length = 1.0;
-		cell_data[i].mid_cell_x = 1.0;
-		cell_data[i].disp = 1.0;
-		cell_data[i].temp = 25.0;
-		cell_data[i].por = 0.1;
-		cell_data[i].por_il = 0.01;
-		cell_data[i].potV = 0;
-		cell_data[i].punch = FALSE;
-		cell_data[i].print = FALSE;
-	}
+    for (int i = 0; i < cell_data_max_cells; i++)
+    {
+        CellData per_cell_data;
+        cell_data.push_back(per_cell_data);
+    }
 
 	space((void **) ((void *) &elements), INIT, &max_elements,
 		  sizeof(struct element *));
@@ -66,8 +51,6 @@ initialize(void)
 	space((void **) ((void *) &elt_list), INIT, &max_elts,
 		  sizeof(struct elt_list));
 
-	inverse = (struct inverse *) PHRQ_malloc((size_t) sizeof(struct inverse));
-	if (inverse == NULL) malloc_error();
 	count_inverse = 0;
 	space((void **) ((void *) &line), INIT, &max_line, sizeof(char));
 
@@ -190,15 +173,7 @@ initialize(void)
 	if (save_values == NULL)
 		malloc_error();
 
-	// one rate
-	rates = (struct rate *) PHRQ_malloc(sizeof(struct rate));
-	if (rates == NULL)
-		malloc_error();
-
 	// user_print
-	user_print = (struct rate *) PHRQ_malloc((size_t) sizeof(struct rate));
-	if (user_print == NULL)
-		malloc_error();
     user_print->commands = "";
 	user_print->linebase = NULL;
 	user_print->varbase = NULL;

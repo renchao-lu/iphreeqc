@@ -643,7 +643,7 @@ coef_in_master(struct master * master_ptr)
 	coef = 0.0;
 	char * temp_name = string_duplicate(master_ptr->elt->name);
 	ptr = temp_name;
-	get_elt(&ptr, elt_name, &l);
+    get_elt(ptr, elt_name, &l);
 	free_check_null(temp_name);
 	for (next_elt = master_ptr->s->next_elt; next_elt->elt != NULL;
 		 next_elt++)
@@ -1730,7 +1730,7 @@ tidy_pp_assemblage(void)
 				{
 					char * temp_add = string_duplicate(it->second.Get_add_formula().c_str());
 					ptr = temp_add;
-					get_elts_in_species(&ptr, coef);
+                    get_elts_in_species(ptr, coef);
 					free_check_null(temp_add);
 				}
 				/* check that all elements are in the database */
@@ -3135,7 +3135,7 @@ tidy_surface(void)
 					{
 						char * temp_formula = string_duplicate(comp_ptr->Get_formula().c_str());
 						ptr1 = temp_formula;
-						get_elts_in_species(&ptr1, comp_ptr->Get_moles());
+                        get_elts_in_species(ptr1, comp_ptr->Get_moles());
 						free_check_null(temp_formula);
 					}
 					{
@@ -3341,7 +3341,7 @@ phase_rxn_to_trxn(struct phase *phase_ptr, struct reaction *rxn_ptr)
 	/* charge */
 	char * temp_formula = string_duplicate(phase_ptr->formula);
 	ptr = temp_formula;
-	get_token(&ptr, token, &l_z, &l);
+    get_token(ptr, token, &l_z, &l);
 	free_check_null(temp_formula);
 	trxn.token[0].z = l_z;
 	trxn.token[0].s = NULL;
@@ -3646,7 +3646,7 @@ tidy_kin_exchange(void)
 			{
 				char * temp_formula = string_duplicate(comp_ref.Get_formula().c_str());
 				ptr = temp_formula;
-				get_elts_in_species(&ptr, conc);
+                get_elts_in_species(ptr, conc);
 				free_check_null(temp_formula);
 			}
 			comp_ref.Set_totals(elt_list_NameDouble());
@@ -3764,7 +3764,7 @@ tidy_min_exchange(void)
 			{
 				char * temp_formula = string_duplicate(comp_ref.Get_formula().c_str());
 				ptr = temp_formula;
-				get_elts_in_species(&ptr, conc);
+                get_elts_in_species(ptr, conc);
 				free_check_null(temp_formula);
 			}
 			comp_ref.Set_totals(elt_list_NameDouble());
@@ -3776,7 +3776,7 @@ tidy_min_exchange(void)
 			{
 				char * temp_formula = string_duplicate(comp_ref.Get_formula().c_str());
 				ptr = temp_formula;
-				get_elts_in_species(&ptr, -comp_ref.Get_phase_proportion());
+                get_elts_in_species(ptr, -comp_ref.Get_phase_proportion());
 				free_check_null(temp_formula);
 			}
 			int l;
@@ -3785,7 +3785,7 @@ tidy_min_exchange(void)
 			{
 				char * temp_formula = string_duplicate(phase_ptr->formula);
 				ptr = temp_formula;
-				get_elts_in_species(&ptr, 1.0);
+                get_elts_in_species(ptr, 1.0);
 				free_check_null(temp_formula);
 			}
 			else
@@ -3942,7 +3942,7 @@ tidy_min_surface(void)
 				char *ptr = temp_formula;
 				count_elts = 0;
 				paren_count = 0;
-				get_elts_in_species(&ptr, conc);
+                get_elts_in_species(ptr, conc);
 				free_check_null(temp_formula);
 			}
 			{
@@ -3971,7 +3971,7 @@ tidy_min_surface(void)
 			{
 				char * temp_formula = string_duplicate(phase_ptr->formula);
 				char * ptr = temp_formula;
-				get_elts_in_species(&ptr, 1.0);
+                get_elts_in_species(ptr, 1.0);
 				free_check_null(temp_formula);
 			}
 			// Revise logic for surface related to mineral
@@ -3982,7 +3982,7 @@ tidy_min_surface(void)
 				{
 					char * temp_formula = string_duplicate(comp_jj_ptr->Get_formula().c_str());
 					char *ptr = temp_formula;
-					get_elts_in_species(&ptr,
+                    get_elts_in_species(ptr,
 										-comp_jj_ptr->Get_phase_proportion());
 
 					if (surface_ptr->Get_type() != cxxSurface::CD_MUSIC)
@@ -4186,7 +4186,7 @@ tidy_kin_surface(void)
 				char *ptr = temp_formula;
 				count_elts = 0;
 				paren_count = 0;
-				get_elts_in_species(&ptr, conc);
+                get_elts_in_species(ptr, conc);
 				free_check_null(temp_formula);
 			}
 			{
@@ -4246,7 +4246,7 @@ tidy_kin_surface(void)
 				{
 					char * temp_name = string_duplicate(name.c_str());
 					char * ptr = temp_name;
-					get_elts_in_species(&ptr, coef);
+                    get_elts_in_species(ptr, coef);
 					free_check_null(temp_name);
 				}
 			}
@@ -4276,7 +4276,7 @@ tidy_kin_surface(void)
 				{
 					char * temp_formula = string_duplicate( comp_ptr->Get_formula().c_str());
 					char *ptr = temp_formula;
-					get_elts_in_species(&ptr, -1 * comp_ptr->Get_phase_proportion());
+                    get_elts_in_species(ptr, -1 * comp_ptr->Get_phase_proportion());
 					free_check_null(temp_formula);
 				}
 			}

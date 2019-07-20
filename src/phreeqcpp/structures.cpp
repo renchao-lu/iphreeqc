@@ -39,9 +39,9 @@ clean_up(void)
 
 	description_x = (char *) free_check_null(description_x);
 	isotopes_x.clear();
-	moles_per_kilogram_string =
-		(char *) free_check_null(moles_per_kilogram_string);
-	pe_string = (char *) free_check_null(pe_string);
+//	moles_per_kilogram_string =
+//		(char *) free_check_null(moles_per_kilogram_string);
+//	pe_string = (char *) free_check_null(pe_string);
 /* model */
 	last_model.exchange =
 		(struct master **) free_check_null(last_model.exchange);
@@ -136,7 +136,7 @@ clean_up(void)
 	{
 		inverse_free(&(inverse[j]));
 	}
-	inverse = (struct inverse *) free_check_null(inverse);
+//	inverse = (struct inverse *) free_check_null(inverse);
 
 /* gases */
 	Rxn_gas_phase_map.clear();
@@ -184,7 +184,7 @@ clean_up(void)
 /* transport data */
 
 	stag_data = (struct stag_data *) free_check_null(stag_data);
-	cell_data = (struct cell_data *) free_check_null(cell_data);
+//	cell_data = (struct cell_data *) free_check_null(cell_data);
 
 /* punch */
 #ifdef SKIP
@@ -200,8 +200,8 @@ clean_up(void)
 	punch.s_s = (struct name_phase *) free_check_null(punch.s_s);
 	punch.kinetics = (struct name_phase *) free_check_null(punch.kinetics);
 #endif
-	advection_punch = (int *) free_check_null(advection_punch);
-	advection_print = (int *) free_check_null(advection_print);
+//	advection_punch = (int *) free_check_null(advection_punch);
+//	advection_print = (int *) free_check_null(advection_print);
 #ifdef SKIP
 	punch.isotopes = (struct name_master *) free_check_null(punch.isotopes);
 	punch.calculate_values =
@@ -730,11 +730,7 @@ inverse_alloc(void)
 	struct inverse *inverse_ptr = NULL;
 
 	count_inverse++;
-	inverse =
-		(struct inverse *) PHRQ_realloc(inverse,
-										(size_t) count_inverse *
-										sizeof(struct inverse));
-	if (inverse == NULL)
+    if (inverse.empty())
 	{
 		malloc_error();
 		return inverse_ptr;
@@ -1002,11 +998,11 @@ inverse_sort(void)
 /*
  *   Sort array of inverse structures
  */
-	if (count_inverse > 0)
-	{
-		qsort(inverse, (size_t) count_inverse,
-			  (size_t) sizeof(struct inverse), inverse_compare);
-	}
+//	if (count_inverse > 0)
+//	{
+//		qsort(inverse, (size_t) count_inverse,
+//			  (size_t) sizeof(struct inverse), inverse_compare);
+//	}
 	return (OK);
 }
 
@@ -1659,7 +1655,7 @@ rate_free(struct rate *rate_ptr)
 
 	if (rate_ptr == NULL)
 		return (ERROR);
-	rate_ptr->commands = (char *) free_check_null(rate_ptr->commands);
+//	rate_ptr->commands = (char *) free_check_null(rate_ptr->commands);
 	if (rate_ptr->linebase != NULL)
 	{
 		char cmd[] = "new; quit";
@@ -1683,7 +1679,7 @@ rate_copy(struct rate *rate_ptr)
 		return (NULL);
 	struct rate * rate_new = (struct rate *) PHRQ_malloc(sizeof(struct rate));
 	if (rate_new == NULL) malloc_error();
-	rate_new->commands = string_duplicate(rate_ptr->commands);
+//	rate_new->commands = string_duplicate(rate_ptr->commands);
 	rate_new->new_def = TRUE;
 	rate_new->linebase = NULL;
 	rate_new->varbase = NULL;
@@ -1692,7 +1688,7 @@ rate_copy(struct rate *rate_ptr)
 }
 
 /* ---------------------------------------------------------------------- */
-struct rate * Phreeqc::
+struct Rate * Phreeqc::
 rate_search(const char *name_in, int *n)
 /* ---------------------------------------------------------------------- */
 {
@@ -3609,7 +3605,7 @@ get_entity_enum(char *name)
  *   Read keyword
  */
 	ptr = name;
-	copy_token(token, &ptr, &i);
+    copy_token(token, ptr, &i);
 	check_key(token);
 
 	switch (next_keyword)

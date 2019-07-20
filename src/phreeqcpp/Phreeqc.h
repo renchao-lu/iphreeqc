@@ -707,7 +707,6 @@ public:
     int get_true_false(std::string string, int default_value);
 
 	int add_psi_master_species(char *token);
-	int read_advection(void);
 	int read_analytical_expression_only(char *ptr, LDBLE * log_k);
 	/* VP: Density Start */
 	int read_millero_abcdef (char *ptr, LDBLE * abcdef);
@@ -789,7 +788,6 @@ public:
 	void dump_ostream(std::ostream& os);
 
 	// readtr.cpp -------------------------------
-	int read_transport(void);
 	int dump(void);
 	int dump_exchange(int k);
 	int dump_gas_phase(int k);
@@ -912,10 +910,9 @@ protected:
 	int phase_delete(int i);
 	struct phase *phase_store(const char *name);
 public:
-	struct rate *rate_bsearch(char *ptr, int *j);
+    struct Rate *rate_bsearch(char *ptr, int *j);
 	int rate_free(struct rate *rate_ptr);
-	struct rate * rate_copy(struct rate *rate_ptr);
-	struct rate *rate_search(const char *name, int *n);
+    struct Rate *rate_search(const char *name, int *n);
 	int rate_sort(void);
 	struct reaction *rxn_alloc(int ntokens);
 	struct reaction *rxn_dup(struct reaction *rxn_ptr_old);
@@ -1271,7 +1268,7 @@ protected:
 	*   Inverse
 	*---------------------------------------------------------------------- */
 
-	struct inverse *inverse;
+    std::vector<struct inverse> inverse;
 	int count_inverse;
 
 	/*----------------------------------------------------------------------
@@ -1391,7 +1388,7 @@ protected:
 	LDBLE mass_water_aq_x;
 	LDBLE mass_water_surfaces_x;
 	LDBLE mass_water_bulk_x;
-	char *units_x;
+    std::string units_x;
 	std::map < std::string, cxxChemRxn > pe_x;
 	std::map<std::string, cxxSolutionIsotope> isotopes_x;
 	std::string default_pe_x;
@@ -1426,7 +1423,7 @@ protected:
 	int dump_in;
 	int dump_modulus;
 	int transport_warnings;
-	struct cell_data *cell_data;
+    std::vector<CellData> cell_data;
 	int old_cells, max_cells, all_cells;
 	int multi_Dflag;		/* signals calc'n of multicomponent diffusion */
 	int interlayer_Dflag;	/* multicomponent diffusion and diffusion through interlayer porosity */
@@ -1449,7 +1446,8 @@ protected:
 	int count_ad_shifts;
 	int print_ad_modulus;
 	int punch_ad_modulus;
-	int *advection_punch, *advection_print;
+    std::vector<bool> advection_punch;
+    std::vector<bool> advection_print;
 	LDBLE advection_kin_time;
 	LDBLE advection_kin_time_defined;
 	int advection_warnings;
@@ -1491,8 +1489,8 @@ protected:
 	int count_logk;
 	int max_logk;
 
-	char *moles_per_kilogram_string;
-	char *pe_string;
+    std::string moles_per_kilogram_string;
+    std::string pe_string;
 
 	struct species **s;
 	int count_s;
@@ -1577,7 +1575,7 @@ protected:
 	/* ----------------------------------------------------------------------
 	*   RATES
 	* ---------------------------------------------------------------------- */
-	struct rate *rates;
+    std::vector<Rate> rates;
 	int count_rates;
 	LDBLE rate_m, rate_m0, rate_time, rate_kin_time, rate_sim_time_start,
 		rate_sim_time_end, rate_sim_time, rate_moles, initial_total_time;
@@ -1587,7 +1585,7 @@ protected:
 	/* ----------------------------------------------------------------------
 	*   USER PRINT COMMANDS
 	* ---------------------------------------------------------------------- */
-	struct rate *user_print;
+    struct Rate *user_print;
 	//struct rate *user_punch;
 	//const char **user_punch_headings;
 	//int user_punch_count_headings;

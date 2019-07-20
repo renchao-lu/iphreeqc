@@ -321,7 +321,7 @@ compute_gfw(const char *string, LDBLE * gfw)
 	paren_count = 0;
 	strcpy(token, string);
 	ptr = token;
-	if (get_elts_in_species(&ptr, 1.0) == ERROR)
+    if (get_elts_in_species(ptr, 1.0) == ERROR)
 	{
 		return (ERROR);
 	}
@@ -367,8 +367,8 @@ copy_token(std::string token_ptr, std::string ptr, int *length)
 /*
  *   Read to end of whitespace
  */
-	while (isspace((int) (c = **ptr)))
-		(*ptr)++;
+//	while (isspace((int) (c = **ptr)))
+//		(*ptr)++;
 /*
  *   Check what we have
  */
@@ -396,14 +396,14 @@ copy_token(std::string token_ptr, std::string ptr, int *length)
  *   Begin copying to token
  */
 	i = 0;
-	while ((!isspace((int) (c = **ptr))) &&
-		   /*              c != ',' && */
-		   c != ';' && c != '\0')
-	{
-		token_ptr[i] = c;
-		(*ptr)++;
-		i++;
-	}
+//	while ((!isspace((int) (c = **ptr))) &&
+//		   /*              c != ',' && */
+//		   c != ';' && c != '\0')
+//	{
+//		token_ptr[i] = c;
+//		(*ptr)++;
+//		i++;
+//	}
 	token_ptr[i] = '\0';
 	*length = i;
 #ifdef PHREEQ98
@@ -445,8 +445,8 @@ copy_token(std::string &token, std::string ptr)
  *   Read to end of whitespace
  */
 	token.clear();
-	while (isspace((int) (c = **ptr)))
-		(*ptr)++;
+//	while (isspace((int) (c = **ptr)))
+//		(*ptr)++;
 /*
  *   Check what we have
  */
@@ -475,14 +475,14 @@ copy_token(std::string &token, std::string ptr)
  */
 	char c_char[2];
 	c_char[1] = '\0';
-	while ((!isspace((int) (c = **ptr))) &&
-		   /*              c != ',' && */
-		   c != ';' && c != '\0')
-	{
-		c_char[0] = c;
-		token.append(c_char);
-		(*ptr)++;
-	}
+//	while ((!isspace((int) (c = **ptr))) &&
+//		   /*              c != ',' && */
+//		   c != ';' && c != '\0')
+//	{
+//		c_char[0] = c;
+//		token.append(c_char);
+//		(*ptr)++;
+//	}
 #ifdef PHREEQ98
 	if ((return_value == DIGIT) && (strstr(token_ptr, ",") != NULL))
 	{
@@ -684,8 +684,8 @@ get_token(std::string eqnaddr, char *string, LDBLE * l_z, int *l)
 	char *ptr, *ptr1, *rest;
 	char charge[MAX_LENGTH];
 
-	rest = *eqnaddr;
-	ptr = *eqnaddr;
+//	rest = *eqnaddr;
+//	ptr = *eqnaddr;
 	i = 0;
 /*
  *   Find end of token or begining of charge
@@ -745,7 +745,7 @@ get_token(std::string eqnaddr, char *string, LDBLE * l_z, int *l)
  */
 	if (c == '=' || c == '\0')
 	{
-		*eqnaddr = ptr;
+//		*eqnaddr = ptr;
 		lcharge = 0;
 		*l_z = 0.0;
 	}
@@ -786,7 +786,7 @@ get_token(std::string eqnaddr, char *string, LDBLE * l_z, int *l)
 		}
 		charge[j] = '\0';
 		lcharge = j;
-		*eqnaddr = ptr1;
+//		*eqnaddr = ptr1;
 /*
  *   Charge has been written, now need to check if charge has legal format
  */
@@ -885,7 +885,7 @@ parse_couple(char *token)
 	}
 	while (replace("+", "", token) == TRUE);
 	ptr = token;
-	get_elt(&ptr, elt1, &e1);
+    get_elt(ptr, elt1, &e1);
 	if (*ptr != '(')
 	{
 		error_string = sformatf( "Element name must be followed by "
@@ -927,7 +927,7 @@ parse_couple(char *token)
 		return (ERROR);
 	}
 	ptr++;
-	get_elt(&ptr, elt2, &e2);
+    get_elt(ptr, elt2, &e2);
 	if (strcmp(elt1, elt2) != 0)
 	{
 		error_string = sformatf( "Redox couple must be two redox states "

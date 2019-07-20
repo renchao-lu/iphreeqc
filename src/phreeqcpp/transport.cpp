@@ -1669,10 +1669,10 @@ set_initial_moles(int i)
 		paren_count = 0;
 		strcpy(token, "X");
 		ptr = token;
-		get_elts_in_species(&ptr, 2e-10);
+        get_elts_in_species(ptr, 2e-10);
 		ptr = token;
 		LDBLE z;
-		get_token(&ptr, token1, &z, &l);
+        get_token(ptr, token1, &z, &l);
 		comp.Set_formula(token1);
 		comp.Set_formula_z(z);
 		comp.Set_totals(elt_list_NameDouble());
@@ -2320,7 +2320,7 @@ fill_m_s(struct J_ij *l_J_ij, int l_J_ij_count_spec)
 			char * temp_name = string_duplicate(l_J_ij[j].name);
 			ptr = temp_name;
 			count_elts = 0;
-			get_elts_in_species(&ptr, 1);
+            get_elts_in_species(ptr, 1);
 			free_check_null(temp_name);
 		}
 		for (k = 0; k < count_elts; k++)

@@ -536,17 +536,18 @@ struct stag_data
 	LDBLE th_m;
 	LDBLE th_im;
 };
-struct cell_data
+
+struct CellData
 {
-	LDBLE length;
-	LDBLE mid_cell_x;
-	LDBLE disp;
-	LDBLE temp;
-	LDBLE por;				/* free (uncharged) porewater porosities */
-	LDBLE por_il;			/* interlayer water porosities */
-	LDBLE potV;				/* potential (V) */
-	int punch;
-	int print;
+    double disp = 1.0;
+    double length = 1.0;
+    double mid_cell_x = 1.0;
+    double por = 0.1; /* free (uncharged) porewater porosities */
+    double por_il = 0.01; /* interlayer water porosities */
+    double potV = 0; /* potential (V) */
+    bool punch = FALSE;
+    bool print = FALSE;
+    double temp = 25.0;
 };
 
 /*----------------------------------------------------------------------
@@ -914,7 +915,7 @@ struct prints
 /* ----------------------------------------------------------------------
  *   RATES
  * ---------------------------------------------------------------------- */
-struct rate
+struct Rate
 {
         std::string name;
         std::string commands;

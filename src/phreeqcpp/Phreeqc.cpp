@@ -242,7 +242,7 @@ size_t Phreeqc::list_KineticReactions(std::list<std::string> &list_kr)
 			{
 				std::string ratename = entity.Get_kinetics_comps()[i].Get_rate_name();
 				int j;
-				rate *r = rate_search(ratename.c_str(), &j);
+                Rate *r = rate_search(ratename.c_str(), &j);
 				if (r != NULL)
 				{
 					accumulator.insert(r->name);
@@ -582,7 +582,6 @@ void Phreeqc::init(void)
 	/*----------------------------------------------------------------------
 	*   Inverse
 	*---------------------------------------------------------------------- */
-	inverse					= NULL;
 	count_inverse			= 0;
 	/*----------------------------------------------------------------------
 	*   Mix
@@ -672,7 +671,7 @@ void Phreeqc::init(void)
 	mass_water_aq_x         = 0;
 	mass_water_surfaces_x   = 0;
 	mass_water_bulk_x       = 0;
-	units_x					= NULL;
+    units_x					= "";
 	// auto pe_x
 	// auto isotopes_x
 	// auto default_pe_x
@@ -705,7 +704,6 @@ void Phreeqc::init(void)
 	dump_in                  = FALSE;
 	dump_modulus             = 0;
 	transport_warnings       = TRUE;
-	cell_data                = NULL;
 	old_cells                = 0;
 	max_cells                = 0;
 	all_cells                = 0;
@@ -728,10 +726,8 @@ void Phreeqc::init(void)
 	count_ad_shifts          = 1;
 	print_ad_modulus         = 1;
 	punch_ad_modulus         = 1;
-	advection_punch          = NULL;
 	advection_kin_time       = 0.0;
 	advection_kin_time_defined = FALSE;
-	advection_print          = NULL;
 	advection_warnings       = TRUE;
 	/*----------------------------------------------------------------------
 	*   Tidy data
@@ -770,8 +766,6 @@ void Phreeqc::init(void)
 	logk                     = NULL;
 	count_logk               = 0;
 	max_logk                 = MAX_S;
-	moles_per_kilogram_string= NULL;
-	pe_string                = NULL;
 	s                        = NULL;
 	count_s                  = 0;
 	max_s                    = MAX_S;
@@ -888,7 +882,6 @@ void Phreeqc::init(void)
 	/* ----------------------------------------------------------------------
 	*   RATES
 	* ---------------------------------------------------------------------- */
-	rates                   = NULL;
 	count_rates				= 0;
 	rate_m					= 0;
 	rate_m0					= 0;
@@ -1676,13 +1669,7 @@ Phreeqc::InternalCopy(const Phreeqc *pSrc)
 	cell_data_max_cells = 1;
 	if (count_cells > 0)
 	{
-		//cell_data = (struct cell_data *) free_check_null(cell_data);
-		//cell_data = (struct cell_data *) PHRQ_malloc((size_t) ((count_cells + 2) * sizeof(struct cell_data)));
-		//if (cell_data == NULL) malloc_error();
-		//memcpy(cell_data, pSrc->cell_data, ((size_t) ((count_cells + 2) * sizeof(struct cell_data
-		int all_cells_now = max_cells * (1 + stag_data->count_stag) + 2;
-		space((void **)((void *)&cell_data), all_cells_now, &cell_data_max_cells, sizeof(struct cell_data));
-		memcpy(cell_data, pSrc->cell_data, ((size_t)(all_cells_now * sizeof(struct cell_data))));
+        cell_data = pSrc->cell_data;
 	}
 	max_cells = pSrc->max_cells;
 	multi_Dflag              = pSrc->multi_Dflag;
@@ -1708,18 +1695,12 @@ Phreeqc::InternalCopy(const Phreeqc *pSrc)
 	/* advection_punch */
 	if (count_ad_cells > 0)
 	{
-		advection_punch = (int *) free_check_null(advection_punch);
-		advection_punch = (int *) PHRQ_malloc((size_t) (count_ad_cells * sizeof(int)));
-		if (advection_punch == NULL) malloc_error();
-		memcpy(advection_punch, pSrc->advection_punch, (size_t) (count_ad_cells * sizeof(int)));
+        advection_punch = pSrc->advection_punch;
 	}
 	/* advection_print */
 	if (count_ad_cells > 0)
-	{
-		advection_print = (int *) free_check_null(advection_print);
-		advection_print = (int *) PHRQ_malloc((size_t) (count_ad_cells * sizeof(int)));
-		if (advection_print == NULL) malloc_error();
-		memcpy(advection_print, pSrc->advection_print, (size_t) (count_ad_cells * sizeof(int)));
+    {
+        advection_print = pSrc->advection_print;
 	}
 	advection_kin_time       = pSrc->advection_kin_time;
 	advection_kin_time_defined = pSrc->advection_kin_time_defined;
@@ -2148,12 +2129,9 @@ Phreeqc::InternalCopy(const Phreeqc *pSrc)
 	// auto rate_p
 	count_rate_p            = 0;
 	*/
-	rates = (struct rate *) free_check_null(rates);
 	count_rates = pSrc->count_rates;
 	if (count_rates > 0)
 	{
-		rates = (struct rate *) PHRQ_malloc((size_t) count_rates * sizeof(struct rate));
-		if (rates == NULL) malloc_error();
 		for (int i = 0; i < count_rates; i++)
 		{
             rates[i].name = string_hsave(pSrc->rates[i].name.c_str());
@@ -2370,7 +2348,7 @@ Phreeqc::InternalCopy(const Phreeqc *pSrc)
 		std::map<int, UserPunch>::iterator it = UserPunch_map.begin(); 
 		for (; it != UserPunch_map.end(); it++)
 		{
-			struct rate *rate_new = rate_copy(it->second.Get_rate());
+            auto rate_new = it->second.Get_rate();
 			it->second.Set_rate(rate_new);
 		}
 	}

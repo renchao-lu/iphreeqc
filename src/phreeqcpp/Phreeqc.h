@@ -911,7 +911,7 @@ protected:
 	struct phase *phase_store(const char *name);
 public:
     struct Rate *rate_bsearch(char *ptr, int *j);
-	int rate_free(struct rate *rate_ptr);
+    int rate_free(struct Rate rate_ptr);
     struct Rate *rate_search(const char *name, int *n);
 	int rate_sort(void);
 	struct reaction *rxn_alloc(int ntokens);
@@ -1585,7 +1585,7 @@ protected:
 	/* ----------------------------------------------------------------------
 	*   USER PRINT COMMANDS
 	* ---------------------------------------------------------------------- */
-    struct Rate *user_print;
+    struct Rate user_print;
 	//struct rate *user_punch;
 	//const char **user_punch_headings;
 	//int user_punch_count_headings;

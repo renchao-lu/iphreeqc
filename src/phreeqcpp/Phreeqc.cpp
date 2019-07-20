@@ -897,7 +897,6 @@ void Phreeqc::init(void)
 	/* ----------------------------------------------------------------------
 	*   USER PRINT COMMANDS
 	* ---------------------------------------------------------------------- */
-	user_print				= NULL;
 #ifdef SKIP
 	user_punch				= NULL;
 	user_punch_headings		= NULL;
@@ -2150,16 +2149,16 @@ Phreeqc::InternalCopy(const Phreeqc *pSrc)
 	user_print				= NULL;
 	*/
 	{
-        user_print->name = "";
-        user_print->commands = "";
-        if (pSrc->user_print->commands != "")
+        user_print.name = "";
+        user_print.commands = "";
+        if (pSrc->user_print.commands != "")
 		{
-            user_print->commands = string_duplicate(pSrc->user_print->commands.c_str());
+            user_print.commands = string_duplicate(pSrc->user_print.commands.c_str());
 		}
-		user_print->new_def = TRUE;
-		user_print->linebase = NULL;
-		user_print->varbase = NULL;
-		user_print->loopbase = NULL;
+        user_print.new_def = TRUE;
+        user_print.linebase = NULL;
+        user_print.varbase = NULL;
+        user_print.loopbase = NULL;
 	}
 
 	// For now, User Punch is not copied

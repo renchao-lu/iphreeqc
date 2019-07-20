@@ -151,9 +151,9 @@ clean_up(void)
 /* rates */
 	for (j = 0; j < count_rates; j++)
 	{
-		rate_free(&rates[j]);
+        rate_free(rates[j]);
 	}
-	rates = (struct rate *) free_check_null(rates);
+//	rates = (struct rate *) free_check_null(rates);
 
 /* logk hash table */
 	for (j = 0; j < count_logk; j++)
@@ -212,7 +212,7 @@ clean_up(void)
 
 /*  user_print and user_punch */
 	rate_free(user_print);
-	user_print = (struct rate *) free_check_null(user_print);
+//	user_print = (struct rate *) free_check_null(user_print);
 #ifdef SKIP
 	rate_free(user_punch);
 	user_print = (struct rate *) free_check_null(user_print);
@@ -1576,7 +1576,7 @@ phase_store(const char *name)
  *
  * ********************************************************************** */
 /* ---------------------------------------------------------------------- */
-struct rate * Phreeqc::
+struct Rate * Phreeqc::
 rate_bsearch(char *ptr, int *j)
 /* ---------------------------------------------------------------------- */
 {
@@ -1599,11 +1599,11 @@ rate_bsearch(char *ptr, int *j)
 		*j = -1;
 		return (NULL);
 	}
-	void_ptr = (void *)
-		bsearch((char *) ptr,
-				(char *) rates,
-				(size_t) count_rates,
-				(size_t) sizeof(struct rate *), rate_compare_string);
+//	void_ptr = (void *)
+//		bsearch((char *) ptr,
+//				(char *) rates,
+//				(size_t) count_rates,
+//                (size_t) sizeof(struct Rate *), rate_compare_string);
 
 	if (void_ptr == NULL)
 	{
@@ -1611,8 +1611,8 @@ rate_bsearch(char *ptr, int *j)
 		return (NULL);
 	}
 
-	*j = (int) ((struct rate *) void_ptr - rates);
-	return ((struct rate *) void_ptr);
+//    *j = (int) ((struct Rate *) void_ptr - rates);
+    return ((struct Rate *) void_ptr);
 }
 
 /* ---------------------------------------------------------------------- */
@@ -1623,9 +1623,9 @@ rate_compare(const void *ptr1, const void *ptr2)
 /*
  *   Compares names of rates for sort
  */
-	const struct rate *rate_ptr1, *rate_ptr2;
-	rate_ptr1 = *(const struct rate **) ptr1;
-	rate_ptr2 = *(const struct rate **) ptr2;
+    const struct Rate *rate_ptr1, *rate_ptr2;
+    rate_ptr1 = *(const struct Rate **) ptr1;
+    rate_ptr2 = *(const struct Rate **) ptr2;
     return (strcmp_nocase(rate_ptr1->name.c_str(), rate_ptr2->name.c_str()));
 }
 
@@ -1635,15 +1635,15 @@ rate_compare_string(const void *ptr1, const void *ptr2)
 /* ---------------------------------------------------------------------- */
 {
 	const char *char_ptr;
-	const struct rate *rate_ptr;
+    const struct Rate *rate_ptr;
 	char_ptr = (const char *) ptr1;
-	rate_ptr = *(const struct rate **) ptr2;
+    rate_ptr = *(const struct Rate **) ptr2;
     return (strcmp_nocase(char_ptr, rate_ptr->name.c_str()));
 }
 
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-rate_free(struct rate *rate_ptr)
+rate_free(struct Rate rate_ptr)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -1653,38 +1653,18 @@ rate_free(struct rate *rate_ptr)
  */
 	
 
-	if (rate_ptr == NULL)
-		return (ERROR);
+//	if (rate_ptr == NULL)
+//		return (ERROR);
 //	rate_ptr->commands = (char *) free_check_null(rate_ptr->commands);
-	if (rate_ptr->linebase != NULL)
+    if (rate_ptr.linebase != NULL)
 	{
 		char cmd[] = "new; quit";
-		basic_run(cmd, rate_ptr->linebase, rate_ptr->varbase, rate_ptr->loopbase);
-		rate_ptr->linebase = NULL;
-		rate_ptr->varbase = NULL;
-		rate_ptr->loopbase = NULL;
+        basic_run(cmd, rate_ptr.linebase, rate_ptr.varbase, rate_ptr.loopbase);
+        rate_ptr.linebase = NULL;
+        rate_ptr.varbase = NULL;
+        rate_ptr.loopbase = NULL;
 	}
 	return (OK);
-}
-
-/* ---------------------------------------------------------------------- */
-struct rate * Phreeqc::
-rate_copy(struct rate *rate_ptr)
-/* ---------------------------------------------------------------------- */
-{
-	/*
-	*   Copies a rate to new allocated space
-	*/
-	if (rate_ptr == NULL)
-		return (NULL);
-	struct rate * rate_new = (struct rate *) PHRQ_malloc(sizeof(struct rate));
-	if (rate_new == NULL) malloc_error();
-//	rate_new->commands = string_duplicate(rate_ptr->commands);
-	rate_new->new_def = TRUE;
-	rate_new->linebase = NULL;
-	rate_new->varbase = NULL;
-	rate_new->loopbase = NULL;
-	return (rate_new);
 }
 
 /* ---------------------------------------------------------------------- */
@@ -1744,11 +1724,11 @@ rate_sort(void)
 /*
  *   Sort array of rate structures
  */
-	if (count_rates > 0)
-	{
-		qsort(rates, (size_t) count_rates, (size_t) sizeof(struct rate),
-			  rate_compare);
-	}
+//	if (count_rates > 0)
+//	{
+//        qsort(rates, (size_t) count_rates, (size_t) sizeof(struct Rate),
+//			  rate_compare);
+//	}
 	return (OK);
 }
 

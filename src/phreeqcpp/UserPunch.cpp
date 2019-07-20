@@ -14,7 +14,7 @@ UserPunch::~UserPunch(void)
 	{
 		if (this->PhreeqcPtr != NULL)
 		{
-			this->PhreeqcPtr->rate_free(this->rate);
+            this->PhreeqcPtr->rate_free(*this->rate);
 			this->PhreeqcPtr->free_check_null(this->rate);
 		}
 	}

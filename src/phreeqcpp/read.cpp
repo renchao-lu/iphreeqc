@@ -9028,7 +9028,7 @@ read_rates(void)
 	int l, length, line_length, n;
 	int return_value, opt, opt_save;
 	char token[MAX_LENGTH];
-	struct rate *rate_ptr;
+    struct Rate *rate_ptr;
 	char *description;
 	int n_user, n_user_end;
 	char *next_char;
@@ -9086,19 +9086,12 @@ read_rates(void)
 			}
 			if (rate_ptr == NULL)
 			{
-				rates =
-					(struct rate *) PHRQ_realloc(rates,
-												 (size_t) (count_rates +
-														   1) *
-												 sizeof(struct rate));
-				if (rates == NULL)
-					malloc_error();
 				rate_ptr = &rates[count_rates];
 				count_rates++;
 			}
 			else
 			{
-				rate_free(rate_ptr);
+                rate_free(*rate_ptr);
 			}
 			rate_ptr->new_def = TRUE;
 			rate_ptr->commands = (char *) PHRQ_malloc(sizeof(char));
@@ -9213,28 +9206,28 @@ read_user_print(void)
 			break;
 		case OPTION_DEFAULT:	/* read first command */
 			rate_free(user_print);
-			user_print->new_def = TRUE;
-			user_print->commands = (char *) PHRQ_malloc(sizeof(char));
-            if (user_print->commands.empty())
+            user_print.new_def = TRUE;
+            user_print.commands = (char *) PHRQ_malloc(sizeof(char));
+            if (user_print.commands.empty())
 				malloc_error();
-			user_print->commands[0] = '\0';
-			user_print->linebase = NULL;
-			user_print->varbase = NULL;
-			user_print->loopbase = NULL;
-			user_print->name =
+            user_print.commands[0] = '\0';
+            user_print.linebase = NULL;
+            user_print.varbase = NULL;
+            user_print.loopbase = NULL;
+            user_print.name =
 				string_hsave("user defined Basic print routine");
 		case OPT_1:			/* read command */
-            length = (int) user_print->commands.size();
+            length = (int) user_print.commands.size();
             line_length = (int) line.size();
 //			user_print->commands =
 //				(char *) PHRQ_realloc(user_print->commands,
 //									  (size_t) (length + line_length +
 //												2) * sizeof(char));
-            if (user_print->commands.empty())
+            if (user_print.commands.empty())
 				malloc_error();
-			user_print->commands[length] = ';';
-			user_print->commands[length + 1] = '\0';
-            user_print->commands += line;
+            user_print.commands[length] = ';';
+            user_print.commands[length + 1] = '\0';
+            user_print.commands += line;
 			opt_save = OPT_1;
 			break;
 		}
@@ -9298,14 +9291,13 @@ read_user_punch(void)
 	//}
 	
 	// Malloc rate structure
-	struct rate *r = (struct rate *) PHRQ_malloc(sizeof(struct rate));
-	if (r == NULL) malloc_error();
-    r->commands = "";
-	r->new_def = TRUE;
-	r->linebase = NULL;
-	r->varbase = NULL;
-	r->loopbase = NULL;
-	r->name = string_hsave("user defined Basic punch routine");
+    Rate r;
+    r.commands = "";
+    r.new_def = TRUE;
+    r.linebase = NULL;
+    r.varbase = NULL;
+    r.loopbase = NULL;
+    r.name = string_hsave("user defined Basic punch routine");
 
 	return_value = UNKNOWN;
 	for (;;)
@@ -9344,9 +9336,9 @@ read_user_punch(void)
 			break;
 		case OPTION_DEFAULT:	/* read first command */
 			{
-				r->commands = (char *) PHRQ_malloc(sizeof(char));
-                if (r->commands.empty()) malloc_error();
-				else r->commands[0] = '\0';
+//				r->commands = (char *) PHRQ_malloc(sizeof(char));
+//                if (r->commands.empty()) malloc_error();
+//				else r->commands[0] = '\0';
 			}
 			//rate_free(user_punch);
 			//user_punch->new_def = TRUE;
@@ -9360,19 +9352,19 @@ read_user_punch(void)
 			//user_punch->name =
 			//	string_hsave("user defined Basic punch routine");
 		case OPT_1:			/* read command */
-            length = (int) r->commands.size();
+            length = (int) r.commands.size();
             line_length = (int) line.size();
 //			r->commands = (char *) PHRQ_realloc(r->commands,
 //				(size_t) (length + line_length + 2) * sizeof(char));
-            if (r->commands.empty())
+            if (r.commands.empty())
 			{
 				malloc_error();
 			}
 			else
 			{
-				r->commands[length] = ';';
-				r->commands[length + 1] = '\0';
-                r->commands += line;
+                r.commands[length] = ';';
+                r.commands[length + 1] = '\0';
+                r.commands += line;
 			}
 			//length = (int) strlen(user_punch->commands);
 			//line_length = (int) strlen(line);
@@ -9393,7 +9385,7 @@ read_user_punch(void)
 	}
 	UserPunch_map.erase(n_user); 
 	UserPunch_map[n_user] = temp_user_punch;
-	UserPunch_map[n_user].Set_rate(r);
+    UserPunch_map[n_user].Set_rate(&r);
 
 	return (return_value);
 }

@@ -445,8 +445,9 @@ copy_token(std::string &token, std::string ptr)
  *   Read to end of whitespace
  */
 	token.clear();
-//	while (isspace((int) (c = **ptr)))
-//		(*ptr)++;
+    for (unsigned i = 0; i < ptr.length(); ++i)
+    {
+        c = ptr.at(i);
 /*
  *   Check what we have
  */
@@ -493,6 +494,7 @@ copy_token(std::string &token, std::string ptr)
 	}
 #endif
 	return (return_value);
+    }
 }
 #if defined PHREEQ98 
 /* ---------------------------------------------------------------------- */

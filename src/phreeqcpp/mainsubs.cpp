@@ -174,10 +174,10 @@ initialize(void)
 		malloc_error();
 
 	// user_print
-    user_print->commands = "";
-	user_print->linebase = NULL;
-	user_print->varbase = NULL;
-	user_print->loopbase = NULL;
+    user_print.commands = "";
+    user_print.linebase = NULL;
+    user_print.varbase = NULL;
+    user_print.loopbase = NULL;
 
 #ifdef SKIP
 	// user_punch

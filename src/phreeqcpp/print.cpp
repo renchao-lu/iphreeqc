@@ -2362,7 +2362,7 @@ print_user_print(void)
 
 	if (pr.user_print == FALSE || pr.all == FALSE)
 		return (OK);
-    if (user_print->commands.empty())
+    if (user_print.commands.empty())
 		return (OK);
 	kinetics_ptr = NULL;
 	if (use.Get_kinetics_in() == TRUE)
@@ -2378,20 +2378,20 @@ print_user_print(void)
 		}
 	}
 	print_centered("User print");
-	if (user_print->new_def == TRUE)
+    if (user_print.new_def == TRUE)
 	{
 		/*      basic_renumber(user_print->commands, &user_print->linebase, &user_print->varbase, &user_print->loopbase); */
 		if (basic_compile
-			(user_print->commands, &user_print->linebase,
-			 &user_print->varbase, &user_print->loopbase) != 0)
+            (user_print.commands, &user_print.linebase,
+             &user_print.varbase, &user_print.loopbase) != 0)
 		{
 			error_msg("Fatal Basic error in USER_PRINT.", STOP);
 		}
-		user_print->new_def = FALSE;
+        user_print.new_def = FALSE;
 	}
 	if (basic_run
-		(l_command, user_print->linebase, user_print->varbase,
-		 user_print->loopbase) != 0)
+        (l_command, user_print.linebase, user_print.varbase,
+         user_print.loopbase) != 0)
 	{
 		error_msg("Fatal Basic error in USER_PRINT.", STOP);
 	}

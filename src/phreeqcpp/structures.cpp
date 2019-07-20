@@ -224,11 +224,11 @@ clean_up(void)
 	/*
 	   Free llnl aqueous model parameters
 	 */
-	llnl_temp = (LDBLE *) free_check_null(llnl_temp);
-	llnl_adh = (LDBLE *) free_check_null(llnl_adh);
-	llnl_bdh = (LDBLE *) free_check_null(llnl_bdh);
-	llnl_bdot = (LDBLE *) free_check_null(llnl_bdot);
-	llnl_co2_coefs = (LDBLE *) free_check_null(llnl_co2_coefs);
+    //	llnl_temp = (LDBLE *) free_check_null(llnl_temp);
+//    llnl_adh = (LDBLE*)free_check_null(llnl_adh);
+    llnl_bdh = (LDBLE*)free_check_null(llnl_bdh);
+    llnl_bdot = (LDBLE*)free_check_null(llnl_bdot);
+    llnl_co2_coefs = (LDBLE *) free_check_null(llnl_co2_coefs);
 	/*
 	 * Copier space
 	 */

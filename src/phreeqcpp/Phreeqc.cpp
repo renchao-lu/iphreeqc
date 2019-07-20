@@ -986,9 +986,7 @@ void Phreeqc::init(void)
 	numerical_deriv			= FALSE;
 	count_total_steps       = 0;
 	phast                   = FALSE;
-	llnl_temp				= 0;
 	llnl_count_temp			= 0;
-	llnl_adh				= 0;
 	llnl_count_adh			= 0;
 	llnl_bdh				= 0;
 	llnl_count_bdh			= 0;
@@ -2290,18 +2288,12 @@ Phreeqc::InternalCopy(const Phreeqc *pSrc)
 	llnl_count_temp			= pSrc->llnl_count_temp;
 	if (llnl_count_temp > 0)
 	{
-		llnl_temp = (LDBLE *) free_check_null(llnl_temp);
-		llnl_temp = (LDBLE *) PHRQ_malloc((size_t) llnl_count_temp * sizeof(LDBLE));
-		if (llnl_temp == NULL) malloc_error();
-		memcpy(llnl_temp, pSrc->llnl_temp, (size_t) llnl_count_temp * sizeof(LDBLE));
-	}
-	llnl_count_adh			= pSrc->llnl_count_adh;
-	if (llnl_count_adh > 0)
-	{
-		llnl_adh = (LDBLE *) free_check_null(llnl_adh);
-		llnl_adh = (LDBLE *) PHRQ_malloc((size_t) llnl_count_adh * sizeof(LDBLE));
-		if (llnl_adh == NULL) malloc_error();
-		memcpy(llnl_adh, pSrc->llnl_adh, (size_t) llnl_count_adh * sizeof(LDBLE));
+        llnl_temp = pSrc->llnl_temp;
+    }
+    llnl_count_adh = pSrc->llnl_count_adh;
+    if (llnl_count_adh > 0)
+    {
+        llnl_adh = pSrc->llnl_adh;
 	}
 	llnl_count_bdh			= pSrc->llnl_count_bdh;
 	if (llnl_count_bdh > 0)

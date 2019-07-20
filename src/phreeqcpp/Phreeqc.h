@@ -1688,9 +1688,11 @@ protected:
 
 	int count_total_steps;
 	int phast;
-	LDBLE *llnl_temp, *llnl_adh, *llnl_bdh, *llnl_bdot, *llnl_co2_coefs;
-	int llnl_count_temp, llnl_count_adh, llnl_count_bdh, llnl_count_bdot,
-		llnl_count_co2_coefs;
+    std::vector<double> llnl_temp;
+    std::vector<double> llnl_adh;
+    LDBLE *llnl_bdh, *llnl_bdot, *llnl_co2_coefs;
+    int llnl_count_temp, llnl_count_adh, llnl_count_bdh, llnl_count_bdot,
+        llnl_count_co2_coefs;
 
 public:
     //char *selected_output_file_name;

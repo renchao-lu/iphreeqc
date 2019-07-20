@@ -1,6 +1,8 @@
-#include <complex>
 #include <assert.h>
 #include <time.h>
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/predicate.hpp>
+#include <complex>
 
 #include "Utils.h"	
 #include "Phreeqc.h"
@@ -10330,6 +10332,38 @@ read_solid_solutions(void)
 	Rxn_new_ss_assemblage.insert(n_user);
 	return (return_value);
 }
+
+enum class LLNLModelKeywords
+{
+    temperatures,   /* 0 */
+    temperature,    /* 1 */
+    temp,           /* 2 */
+    adh,            /* 3 */
+    debye_huckel_a, /* 4 */
+    dh_a,           /* 5 */
+    bdh,            /* 6 */
+    debye_huckel_b, /* 7 */
+    dh_b,           /* 8 */
+    bdot,           /* 9 */
+    b_dot,          /* 10 */
+    c_co2,          /* 11 */
+    co2_coefs       /* 12 */
+};
+
+std::vector<std::string> LLNLModelKeywordsString
+{
+    "-temperatures",
+    "-adh",
+};
+
+inline LLNLModelKeywords convertStringToProperty(std::string const& inString)
+{
+    if (boost::iequals(inString, "-temperatures"))
+    {
+        return LLNLModelKeywords::temperatures;
+    }
+}
+
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
 read_llnl_aqueous_model_parameters(void)
@@ -10353,130 +10387,129 @@ read_llnl_aqueous_model_parameters(void)
 
 	int return_value, opt;
     std::string next_char;
-	const char *opt_list[] = {
-		"temperatures",			/* 0 */
-		"temperature",			/* 1 */
-		"temp",					/* 2 */
-		"adh",					/* 3 */
-		"debye_huckel_a",		/* 4 */
-		"dh_a",					/* 5 */
-		"bdh",					/* 6 */
-		"debye_huckel_b",		/* 7 */
-		"dh_b",					/* 8 */
-		"bdot",					/* 9 */
-		"b_dot",				/* 10 */
-		"c_co2",				/* 11 */
-		"co2_coefs"				/* 12 */
-	};
-	int count_opt_list = 13;
-/*
- *   Initialize
- */
-/*
- *   Read aqueous model parameters
- */
-	return_value = UNKNOWN;
-    opt = get_option(opt_list, count_opt_list, next_char);
-	for (;;)
-	{
-		next_char = line;
-		if (opt >= 0)
-		{
-            copy_token(token, next_char, &i);
-		}
-		switch (opt)
-		{
-		case OPTION_EOF:		/* end of file */
-			return_value = EOF;
-			break;
-		case OPTION_KEYWORD:	/* keyword */
-			return_value = KEYWORD;
-			break;
-		case OPTION_DEFAULT:
-		case OPTION_ERROR:
-			input_error++;
-			error_msg
-				("Unknown input in LLNL_AQUEOUS_MODEL_PARAMETERS keyword.",
-				 CONTINUE);
-            error_msg(line_save.c_str(), CONTINUE);
-			break;
 
-/*
- * New component
- */
-		case 0:				/* temperatures */
-		case 1:				/* temperature */
-		case 2:				/* temp */
-			count_alloc = 1;
-			llnl_count_temp = 0;
-            i = read_lines_doubles(const_cast<char*>(next_char.c_str()), &(llnl_temp),
-								   &(llnl_count_temp), &(count_alloc),
-								   opt_list, count_opt_list, &opt);
-			/*
-			   ptr = next_char;
-			   llnl_temp = read_list_doubles(&ptr, &count);
-			   llnl_count_temp = count;
-			 */
-			break;
-		case 3:				/* adh */
-		case 4:				/* debye_huckel_a */
-		case 5:				/* dh_a */
-			count_alloc = 1;
-			llnl_count_adh = 0;
-            i = read_lines_doubles(const_cast<char*>(next_char.c_str()), &(llnl_adh), &(llnl_count_adh),
-								   &(count_alloc), opt_list, count_opt_list,
-								   &opt);
-			/*
-			   ptr = next_char;
-			   llnl_adh = read_list_doubles(&ptr, &count);
-			   llnl_count_adh = count;
-			 */
-			break;
-		case 6:				/* bdh */
-		case 7:				/* debye_huckel_b */
-		case 8:				/* dh_b */
-			count_alloc = 1;
-			llnl_count_bdh = 0;
-            i = read_lines_doubles(const_cast<char*>(next_char.c_str()), &(llnl_bdh), &(llnl_count_bdh),
-								   &(count_alloc), opt_list, count_opt_list,
-								   &opt);
-			/*
-			   ptr = next_char;
-			   llnl_bdh = read_list_doubles(&ptr, &count);
-			   llnl_count_bdh = count;
-			 */
-			break;
-		case 9:				/* bdot */
-		case 10:				/* b_dot */
-			count_alloc = 1;
-			llnl_count_bdot = 0;
-            i = read_lines_doubles(const_cast<char*>(next_char.c_str()), &(llnl_bdot),
-								   &(llnl_count_bdot), &(count_alloc),
-								   opt_list, count_opt_list, &opt);
-			/*
-			   ptr = next_char;
-			   llnl_bdot = read_list_doubles(&ptr, &count);
-			   llnl_count_bdot = count;
-			 */
-			break;
-		case 11:				/* c_co2 */
-		case 12:				/* co2_coefs */
-			count_alloc = 1;
-			llnl_count_co2_coefs = 0;
-            i = read_lines_doubles(const_cast<char*>(next_char.c_str()), &(llnl_co2_coefs),
-								   &(llnl_count_co2_coefs), &(count_alloc),
-								   opt_list, count_opt_list, &opt);
-			/*
-			   ptr = next_char;
-			   llnl_co2_coefs = read_list_doubles(&ptr, &count);
-			   llnl_count_co2_coefs = count;
-			 */
-			break;
-		}
-		return_value = check_line_return;
-		if (return_value == EOF || return_value == KEYWORD)
-			break;
-	}
+    int count_opt_list = 13;
+    /*
+     *   Initialize
+     */
+    /*
+     *   Read aqueous model parameters
+     */
+    return_value = UNKNOWN;
+
+    auto in = phrq_io->get_istream();
+    while (std::getline(*in, line))
+    {
+        auto opt = convertStringToProperty(line);
+        switch (opt)
+        {
+                //		case OPTION_EOF:		/* end of file */
+                //			return_value = EOF;
+                //			break;
+                //		case OPTION_KEYWORD:	/* keyword */
+                //			return_value = KEYWORD;
+                //			break;
+                //		case OPTION_DEFAULT:
+                //		case OPTION_ERROR:
+                //			input_error++;
+                //			error_msg
+                //				("Unknown input in LLNL_AQUEOUS_MODEL_PARAMETERS
+                // keyword.", 				 CONTINUE);
+                //            error_msg(line_save.c_str(), CONTINUE);
+                //			break;
+
+                /*
+                 * New component
+                 */
+            case LLNLModelKeywords::temperatures:
+            case LLNLModelKeywords::temperature:
+            case LLNLModelKeywords::temp:
+            {
+                while (std::getline(*in, line))
+                {                        
+                    std::vector<std::string> items;
+                    boost::trim_if(line, boost::is_any_of("\t "));
+                    boost::algorithm::split(items, line,
+                                            boost::is_any_of("\t "),
+                                            boost::token_compress_on);
+                    for (auto item : items)
+                        llnl_temp.push_back(std::stod(item));
+                    continue;
+                }
+                continue;
+            }
+            case LLNLModelKeywords::adh:
+            case LLNLModelKeywords::debye_huckel_a:
+            case LLNLModelKeywords::dh_a:
+            {
+                while (std::getline(*in, line))
+                {
+                    std::vector<std::string> items;
+                    boost::trim_if(line, boost::is_any_of("\t "));
+                    boost::algorithm::split(items, line,
+                                            boost::is_any_of("\t "),
+                                            boost::token_compress_on);
+                    for (auto item : items)
+                        llnl_adh.push_back(std::stod(item));
+                    break;
+                }
+                count_alloc = 1;
+                llnl_count_adh = llnl_adh.size();
+                continue;
+            }
+                //		case 6:				/* bdh */
+                //		case 7:				/* debye_huckel_b */
+                //		case 8:				/* dh_b */
+                //			count_alloc = 1;
+                //			llnl_count_bdh = 0;
+                //            i =
+                //            read_lines_doubles(const_cast<char*>(next_char.c_str()),
+                //            &(llnl_bdh), &(llnl_count_bdh),
+                //								   &(count_alloc), opt_list,
+                // count_opt_list, 								   &opt);
+                //			/*
+                //			   ptr = next_char;
+                //			   llnl_bdh = read_list_doubles(&ptr, &count);
+                //			   llnl_count_bdh = count;
+                //			 */
+                //			break;
+                //		case 9:				/* bdot */
+                //		case 10:				/* b_dot */
+                //			count_alloc = 1;
+                //			llnl_count_bdot = 0;
+                //            i =
+                //            read_lines_doubles(const_cast<char*>(next_char.c_str()),
+                //            &(llnl_bdot),
+                //								   &(llnl_count_bdot),
+                //&(count_alloc), 								   opt_list,
+                // count_opt_list, &opt);
+                //			/*
+                //			   ptr = next_char;
+                //			   llnl_bdot = read_list_doubles(&ptr, &count);
+                //			   llnl_count_bdot = count;
+                //			 */
+                //			break;
+                //		case 11:				/* c_co2 */
+                //		case 12:				/* co2_coefs */
+                //			count_alloc = 1;
+                //			llnl_count_co2_coefs = 0;
+                //            i =
+                //            read_lines_doubles(const_cast<char*>(next_char.c_str()),
+                //            &(llnl_co2_coefs),
+                //								   &(llnl_count_co2_coefs),
+                //&(count_alloc), 								   opt_list,
+                // count_opt_list, &opt);
+                //			/*
+                //			   ptr = next_char;
+                //			   llnl_co2_coefs = read_list_doubles(&ptr, &count);
+                //			   llnl_count_co2_coefs = count;
+                //			 */
+                //			break;
+        }
+        return_value = check_line_return;
+        if (return_value == EOF || return_value == KEYWORD)
+            break;
+    }
 	/* check consistency */
 	if ((llnl_count_temp <= 0) ||
 		(llnl_count_temp != llnl_count_adh) ||

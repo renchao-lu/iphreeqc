@@ -553,7 +553,7 @@ spread_row_to_solution(struct spread_row *heading, struct spread_row *units,
 					   struct spread_row *data, struct defaults defaults)
 /* ---------------------------------------------------------------------- */
 {
-	Keywords::KEYWORDS next_keyword_save;
+    Keywords next_keyword_save;
 	int n_user, n_user_end;
 	std::string description;
 	std::string token, token1, string;
@@ -612,14 +612,14 @@ spread_row_to_solution(struct spread_row *heading, struct spread_row *units,
 		{
 			string = "solution_s ";
 			string.append( data->char_vector[i] );
-			next_keyword_save = next_keyword;
-			next_keyword = Keywords::KEY_SOLUTION_SPREAD;
+//			next_keyword_save = next_keyword;
+//			next_keyword = Keywords::KEY_SOLUTION_SPREAD;
 			cxxNumKeyword nk;
 			nk.read_number_description(string);
 			n_user = nk.Get_n_user();
 			n_user_end = nk.Get_n_user_end();
 			description = nk.Get_description();
-			next_keyword = next_keyword_save;
+//			next_keyword = next_keyword_save;
 			Rxn_new_solution.insert(n_user);
 		}
 	}

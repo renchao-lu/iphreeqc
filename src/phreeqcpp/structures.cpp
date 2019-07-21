@@ -225,14 +225,14 @@ clean_up(void)
 	   Free llnl aqueous model parameters
 	 */
     //	llnl_temp = (LDBLE *) free_check_null(llnl_temp);
-//    llnl_adh = (LDBLE*)free_check_null(llnl_adh);
-    llnl_bdh = (LDBLE*)free_check_null(llnl_bdh);
-    llnl_bdot = (LDBLE*)free_check_null(llnl_bdot);
-    llnl_co2_coefs = (LDBLE *) free_check_null(llnl_co2_coefs);
-	/*
-	 * Copier space
-	 */
-	copier_free(&copy_solution);
+    //    llnl_adh = (LDBLE*)free_check_null(llnl_adh);
+    //    llnl_bdh = (LDBLE*)free_check_null(llnl_bdh);
+    //    llnl_bdot = (LDBLE*)free_check_null(llnl_bdot);
+    //    llnl_co2_coefs = (LDBLE *) free_check_null(llnl_co2_coefs);
+    /*
+     * Copier space
+     */
+    copier_free(&copy_solution);
 	copier_free(&copy_pp_assemblage);
 	copier_free(&copy_exchange);
 	copier_free(&copy_surface);
@@ -3588,46 +3588,46 @@ get_entity_enum(char *name)
     copy_token(token, ptr, &i);
 	check_key(token);
 
-	switch (next_keyword)
-	{
-	case Keywords::KEY_SOLUTION:					/* Solution */
-		return (Solution);
-		break;
-	case Keywords::KEY_EQUILIBRIUM_PHASES:		/* Pure phases */
-		return (Pure_phase);
-		break;
-	case Keywords::KEY_REACTION:					/* Reaction */
-		return (Reaction);
-		break;
-	case Keywords::KEY_MIX:						/* Mix */
-		return (Mix);
-		break;
-	case Keywords::KEY_EXCHANGE:					/* Ex */
-		return (Exchange);
-		break;
-	case Keywords::KEY_SURFACE:					/* Surface */
-		return (Surface);
-		break;
-	case Keywords::KEY_REACTION_TEMPERATURE:		/* Temperature */
-		return (Temperature);
-		break;
-	case Keywords::KEY_REACTION_PRESSURE:		/* Pressure */
-		return (Pressure);
-		break;
-	case Keywords::KEY_GAS_PHASE:					/* Gas */
-		return (Gas_phase);
-		break;
-	case Keywords::KEY_KINETICS:					/* Kinetics */
-		return (Kinetics);
-		break;
-	case Keywords::KEY_SOLID_SOLUTIONS:			/* solid_solutions */
-		return (Ss_phase);
-		break;
-	default:
-		warning_msg
-			("EXISTS expecting keyword solution, mix, kinetics, reaction, reaction_temperature, equilibrium_phases, exchange, surface, gas_phase, or solid_solutions.");
-		break;
-	}
+//	switch (next_keyword)
+//	{
+//	case Keywords::KEY_SOLUTION:					/* Solution */
+//		return (Solution);
+//		break;
+//	case Keywords::KEY_EQUILIBRIUM_PHASES:		/* Pure phases */
+//		return (Pure_phase);
+//		break;
+//	case Keywords::KEY_REACTION:					/* Reaction */
+//		return (Reaction);
+//		break;
+//	case Keywords::KEY_MIX:						/* Mix */
+//		return (Mix);
+//		break;
+//	case Keywords::KEY_EXCHANGE:					/* Ex */
+//		return (Exchange);
+//		break;
+//	case Keywords::KEY_SURFACE:					/* Surface */
+//		return (Surface);
+//		break;
+//	case Keywords::KEY_REACTION_TEMPERATURE:		/* Temperature */
+//		return (Temperature);
+//		break;
+//	case Keywords::KEY_REACTION_PRESSURE:		/* Pressure */
+//		return (Pressure);
+//		break;
+//	case Keywords::KEY_GAS_PHASE:					/* Gas */
+//		return (Gas_phase);
+//		break;
+//	case Keywords::KEY_KINETICS:					/* Kinetics */
+//		return (Kinetics);
+//		break;
+//	case Keywords::KEY_SOLID_SOLUTIONS:			/* solid_solutions */
+//		return (Ss_phase);
+//		break;
+//	default:
+//		warning_msg
+//			("EXISTS expecting keyword solution, mix, kinetics, reaction, reaction_temperature, equilibrium_phases, exchange, surface, gas_phase, or solid_solutions.");
+//		break;
+//	}
 	return (UnKnown);
 }
 

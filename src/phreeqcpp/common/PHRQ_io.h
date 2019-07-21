@@ -115,10 +115,10 @@ public:
 	void dump_flush(void);
 	void dump_close(void);
 	virtual void dump_msg(const char * str);
-	void Set_dump_ostream(std::ostream * out)		{this->dump_ostream = out;};
-	std::ostream *Get_dump_ostream(void)			{return this->dump_ostream;};
-	void Set_dump_on(bool tf)						{this->dump_on = tf;};
-	bool Get_dump_on(void)							{return this->dump_on;};
+    void Set_dump_ostream(std::ostream * out)		{this->dump_ostream = out;}
+    std::ostream *Get_dump_ostream(void)			{return this->dump_ostream;}
+    void Set_dump_on(bool tf)						{this->dump_on = tf;}
+    bool Get_dump_on(void)							{return this->dump_on;}
 
 	// fpunchf
 	virtual void fpunchf(const char *name, const char *format, double d);
@@ -129,8 +129,8 @@ public:
 	static void fpunchf_helper(std::string *str, const char *format, ...);
 
 	virtual void screen_msg(const char * str);
-	void Set_screen_on(bool tf)						{this->screen_on = tf;};
-	bool Get_screen_on(void)						{return this->screen_on;};
+    void Set_screen_on(bool tf)						{this->screen_on = tf;}
+    bool Get_screen_on(void)						{return this->screen_on;}
 
 	// input methods
 	virtual int getc(void);
@@ -140,7 +140,7 @@ public:
 	std::string & Get_m_line()       {return m_line;}
 	std::string & Get_m_line_save()  {return m_line_save;}
 	std::string & Get_accumulated()	 {return accumulated;}
-	LINE_TYPE Get_m_line_type()      {return m_line_type;};
+    LINE_TYPE Get_m_line_type()      {return m_line_type;}
 	void Set_accumulate(bool tf) 
 	{ 
 		if (tf)
@@ -149,7 +149,7 @@ public:
 		}
 		this->accumulate = tf; 
 	}
-	Keywords::KEYWORDS Get_m_next_keyword() const {return m_next_keyword;}
+    Keywords Get_m_next_keyword() const {return m_next_keyword;}
 
 	// echo 
 	enum ECHO_OPTION
@@ -158,10 +158,10 @@ public:
 		ECHO_OUTPUT
 	};
 	virtual void echo_msg(const char * str);
-	void Set_echo_on(bool tf)					{this->echo_on = tf;};
-	bool Get_echo_on(void)						{return this->echo_on;};
-	void Set_echo_destination(ECHO_OPTION eo)   {this->echo_destination = eo;};
-	ECHO_OPTION Get_echo_destination(void)      {return this->echo_destination;};
+    void Set_echo_on(bool tf)					{this->echo_on = tf;}
+    bool Get_echo_on(void)						{return this->echo_on;}
+    void Set_echo_destination(ECHO_OPTION eo)   {this->echo_destination = eo;}
+    ECHO_OPTION Get_echo_destination(void)      {return this->echo_destination;}
 
 	// data
 protected:
@@ -203,7 +203,7 @@ protected:
 #endif
 
 	// input data members
-	Keywords::KEYWORDS m_next_keyword;
+    Keywords m_next_keyword;
 	bool accumulate;
 	LINE_TYPE m_line_type;
 };

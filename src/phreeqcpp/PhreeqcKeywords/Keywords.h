@@ -2,12 +2,9 @@
 #define _INC_KEYWORDS_H
 #include <string>
 #include <map>
-class Keywords
+
+enum class Keywords
 {
-public:
-		enum KEYWORDS
-	{
-		KEY_NONE,
 		KEY_END,
 		KEY_SOLUTION_SPECIES,
 		KEY_SOLUTION_MASTER_SPECIES,
@@ -85,15 +82,5 @@ public:
 		KEY_SURFACE_MIX,
 		KEY_COUNT_KEYWORDS // must be last in list
 	};
-
-	Keywords(void);
-	~Keywords(void);
-
-	static KEYWORDS Keyword_search(std::string key);
-	static const std::string & Keyword_name_search(KEYWORDS key);
-
-	static const std::map<const std::string, KEYWORDS> phreeqc_keywords;
-	static const std::map<KEYWORDS, const std::string> phreeqc_keyword_names;
-};
 
 #endif // _INC_KEYWORDS_H

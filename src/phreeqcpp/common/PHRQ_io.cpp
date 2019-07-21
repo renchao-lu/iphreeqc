@@ -34,9 +34,8 @@ PHRQ_io(void)
 	dump_on = true;
 	echo_on = true; //**appt
 	screen_on = true;
-	echo_destination = ECHO_OUTPUT;
 
-	m_next_keyword = Keywords::KEY_NONE;
+	echo_destination = ECHO_OUTPUT;
 	accumulate = false;
 	m_line_type = PHRQ_io::LT_EMPTY;
 }
@@ -894,11 +893,11 @@ check_key(std::string::iterator begin, std::string::iterator end)
 	std::transform(lowercase.begin(), lowercase.end(), lowercase.begin(),
 				   tolower);
 
-	m_next_keyword = Keywords::Keyword_search(lowercase);
-	if (m_next_keyword == Keywords::KEY_NONE)
-	{
-		return false;
-	}
+//	m_next_keyword = Keywords::Keyword_search(lowercase);
+//	if (m_next_keyword == Keywords::KEY_NONE)
+//	{
+//		return false;
+//	}
 	return true;
 }
 

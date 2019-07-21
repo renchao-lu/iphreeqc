@@ -120,7 +120,7 @@ class CParser: public PHRQ_base
 
 
 	//KEY_TYPE next_keyword() const
-	Keywords::KEYWORDS next_keyword() const
+    Keywords next_keyword() const
 	{
 		return m_next_keyword;
 	}
@@ -264,7 +264,7 @@ class CParser: public PHRQ_base
 	//std::ostream & m_error_stream;
 	int m_input_error;
 	//KEY_TYPE m_next_keyword;
-	Keywords::KEYWORDS m_next_keyword;
+    Keywords m_next_keyword;
 	std::string m_line;
 	std::string m_line_save;
 	std::istringstream m_line_iss;

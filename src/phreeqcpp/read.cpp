@@ -21,6 +21,18 @@
 #include "SelectedOutput.h"
 #include "UserPunch.h"
 
+inline Keywords convertStringToKeywords(std::string const& inString)
+{
+    if (boost::iequals(inString, "LLNL_AQUEOUS_MODEL_PARAMETERS"))
+    {
+        return Keywords::KEY_LLNL_AQUEOUS_MODEL_PARAMETERS;
+    }
+    if (boost::iequals(inString, "NAMED_EXPRESSIONS"))
+    {
+        return Keywords::KEY_NAMED_EXPRESSIONS;
+    }
+}
+
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
 read_input(void)
@@ -33,7 +45,6 @@ read_input(void)
 
 	parse_error = 0;
 	input_error = 0;
-	next_keyword = Keywords::KEY_NONE;
 	count_warnings = 0;
 
 	Rxn_new_exchange.clear();
@@ -48,13 +59,6 @@ read_input(void)
 	Rxn_new_surface.clear();
 	Rxn_new_temperature.clear();   // not used
 	phrq_io->Set_echo_on(true);
-/*
- *  Initialize keyword counters
- */
-	for (i = 0; i < Keywords::KEY_COUNT_KEYWORDS; i++)
-	{
-		keycount[i] = 0;
-	}
 /*
  *  Initialize use and save pointers
  */
@@ -71,41 +75,22 @@ read_input(void)
 	save.ss_assemblage = FALSE;
 //	title_x = (char *) free_check_null(title_x);
 
-	while ((i =	check_line("Subroutine Read", FALSE, TRUE, TRUE, TRUE)) != KEYWORD)
+    auto in = phrq_io->get_istream();
+    while(std::getline(*in, line))
 	{
-		/* empty, eof, keyword, print */
+        if (line.empty())
+            continue;
 
-		if (i == EOF)
-			return (EOF);
-		error_string = sformatf(
-				"Unknown input, no keyword has been specified.");
-		warning_msg(error_string);
-	}
+        if (line.at(0) == '#')
+        {
+            if (line == "#ende")
+                break;
+            continue;
+        }
 
-	for (;;)
-	{
-		if (next_keyword > 0)
+        auto keyword = convertStringToKeywords(line);
+        switch (keyword)
 		{
-			if (next_keyword != Keywords::KEY_DATABASE && !reading_database())
-			{
-				first_read_input = FALSE;
-			}
-		}
-		// mark keyword read
-		if (next_keyword > 0 && next_keyword < Keywords::KEY_COUNT_KEYWORDS)
-		{
-			keycount[next_keyword]++;
-		}
-		switch (next_keyword)
-		{
-		case Keywords::KEY_NONE:				/* Have not read line with keyword */
-			error_string = sformatf( "Unknown input, no keyword has been specified.");
-			warning_msg(error_string);
-			while ((j =	check_line("No keyword", FALSE, TRUE, TRUE, TRUE)) != KEYWORD && j != EOF)
-			{
-				warning_msg(error_string);
-			}
-			break;
 		case Keywords::KEY_END:
 			goto END_OF_SIMULATION_INPUT;
 		case Keywords::KEY_SOLUTION_SPECIES:				/* Read aqueous model */
@@ -3751,14 +3736,6 @@ read_number_description(char *ptr, int *n_user,
 				{
 					*n_user_end = *n_user;
 				}
-				if (next_keyword >= 0)
-				{
-					error_string = sformatf( "Reading number range for %s.", Keywords::Keyword_name_search(next_keyword).c_str());
-				}
-				else
-				{
-					error_string = sformatf( "Reading number range for keyword.");
-				}
 				error_msg(error_string, CONTINUE);
 				input_error++;
 			}
@@ -3769,14 +3746,6 @@ read_number_description(char *ptr, int *n_user,
 			n = sscanf(token, "%d", n_user);
 			if (n != 1)
 			{
-				if (next_keyword >= 0)
-				{
-					error_string = sformatf( "Reading number range for %s.", Keywords::Keyword_name_search(next_keyword).c_str());
-				}
-				else
-				{
-					error_string = sformatf( "Reading number range for keyword.");
-				}
 				error_msg(error_string, CONTINUE);
 				input_error++;
 			}
@@ -4645,48 +4614,48 @@ read_save(void)
 		}
 	}
 
-	switch (next_keyword)
-	{
-	case Keywords::KEY_SOLUTION:								/* Solution */
-		save.solution = TRUE;
-		save.n_solution_user = n_user;
-		save.n_solution_user_end = n_user_end;
-		break;
-	case Keywords::KEY_EQUILIBRIUM_PHASES:					/* Pure phases */
-		save.pp_assemblage = TRUE;
-		save.n_pp_assemblage_user = n_user;
-		save.n_pp_assemblage_user_end = n_user_end;
-		break;
-	case Keywords::KEY_EXCHANGE:								/* exchange */
-		save.exchange = TRUE;
-		save.n_exchange_user = n_user;
-		save.n_exchange_user_end = n_user_end;
-		break;
-	case Keywords::KEY_SURFACE:								/* surface */
-		save.surface = TRUE;
-		save.n_surface_user = n_user;
-		save.n_surface_user_end = n_user_end;
-		break;
-	case Keywords::KEY_GAS_PHASE:								/* gas_phase */
-		save.gas_phase = TRUE;
-		save.n_gas_phase_user = n_user;
-		save.n_gas_phase_user_end = n_user_end;
-		break;
-	case Keywords::KEY_SOLID_SOLUTIONS:						/* solid_solutions */
-		save.ss_assemblage = TRUE;
-		save.n_ss_assemblage_user = n_user;
-		save.n_ss_assemblage_user_end = n_user_end;
-		break;
-	default:
-		input_error++;
-		error_msg
-			("Expecting keyword solution, equilibrium_phases, exchange, surface, gas_phase, or solid_solutions.",
-			CONTINUE);
-        error_msg(line_save.c_str(), CONTINUE);
-		check_line("End of save", FALSE, TRUE, TRUE, TRUE);
-		/* empty, eof, keyword, print */
-		return (ERROR);
-	}
+//	switch (next_keyword)
+//	{
+//	case Keywords::KEY_SOLUTION:								/* Solution */
+//		save.solution = TRUE;
+//		save.n_solution_user = n_user;
+//		save.n_solution_user_end = n_user_end;
+//		break;
+//	case Keywords::KEY_EQUILIBRIUM_PHASES:					/* Pure phases */
+//		save.pp_assemblage = TRUE;
+//		save.n_pp_assemblage_user = n_user;
+//		save.n_pp_assemblage_user_end = n_user_end;
+//		break;
+//	case Keywords::KEY_EXCHANGE:								/* exchange */
+//		save.exchange = TRUE;
+//		save.n_exchange_user = n_user;
+//		save.n_exchange_user_end = n_user_end;
+//		break;
+//	case Keywords::KEY_SURFACE:								/* surface */
+//		save.surface = TRUE;
+//		save.n_surface_user = n_user;
+//		save.n_surface_user_end = n_user_end;
+//		break;
+//	case Keywords::KEY_GAS_PHASE:								/* gas_phase */
+//		save.gas_phase = TRUE;
+//		save.n_gas_phase_user = n_user;
+//		save.n_gas_phase_user_end = n_user_end;
+//		break;
+//	case Keywords::KEY_SOLID_SOLUTIONS:						/* solid_solutions */
+//		save.ss_assemblage = TRUE;
+//		save.n_ss_assemblage_user = n_user;
+//		save.n_ss_assemblage_user_end = n_user_end;
+//		break;
+//	default:
+//		input_error++;
+//		error_msg
+//			("Expecting keyword solution, equilibrium_phases, exchange, surface, gas_phase, or solid_solutions.",
+//			CONTINUE);
+//        error_msg(line_save.c_str(), CONTINUE);
+//		check_line("End of save", FALSE, TRUE, TRUE, TRUE);
+//		/* empty, eof, keyword, print */
+//		return (ERROR);
+//	}
 
 	check_line("End of save", FALSE, TRUE, TRUE, TRUE);
 	/* empty, eof, keyword, print */
@@ -6583,25 +6552,25 @@ read_use(void)
  */
     copy_token(token, ptr, &l);
 	check_key(token);
-	if (next_keyword != Keywords::KEY_SOLUTION				&&
-		next_keyword != Keywords::KEY_MIX					&&
-		next_keyword != Keywords::KEY_KINETICS				&&
-		next_keyword != Keywords::KEY_REACTION				&&
-		next_keyword != Keywords::KEY_REACTION_TEMPERATURE	&&
-		next_keyword != Keywords::KEY_REACTION_PRESSURE		&&
-		next_keyword != Keywords::KEY_EQUILIBRIUM_PHASES	&&
-		next_keyword != Keywords::KEY_EXCHANGE				&&
-		next_keyword != Keywords::KEY_SURFACE				&&
-		next_keyword != Keywords::KEY_GAS_PHASE				&&
-		next_keyword != Keywords::KEY_SOLID_SOLUTIONS)
-	{
-		input_error++;
-		error_msg("Unknown item in USE keyword", CONTINUE);
-        error_msg(line_save.c_str(), CONTINUE);
-		check_line("End of use", FALSE, TRUE, TRUE, TRUE);
-		/* empty, eof, keyword, print */
-		return (ERROR);
-	}
+//	if (next_keyword != Keywords::KEY_SOLUTION				&&
+//		next_keyword != Keywords::KEY_MIX					&&
+//		next_keyword != Keywords::KEY_KINETICS				&&
+//		next_keyword != Keywords::KEY_REACTION				&&
+//		next_keyword != Keywords::KEY_REACTION_TEMPERATURE	&&
+//		next_keyword != Keywords::KEY_REACTION_PRESSURE		&&
+//		next_keyword != Keywords::KEY_EQUILIBRIUM_PHASES	&&
+//		next_keyword != Keywords::KEY_EXCHANGE				&&
+//		next_keyword != Keywords::KEY_SURFACE				&&
+//		next_keyword != Keywords::KEY_GAS_PHASE				&&
+//		next_keyword != Keywords::KEY_SOLID_SOLUTIONS)
+//	{
+//		input_error++;
+//		error_msg("Unknown item in USE keyword", CONTINUE);
+//        error_msg(line_save.c_str(), CONTINUE);
+//		check_line("End of use", FALSE, TRUE, TRUE, TRUE);
+//		/* empty, eof, keyword, print */
+//		return (ERROR);
+//	}
 /*
  *   Read number
  */
@@ -6647,135 +6616,135 @@ read_use(void)
 			break;
 		}
 	}
-	switch (next_keyword)
-	{
-	case Keywords::KEY_SOLUTION:					/* Solution */
-		use.Set_n_solution_user(n_user);
-		if (n_user >= 0)
-		{
-			use.Set_solution_in(true);
-		}
-		else
-		{
-			use.Set_solution_in(false);
-		}
-		break;
-	case Keywords::KEY_EQUILIBRIUM_PHASES:					/* Pure phases */
-		use.Set_n_pp_assemblage_user(n_user);
-		if (n_user >= 0)
-		{
-			use.Set_pp_assemblage_in(true);
-		}
-		else
-		{
-			use.Set_pp_assemblage_in(false);
-		}
-		break;
-	case Keywords::KEY_REACTION:					/* Reaction */
-		use.Set_n_reaction_user(n_user);
-		if (n_user >= 0)
-		{
-			use.Set_reaction_in(true);
-		}
-		else
-		{
-			use.Set_reaction_in(false);
-		}
-		break;
-	case Keywords::KEY_MIX:					/* Mix */
-		use.Set_n_mix_user(n_user);
-		if (n_user >= 0)
-		{
-			use.Set_mix_in(true);
-		}
-		else
-		{
-			use.Set_mix_in(false);
-		}
-		break;
-	case Keywords::KEY_EXCHANGE:					/* Ex */
-		use.Set_n_exchange_user(n_user);
-		if (n_user >= 0)
-		{
-			use.Set_exchange_in(true);
-		}
-		else
-		{
-			use.Set_exchange_in(false);
-		}
-		break;
-	case Keywords::KEY_SURFACE:					/* Surface */
-		use.Set_n_surface_user(n_user);
-		if (n_user >= 0)
-		{
-			use.Set_surface_in(true);
-		}
-		else
-		{
-			use.Set_surface_in(false);
-		}
-		break;
-	case Keywords::KEY_REACTION_TEMPERATURE:					/* Temperature */
-		use.Set_n_temperature_user(n_user);
-		if (n_user >= 0)
-		{
-			use.Set_temperature_in(true);
-		}
-		else
-		{
-			use.Set_temperature_in(false);
-		}
-		break;
-	case Keywords::KEY_REACTION_PRESSURE:					/* pressure */
-		use.Set_n_pressure_user(n_user);
-		if (n_user >= 0)
-		{
-			use.Set_pressure_in(true);
-		}
-		else
-		{
-			use.Set_pressure_in(false);
-		}
-		break;
-	case Keywords::KEY_GAS_PHASE:					/* Gas */
-		use.Set_n_gas_phase_user(n_user);
-		if (n_user >= 0)
-		{
-			use.Set_gas_phase_in(true);
-		}
-		else
-		{
-			use.Set_gas_phase_in(false);
-		}
-		break;
-	case Keywords::KEY_KINETICS:					/* Kinetics */
-		use.Set_n_kinetics_user(n_user);
-		if (n_user >= 0)
-		{
-			use.Set_kinetics_in(true);
-		}
-		else
-		{
-			use.Set_kinetics_in(false);
-		}
-		break;
-	case Keywords::KEY_SOLID_SOLUTIONS:					/* solid_solutions */
-		use.Set_n_ss_assemblage_user(n_user);
-		if (n_user >= 0)
-		{
-			use.Set_ss_assemblage_in(true);
-		}
-		else
-		{
-			use.Set_ss_assemblage_in(false);
-		}
-		break;
-	default:
-		input_error++;
-        error_msg(line_save.c_str(), CONTINUE);
-		error_msg("Error in switch for USE.", STOP);
-		break;
-	}
+//	switch (next_keyword)
+//	{
+//	case Keywords::KEY_SOLUTION:					/* Solution */
+//		use.Set_n_solution_user(n_user);
+//		if (n_user >= 0)
+//		{
+//			use.Set_solution_in(true);
+//		}
+//		else
+//		{
+//			use.Set_solution_in(false);
+//		}
+//		break;
+//	case Keywords::KEY_EQUILIBRIUM_PHASES:					/* Pure phases */
+//		use.Set_n_pp_assemblage_user(n_user);
+//		if (n_user >= 0)
+//		{
+//			use.Set_pp_assemblage_in(true);
+//		}
+//		else
+//		{
+//			use.Set_pp_assemblage_in(false);
+//		}
+//		break;
+//	case Keywords::KEY_REACTION:					/* Reaction */
+//		use.Set_n_reaction_user(n_user);
+//		if (n_user >= 0)
+//		{
+//			use.Set_reaction_in(true);
+//		}
+//		else
+//		{
+//			use.Set_reaction_in(false);
+//		}
+//		break;
+//	case Keywords::KEY_MIX:					/* Mix */
+//		use.Set_n_mix_user(n_user);
+//		if (n_user >= 0)
+//		{
+//			use.Set_mix_in(true);
+//		}
+//		else
+//		{
+//			use.Set_mix_in(false);
+//		}
+//		break;
+//	case Keywords::KEY_EXCHANGE:					/* Ex */
+//		use.Set_n_exchange_user(n_user);
+//		if (n_user >= 0)
+//		{
+//			use.Set_exchange_in(true);
+//		}
+//		else
+//		{
+//			use.Set_exchange_in(false);
+//		}
+//		break;
+//	case Keywords::KEY_SURFACE:					/* Surface */
+//		use.Set_n_surface_user(n_user);
+//		if (n_user >= 0)
+//		{
+//			use.Set_surface_in(true);
+//		}
+//		else
+//		{
+//			use.Set_surface_in(false);
+//		}
+//		break;
+//	case Keywords::KEY_REACTION_TEMPERATURE:					/* Temperature */
+//		use.Set_n_temperature_user(n_user);
+//		if (n_user >= 0)
+//		{
+//			use.Set_temperature_in(true);
+//		}
+//		else
+//		{
+//			use.Set_temperature_in(false);
+//		}
+//		break;
+//	case Keywords::KEY_REACTION_PRESSURE:					/* pressure */
+//		use.Set_n_pressure_user(n_user);
+//		if (n_user >= 0)
+//		{
+//			use.Set_pressure_in(true);
+//		}
+//		else
+//		{
+//			use.Set_pressure_in(false);
+//		}
+//		break;
+//	case Keywords::KEY_GAS_PHASE:					/* Gas */
+//		use.Set_n_gas_phase_user(n_user);
+//		if (n_user >= 0)
+//		{
+//			use.Set_gas_phase_in(true);
+//		}
+//		else
+//		{
+//			use.Set_gas_phase_in(false);
+//		}
+//		break;
+//	case Keywords::KEY_KINETICS:					/* Kinetics */
+//		use.Set_n_kinetics_user(n_user);
+//		if (n_user >= 0)
+//		{
+//			use.Set_kinetics_in(true);
+//		}
+//		else
+//		{
+//			use.Set_kinetics_in(false);
+//		}
+//		break;
+//	case Keywords::KEY_SOLID_SOLUTIONS:					/* solid_solutions */
+//		use.Set_n_ss_assemblage_user(n_user);
+//		if (n_user >= 0)
+//		{
+//			use.Set_ss_assemblage_in(true);
+//		}
+//		else
+//		{
+//			use.Set_ss_assemblage_in(false);
+//		}
+//		break;
+//	default:
+//		input_error++;
+//        error_msg(line_save.c_str(), CONTINUE);
+//		error_msg("Error in switch for USE.", STOP);
+//		break;
+//	}
 	return_value = check_line("End of use", FALSE, TRUE, TRUE, TRUE);
 	/* empty, eof, keyword, print */
 	return (return_value);
@@ -8524,20 +8493,20 @@ check_key(const char *str)
 	Utilities::str_tolower(stdtoken);
 	std::string key(stdtoken);
 
-	if (j == EMPTY)
-	{
-		next_keyword = Keywords::KEY_END;
-	}
-	else
-	{
-		next_keyword = Keywords::Keyword_search(key);
-	}
+//	if (j == EMPTY)
+//	{
+//		next_keyword = Keywords::KEY_END;
+//	}
+//	else
+//	{
+//		next_keyword = Keywords::Keyword_search(key);
+//	}
 
 	free_check_null(token1);
-	if (next_keyword > 0)
-	{
-		return TRUE;
-	}
+//	if (next_keyword > 0)
+//	{
+//		return TRUE;
+//	}
 	return (FALSE);
 }
 /* ---------------------------------------------------------------------- */
@@ -10335,38 +10304,40 @@ read_solid_solutions(void)
 
 enum class LLNLModelKeywords
 {
-    temperatures,   /* 0 */
-    temperature,    /* 1 */
-    temp,           /* 2 */
-    adh,            /* 3 */
-    debye_huckel_a, /* 4 */
-    dh_a,           /* 5 */
-    bdh,            /* 6 */
-    debye_huckel_b, /* 7 */
-    dh_b,           /* 8 */
-    bdot,           /* 9 */
-    b_dot,          /* 10 */
-    c_co2,          /* 11 */
-    co2_coefs       /* 12 */
+    temperatures,
+    dh_a,
+    dh_b,
+    bdot,
+    co2_coefs
 };
 
-std::vector<std::string> LLNLModelKeywordsString
-{
-    "-temperatures",
-    "-adh",
-};
-
-inline LLNLModelKeywords convertStringToProperty(std::string const& inString)
+inline LLNLModelKeywords convertStringToLLNLModelKeywords(std::string const& inString)
 {
     if (boost::iequals(inString, "-temperatures"))
     {
         return LLNLModelKeywords::temperatures;
     }
+    if (boost::iequals(inString, "-dh_a"))
+    {
+        return LLNLModelKeywords::dh_a;
+    }
+    if (boost::iequals(inString, "-dh_b"))
+    {
+        return LLNLModelKeywords::dh_b;
+    }
+    if (boost::iequals(inString, "-bdot"))
+    {
+        return LLNLModelKeywords::bdot;
+    }
+    if (boost::iequals(inString, "-co2_coefs"))
+    {
+        return LLNLModelKeywords::co2_coefs;
+    }
 }
 
 /* ---------------------------------------------------------------------- */
-int Phreeqc::
-read_llnl_aqueous_model_parameters(void)
+void Phreeqc::
+read_llnl_aqueous_model_parameters()
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -10382,51 +10353,27 @@ read_llnl_aqueous_model_parameters(void)
  *	 ERROR   if error occurred reading data
  *
  */
-	int i, count_alloc;
-	char token[MAX_LENGTH];
-
-	int return_value, opt;
-    std::string next_char;
-
-    int count_opt_list = 13;
-    /*
-     *   Initialize
-     */
     /*
      *   Read aqueous model parameters
      */
-    return_value = UNKNOWN;
-
     auto in = phrq_io->get_istream();
     while (std::getline(*in, line))
     {
-        auto opt = convertStringToProperty(line);
+        if (line.at(0) == '#')
+        {
+            if (line == "#ende")
+                break;
+            continue;
+        }
+        auto opt = convertStringToLLNLModelKeywords(line);
         switch (opt)
         {
-                //		case OPTION_EOF:		/* end of file */
-                //			return_value = EOF;
-                //			break;
-                //		case OPTION_KEYWORD:	/* keyword */
-                //			return_value = KEYWORD;
-                //			break;
-                //		case OPTION_DEFAULT:
-                //		case OPTION_ERROR:
-                //			input_error++;
-                //			error_msg
-                //				("Unknown input in LLNL_AQUEOUS_MODEL_PARAMETERS
-                // keyword.", 				 CONTINUE);
-                //            error_msg(line_save.c_str(), CONTINUE);
-                //			break;
-
-                /*
-                 * New component
-                 */
             case LLNLModelKeywords::temperatures:
-            case LLNLModelKeywords::temperature:
-            case LLNLModelKeywords::temp:
             {
                 while (std::getline(*in, line))
-                {                        
+                {
+                    if (line.empty())
+                        break;
                     std::vector<std::string> items;
                     boost::trim_if(line, boost::is_any_of("\t "));
                     boost::algorithm::split(items, line,
@@ -10438,12 +10385,12 @@ read_llnl_aqueous_model_parameters(void)
                 }
                 continue;
             }
-            case LLNLModelKeywords::adh:
-            case LLNLModelKeywords::debye_huckel_a:
             case LLNLModelKeywords::dh_a:
             {
                 while (std::getline(*in, line))
                 {
+                    if (line.empty())
+                        break;
                     std::vector<std::string> items;
                     boost::trim_if(line, boost::is_any_of("\t "));
                     boost::algorithm::split(items, line,
@@ -10451,95 +10398,87 @@ read_llnl_aqueous_model_parameters(void)
                                             boost::token_compress_on);
                     for (auto item : items)
                         llnl_adh.push_back(std::stod(item));
-                    break;
+                    continue;
                 }
-                count_alloc = 1;
-                llnl_count_adh = llnl_adh.size();
                 continue;
             }
-                //		case 6:				/* bdh */
-                //		case 7:				/* debye_huckel_b */
-                //		case 8:				/* dh_b */
-                //			count_alloc = 1;
-                //			llnl_count_bdh = 0;
-                //            i =
-                //            read_lines_doubles(const_cast<char*>(next_char.c_str()),
-                //            &(llnl_bdh), &(llnl_count_bdh),
-                //								   &(count_alloc), opt_list,
-                // count_opt_list, 								   &opt);
-                //			/*
-                //			   ptr = next_char;
-                //			   llnl_bdh = read_list_doubles(&ptr, &count);
-                //			   llnl_count_bdh = count;
-                //			 */
-                //			break;
-                //		case 9:				/* bdot */
-                //		case 10:				/* b_dot */
-                //			count_alloc = 1;
-                //			llnl_count_bdot = 0;
-                //            i =
-                //            read_lines_doubles(const_cast<char*>(next_char.c_str()),
-                //            &(llnl_bdot),
-                //								   &(llnl_count_bdot),
-                //&(count_alloc), 								   opt_list,
-                // count_opt_list, &opt);
-                //			/*
-                //			   ptr = next_char;
-                //			   llnl_bdot = read_list_doubles(&ptr, &count);
-                //			   llnl_count_bdot = count;
-                //			 */
-                //			break;
-                //		case 11:				/* c_co2 */
-                //		case 12:				/* co2_coefs */
-                //			count_alloc = 1;
-                //			llnl_count_co2_coefs = 0;
-                //            i =
-                //            read_lines_doubles(const_cast<char*>(next_char.c_str()),
-                //            &(llnl_co2_coefs),
-                //								   &(llnl_count_co2_coefs),
-                //&(count_alloc), 								   opt_list,
-                // count_opt_list, &opt);
-                //			/*
-                //			   ptr = next_char;
-                //			   llnl_co2_coefs = read_list_doubles(&ptr, &count);
-                //			   llnl_count_co2_coefs = count;
-                //			 */
-                //			break;
+            case LLNLModelKeywords::dh_b:
+            {
+                while (std::getline(*in, line))
+                {
+                    if (line.empty())
+                        break;
+                    std::vector<std::string> items;
+                    boost::trim_if(line, boost::is_any_of("\t "));
+                    boost::algorithm::split(items, line,
+                                            boost::is_any_of("\t "),
+                                            boost::token_compress_on);
+                    for (auto item : items)
+                        llnl_bdh.push_back(std::stod(item));
+                    continue;
+                }
+                continue;
+            }
+            case LLNLModelKeywords::bdot:
+            {
+                while (std::getline(*in, line))
+                {
+                    if (line.empty())
+                        break;
+                    std::vector<std::string> items;
+                    boost::trim_if(line, boost::is_any_of("\t "));
+                    boost::algorithm::split(items, line,
+                                            boost::is_any_of("\t "),
+                                            boost::token_compress_on);
+                    for (auto item : items)
+                        llnl_bdot.push_back(std::stod(item));
+                    continue;
+                }
+                continue;
+            }
+            case LLNLModelKeywords::co2_coefs:
+            {
+                while (std::getline(*in, line))
+                {
+                    if (line.empty())
+                        break;
+                    std::vector<std::string> items;
+                    boost::trim_if(line, boost::is_any_of("\t "));
+                    boost::algorithm::split(items, line,
+                                            boost::is_any_of("\t "),
+                                            boost::token_compress_on);
+                    for (auto item : items)
+                        llnl_co2_coefs.push_back(std::stod(item));
+                    continue;
+                }
+                continue;
+            }
         }
-        return_value = check_line_return;
-        if (return_value == EOF || return_value == KEYWORD)
-            break;
     }
 	/* check consistency */
-	if ((llnl_count_temp <= 0) ||
-		(llnl_count_temp != llnl_count_adh) ||
-		(llnl_count_temp != llnl_count_bdh) ||
-		(llnl_count_temp != llnl_count_bdot))
-	{
+    if ((llnl_temp.size() != llnl_adh.size()) ||
+        (llnl_temp.size() != llnl_bdh.size()) ||
+        (llnl_temp.size() != llnl_bdot.size()))
+    {
 		error_msg
 			("Must define equal number (>0) of temperatures, dh_a, dh_b, and bdot parameters\nin LLNL_AQUEOUS_MODEL",
 			 CONTINUE);
 		input_error++;
 	}
-	if (llnl_count_co2_coefs != 5)
-	{
+    if (llnl_co2_coefs.size() != 5)
+    {
 		error_msg
 			("Must define 5 CO2 activity coefficient parameters in LLNL_AQUEOUS_MODEL",
 			 CONTINUE);
 		input_error++;
 	}
-	for (i = 1; i < llnl_count_temp; i++)
-	{
-		if (llnl_temp[i - 1] > llnl_temp[i])
-		{
-			error_msg
-				("Temperatures must be in ascending order in LLNL_AQUEOUS_MODEL",
-				 CONTINUE);
-			input_error++;
-		}
-	}
-
-	return (return_value);
+    if (!std::is_sorted(std::begin(llnl_temp), std::end(llnl_temp)))
+    {
+        error_msg(
+            "Temperatures must be in ascending order in LLNL_AQUEOUS_MODEL",
+            CONTINUE);
+        input_error++;
+    }
 }
 
 /* ---------------------------------------------------------------------- */
@@ -10696,9 +10635,22 @@ next_keyword_or_option(const char **opt_list, int count_opt_list)
 	return (opt);
 }
 
+enum class NamedExpressionKeywords
+{
+    log_k,
+};
+
+inline NamedExpressionKeywords convertStringToNamedExpressionKeywords(std::string const& inString)
+{
+    if (boost::iequals(inString, "log_k"))
+    {
+        return NamedExpressionKeywords::log_k;
+    }
+}
+
 /* ---------------------------------------------------------------------- */
-int Phreeqc::
-read_named_logk(void)
+void Phreeqc::
+read_named_logk()
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -10742,27 +10694,17 @@ read_named_logk(void)
  */
 	opt_save = OPTION_DEFAULT;
 	return_value = UNKNOWN;
-	for (;;)
+    while (std::getline(*in, line))
 	{
-        opt = get_option(opt_list, count_opt_list, next_char);
-		if (opt == OPTION_DEFAULT)
-		{
-			opt = opt_save;
-		}
-		opt_save = OPTION_DEFAULT;
+        if (line.at(0) == '#')
+        {
+            if (line == "#ende")
+                break;
+            continue;
+        }
+        auto opt = convertStringToNamedExpressionKeywords(line);
 		switch (opt)
 		{
-		case OPTION_EOF:		/* end of file */
-			return_value = EOF;
-			break;
-		case OPTION_KEYWORD:	/* keyword */
-			return_value = KEYWORD;
-			break;
-		case OPTION_ERROR:
-			input_error++;
-			error_msg("Unknown input in SPECIES keyword.", CONTINUE);
-            error_msg(line_save.c_str(), CONTINUE);
-			break;
 		case 0:				/* log_k */
 		case 1:				/* logk */
 			if (logk_ptr == NULL)
@@ -10794,143 +10736,142 @@ read_named_logk(void)
 			logk_copy2orig(logk_ptr);
 			opt_save = OPTION_DEFAULT;
 			break;
-		case 4:				/* analytical_expression */
-		case 5:				/* a_e */
-		case 6:				/* ae */
-			if (logk_ptr == NULL)
-			{
-				error_string = sformatf(
-						"No reaction defined before option, %s.",
-						opt_list[opt]);
-				error_msg(error_string, CONTINUE);
-				input_error++;
-				break;
-			}
-			read_analytical_expression_only(next_char, &(logk_ptr->log_k[T_A1]));
-			logk_copy2orig(logk_ptr);
-			opt_save = OPTION_DEFAULT;
-			break;
-		case 7:				/* ln_alpha1000 */
-			if (logk_ptr == NULL)
-			{
-				error_string = sformatf(
-						"No reaction defined before option, %s.",
-						opt_list[opt]);
-				error_msg(error_string, CONTINUE);
-				input_error++;
-				break;
-			}
-			empty = TRUE;
-			for (i = T_A1; i <= T_A6; i++)
-			{
-				if (logk_ptr->log_k[i] != 0.0)
-				{
-					empty = FALSE;
-					logk_ptr->log_k[i] = 0.0;
-				}
-			}
-			if (empty == FALSE)
-			{
-				error_string = sformatf(
-						"Analytical expression previously defined for %s in NAMED_EXPRESSIONS\nAnalytical expression will be overwritten.",
-						logk_ptr->name);
-				warning_msg(error_string);
-			}
-			read_analytical_expression_only(next_char, &(logk_ptr->log_k[T_A1]));
-			for (i = T_A1; i < T_A6; i++)
-			{
-				logk_ptr->log_k[i] /= 1000. * LOG_10;
-			}
-			logk_copy2orig(logk_ptr);
-			opt_save = OPTION_DEFAULT;
-			break;
-		case 8:				/* add_logk */
-		case 9:				/* add_log_k */
-			if (logk_ptr == NULL)
-			{
-				error_string = sformatf(
-						"No reaction defined before option, %s.",
-						opt_list[opt]);
-				error_msg(error_string, CONTINUE);
-				input_error++;
-				break;
-			}
-			if (logk_ptr->count_add_logk == 0)
-			{
-				logk_ptr->add_logk =
-					(struct name_coef *)
-					PHRQ_malloc(sizeof(struct name_coef));
-				if (logk_ptr->add_logk == NULL)
-					malloc_error();
-			}
-			else
-			{
-				logk_ptr->add_logk =
-					(struct name_coef *) PHRQ_realloc(logk_ptr->add_logk,
-													  (size_t) ((logk_ptr->
-																 count_add_logk
-																 +
-																 1) *
-																sizeof
-																(struct
-																 name_coef)));
-				if (logk_ptr->add_logk == NULL)
-					malloc_error();
-			}
-			/* read name */
-            if (copy_token(token, next_char, &i) == EMPTY)
-			{
-				input_error++;
-				error_string = sformatf(
-						"Expected the name of a NAMED_EXPRESSION.");
-				error_msg(error_string, CONTINUE);
-				break;
-			}
-			logk_ptr->add_logk[logk_ptr->count_add_logk].name =
-				string_hsave(token);
-			/* read coef */
-			i = sscanf(next_char, SCANFORMAT,
-					   &logk_ptr->add_logk[logk_ptr->count_add_logk].coef);
-			if (i <= 0)
-			{
-				logk_ptr->add_logk[logk_ptr->count_add_logk].coef = 1;
-			}
-			logk_ptr->count_add_logk++;
-			opt_save = OPTION_DEFAULT;
-			break;
-		case 10:            /* vm, molar volume */
-			if (logk_ptr == NULL)
-			{
-				error_string = sformatf(
-					"No reaction defined before option, %s.",
-				opt_list[opt]);
-				error_msg(error_string, CONTINUE);
-				input_error++;
-				break;
-			}
-			read_vm_only(next_char, &logk_ptr->log_k[vm0],
-				&logk_ptr->original_deltav_units);
-			logk_copy2orig(logk_ptr);
-			opt_save = OPTION_DEFAULT;
-			break;
-		case OPTION_DEFAULT:
-/*
- *   Get space for logk information
- */
-			logk_ptr = NULL;
-            copy_token(token, next_char, &l);
+//		case 4:				/* analytical_expression */
+//		case 5:				/* a_e */
+//		case 6:				/* ae */
+//			if (logk_ptr == NULL)
+//			{
+//				error_string = sformatf(
+//						"No reaction defined before option, %s.",
+//						opt_list[opt]);
+//				error_msg(error_string, CONTINUE);
+//				input_error++;
+//				break;
+//			}
+//			read_analytical_expression_only(next_char, &(logk_ptr->log_k[T_A1]));
+//			logk_copy2orig(logk_ptr);
+//			opt_save = OPTION_DEFAULT;
+//			break;
+//		case 7:				/* ln_alpha1000 */
+//			if (logk_ptr == NULL)
+//			{
+//				error_string = sformatf(
+//						"No reaction defined before option, %s.",
+//						opt_list[opt]);
+//				error_msg(error_string, CONTINUE);
+//				input_error++;
+//				break;
+//			}
+//			empty = TRUE;
+//			for (i = T_A1; i <= T_A6; i++)
+//			{
+//				if (logk_ptr->log_k[i] != 0.0)
+//				{
+//					empty = FALSE;
+//					logk_ptr->log_k[i] = 0.0;
+//				}
+//			}
+//			if (empty == FALSE)
+//			{
+//				error_string = sformatf(
+//						"Analytical expression previously defined for %s in NAMED_EXPRESSIONS\nAnalytical expression will be overwritten.",
+//						logk_ptr->name);
+//				warning_msg(error_string);
+//			}
+//			read_analytical_expression_only(next_char, &(logk_ptr->log_k[T_A1]));
+//			for (i = T_A1; i < T_A6; i++)
+//			{
+//				logk_ptr->log_k[i] /= 1000. * LOG_10;
+//			}
+//			logk_copy2orig(logk_ptr);
+//			opt_save = OPTION_DEFAULT;
+//			break;
+//		case 8:				/* add_logk */
+//		case 9:				/* add_log_k */
+//			if (logk_ptr == NULL)
+//			{
+//				error_string = sformatf(
+//						"No reaction defined before option, %s.",
+//						opt_list[opt]);
+//				error_msg(error_string, CONTINUE);
+//				input_error++;
+//				break;
+//			}
+//			if (logk_ptr->count_add_logk == 0)
+//			{
+//				logk_ptr->add_logk =
+//					(struct name_coef *)
+//					PHRQ_malloc(sizeof(struct name_coef));
+//				if (logk_ptr->add_logk == NULL)
+//					malloc_error();
+//			}
+//			else
+//			{
+//				logk_ptr->add_logk =
+//					(struct name_coef *) PHRQ_realloc(logk_ptr->add_logk,
+//													  (size_t) ((logk_ptr->
+//																 count_add_logk
+//																 +
+//																 1) *
+//																sizeof
+//																(struct
+//																 name_coef)));
+//				if (logk_ptr->add_logk == NULL)
+//					malloc_error();
+//			}
+//			/* read name */
+//            if (copy_token(token, next_char, &i) == EMPTY)
+//			{
+//				input_error++;
+//				error_string = sformatf(
+//						"Expected the name of a NAMED_EXPRESSION.");
+//				error_msg(error_string, CONTINUE);
+//				break;
+//			}
+//			logk_ptr->add_logk[logk_ptr->count_add_logk].name =
+//				string_hsave(token);
+//			/* read coef */
+//			i = sscanf(next_char, SCANFORMAT,
+//					   &logk_ptr->add_logk[logk_ptr->count_add_logk].coef);
+//			if (i <= 0)
+//			{
+//				logk_ptr->add_logk[logk_ptr->count_add_logk].coef = 1;
+//			}
+//			logk_ptr->count_add_logk++;
+//			opt_save = OPTION_DEFAULT;
+//			break;
+//		case 10:            /* vm, molar volume */
+//			if (logk_ptr == NULL)
+//			{
+//				error_string = sformatf(
+//					"No reaction defined before option, %s.",
+//				opt_list[opt]);
+//				error_msg(error_string, CONTINUE);
+//				input_error++;
+//				break;
+//			}
+//			read_vm_only(next_char, &logk_ptr->log_k[vm0],
+//				&logk_ptr->original_deltav_units);
+//			logk_copy2orig(logk_ptr);
+//			opt_save = OPTION_DEFAULT;
+//			break;
+//		case OPTION_DEFAULT:
+///*
+// *   Get space for logk information
+// */
+//			logk_ptr = NULL;
+//            copy_token(token, next_char, &l);
 
-			logk_ptr = logk_store(token, TRUE);
-/*
- *   Get pointer to each species in the reaction, store new species if necessary
- */
-			opt_save = OPTION_DEFAULT;
-			break;
+//			logk_ptr = logk_store(token, TRUE);
+///*
+// *   Get pointer to each species in the reaction, store new species if necessary
+// */
+//			opt_save = OPTION_DEFAULT;
+//			break;
 		}
 		if (return_value == EOF || return_value == KEYWORD)
 			break;
 	}
-	return (return_value);
 }
 
 /* ---------------------------------------------------------------------- */
@@ -10965,33 +10906,33 @@ read_copy(void)
     copy_token(token, ptr, &l);
 	check_key(token);
 
-	switch (next_keyword)
-	{
-	case Keywords::KEY_NONE:					/* Have not read line with keyword */
-		strcpy(nonkeyword, token);
-		break;
-	case Keywords::KEY_SOLUTION:				/* Solution */
-	case Keywords::KEY_EQUILIBRIUM_PHASES:		/* Pure phases */
-	case Keywords::KEY_REACTION:				/* Reaction */
-	case Keywords::KEY_MIX:						/* Mix */
-	case Keywords::KEY_EXCHANGE:				/* Ex */
-	case Keywords::KEY_SURFACE:					/* Surface */
-	case Keywords::KEY_REACTION_TEMPERATURE:	/* Temperature */
-	case Keywords::KEY_REACTION_PRESSURE:		/* Pressure */
-	case Keywords::KEY_GAS_PHASE:				/* Gas */
-	case Keywords::KEY_KINETICS:				/* Kinetics */
-	case Keywords::KEY_SOLID_SOLUTIONS:			/* solid_solutions */
-		break;
-	default:
-		input_error++;
-		error_msg
-			("Expecting keyword solution, mix, kinetics, reaction, reaction_pressure, reaction_temperature, equilibrium_phases, exchange, surface, gas_phase, or solid_solutions, or cell.",
-			 CONTINUE);
-        error_msg(line_save.c_str(), CONTINUE);
-		check_line("End of use", FALSE, TRUE, TRUE, TRUE);
-		/* empty, eof, keyword, print */
-		return (ERROR);
-	}
+//	switch (next_keyword)
+//	{
+//	case Keywords::KEY_NONE:					/* Have not read line with keyword */
+//		strcpy(nonkeyword, token);
+//		break;
+//	case Keywords::KEY_SOLUTION:				/* Solution */
+//	case Keywords::KEY_EQUILIBRIUM_PHASES:		/* Pure phases */
+//	case Keywords::KEY_REACTION:				/* Reaction */
+//	case Keywords::KEY_MIX:						/* Mix */
+//	case Keywords::KEY_EXCHANGE:				/* Ex */
+//	case Keywords::KEY_SURFACE:					/* Surface */
+//	case Keywords::KEY_REACTION_TEMPERATURE:	/* Temperature */
+//	case Keywords::KEY_REACTION_PRESSURE:		/* Pressure */
+//	case Keywords::KEY_GAS_PHASE:				/* Gas */
+//	case Keywords::KEY_KINETICS:				/* Kinetics */
+//	case Keywords::KEY_SOLID_SOLUTIONS:			/* solid_solutions */
+//		break;
+//	default:
+//		input_error++;
+//		error_msg
+//			("Expecting keyword solution, mix, kinetics, reaction, reaction_pressure, reaction_temperature, equilibrium_phases, exchange, surface, gas_phase, or solid_solutions, or cell.",
+//			 CONTINUE);
+//        error_msg(line_save.c_str(), CONTINUE);
+//		check_line("End of use", FALSE, TRUE, TRUE, TRUE);
+//		/* empty, eof, keyword, print */
+//		return (ERROR);
+//	}
 /*
  *   Read source index
  */
@@ -11048,66 +10989,66 @@ read_copy(void)
 		return (ERROR);
 	}
 
-	switch (next_keyword)
-	{
-	case Keywords::KEY_NONE:
-		str_tolower(nonkeyword);
-		if (strstr(nonkeyword, "cell") != nonkeyword)
-		{
-			error_msg("Unknown input in COPY data block.", CONTINUE);
-            error_msg(line_save.c_str(), CONTINUE);
-			input_error++;
-			return (ERROR);
-		}
-		copier_add(&copy_solution, n_user, n_user_start, n_user_end);
-		copier_add(&copy_pp_assemblage, n_user, n_user_start, n_user_end);
-		copier_add(&copy_reaction, n_user, n_user_start, n_user_end);
-		copier_add(&copy_mix, n_user, n_user_start, n_user_end);
-		copier_add(&copy_exchange, n_user, n_user_start, n_user_end);
-		copier_add(&copy_surface, n_user, n_user_start, n_user_end);
-		copier_add(&copy_temperature, n_user, n_user_start, n_user_end);
-		copier_add(&copy_pressure, n_user, n_user_start, n_user_end);
-		copier_add(&copy_gas_phase, n_user, n_user_start, n_user_end);
-		copier_add(&copy_kinetics, n_user, n_user_start, n_user_end);
-		copier_add(&copy_ss_assemblage, n_user, n_user_start, n_user_end);
-		break;
-	case Keywords::KEY_SOLUTION:								/* Solution */
-		copier_add(&copy_solution, n_user, n_user_start, n_user_end);
-		break;
-	case Keywords::KEY_EQUILIBRIUM_PHASES:					/* Pure phases */
-		copier_add(&copy_pp_assemblage, n_user, n_user_start, n_user_end);
-		break;
-	case Keywords::KEY_REACTION:								/* Reaction */
-		copier_add(&copy_reaction, n_user, n_user_start, n_user_end);
-		break;
-	case Keywords::KEY_MIX:										/* Mix */
-		copier_add(&copy_mix, n_user, n_user_start, n_user_end);
-		break;
-	case Keywords::KEY_EXCHANGE:								/* Ex */
-		copier_add(&copy_exchange, n_user, n_user_start, n_user_end);
-		break;
-	case Keywords::KEY_SURFACE:									/* Surface */
-		copier_add(&copy_surface, n_user, n_user_start, n_user_end);
-		break;
-	case Keywords::KEY_REACTION_TEMPERATURE:					/* Temperature */
-		copier_add(&copy_temperature, n_user, n_user_start, n_user_end);
-		break;
-	case Keywords::KEY_REACTION_PRESSURE:						/* Pressure */
-		copier_add(&copy_pressure, n_user, n_user_start, n_user_end);
-		break;
-	case Keywords::KEY_GAS_PHASE:								/* Gas */
-		copier_add(&copy_gas_phase, n_user, n_user_start, n_user_end);
-		break;
-	case Keywords::KEY_KINETICS:								/* Kinetics */
-		copier_add(&copy_kinetics, n_user, n_user_start, n_user_end);
-		break;
-	case Keywords::KEY_SOLID_SOLUTIONS:							/* solid_solutions */
-		copier_add(&copy_ss_assemblage, n_user, n_user_start, n_user_end);
-		break;
-	default:
-		error_msg("Error in switch for READ_COPY.", STOP);
-		break;
-	}
+//	switch (next_keyword)
+//	{
+//	case Keywords::KEY_NONE:
+//		str_tolower(nonkeyword);
+//		if (strstr(nonkeyword, "cell") != nonkeyword)
+//		{
+//			error_msg("Unknown input in COPY data block.", CONTINUE);
+//            error_msg(line_save.c_str(), CONTINUE);
+//			input_error++;
+//			return (ERROR);
+//		}
+//		copier_add(&copy_solution, n_user, n_user_start, n_user_end);
+//		copier_add(&copy_pp_assemblage, n_user, n_user_start, n_user_end);
+//		copier_add(&copy_reaction, n_user, n_user_start, n_user_end);
+//		copier_add(&copy_mix, n_user, n_user_start, n_user_end);
+//		copier_add(&copy_exchange, n_user, n_user_start, n_user_end);
+//		copier_add(&copy_surface, n_user, n_user_start, n_user_end);
+//		copier_add(&copy_temperature, n_user, n_user_start, n_user_end);
+//		copier_add(&copy_pressure, n_user, n_user_start, n_user_end);
+//		copier_add(&copy_gas_phase, n_user, n_user_start, n_user_end);
+//		copier_add(&copy_kinetics, n_user, n_user_start, n_user_end);
+//		copier_add(&copy_ss_assemblage, n_user, n_user_start, n_user_end);
+//		break;
+//	case Keywords::KEY_SOLUTION:								/* Solution */
+//		copier_add(&copy_solution, n_user, n_user_start, n_user_end);
+//		break;
+//	case Keywords::KEY_EQUILIBRIUM_PHASES:					/* Pure phases */
+//		copier_add(&copy_pp_assemblage, n_user, n_user_start, n_user_end);
+//		break;
+//	case Keywords::KEY_REACTION:								/* Reaction */
+//		copier_add(&copy_reaction, n_user, n_user_start, n_user_end);
+//		break;
+//	case Keywords::KEY_MIX:										/* Mix */
+//		copier_add(&copy_mix, n_user, n_user_start, n_user_end);
+//		break;
+//	case Keywords::KEY_EXCHANGE:								/* Ex */
+//		copier_add(&copy_exchange, n_user, n_user_start, n_user_end);
+//		break;
+//	case Keywords::KEY_SURFACE:									/* Surface */
+//		copier_add(&copy_surface, n_user, n_user_start, n_user_end);
+//		break;
+//	case Keywords::KEY_REACTION_TEMPERATURE:					/* Temperature */
+//		copier_add(&copy_temperature, n_user, n_user_start, n_user_end);
+//		break;
+//	case Keywords::KEY_REACTION_PRESSURE:						/* Pressure */
+//		copier_add(&copy_pressure, n_user, n_user_start, n_user_end);
+//		break;
+//	case Keywords::KEY_GAS_PHASE:								/* Gas */
+//		copier_add(&copy_gas_phase, n_user, n_user_start, n_user_end);
+//		break;
+//	case Keywords::KEY_KINETICS:								/* Kinetics */
+//		copier_add(&copy_kinetics, n_user, n_user_start, n_user_end);
+//		break;
+//	case Keywords::KEY_SOLID_SOLUTIONS:							/* solid_solutions */
+//		copier_add(&copy_ss_assemblage, n_user, n_user_start, n_user_end);
+//		break;
+//	default:
+//		error_msg("Error in switch for READ_COPY.", STOP);
+//		break;
+//	}
 	return_value = check_line("End of COPY", FALSE, TRUE, TRUE, TRUE);
 	/* empty, eof, keyword, print */
 	return (return_value);
@@ -11222,7 +11163,7 @@ cleanup_after_parser(CParser &parser)
 	{
         line = "";
         line_save = "";
-		next_keyword = Keywords::KEY_END;
+//		next_keyword = Keywords::KEY_END;
 		return(TRUE); 
 	}
 	int return_value = check_key(parser.line().c_str());

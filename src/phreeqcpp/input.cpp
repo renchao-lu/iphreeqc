@@ -98,7 +98,6 @@ get_line(void)
 {
 	PHRQ_io::LINE_TYPE j = phrq_io->get_line();
 	// check_key sets next_keyword
-	next_keyword = phrq_io->Get_m_next_keyword();
 
 	// copy parser line to line and line_save
 	// make sure there is enough space

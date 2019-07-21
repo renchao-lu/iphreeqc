@@ -21,33 +21,31 @@
 CParser::CParser(PHRQ_io *io):
 PHRQ_base(io),
 m_input_stream(std::cin), 
-m_input_error(0),
-m_next_keyword(Keywords::KEY_NONE)
+m_input_error(0)
 {
-	if (!io)
-	{
-		error_msg("This parser constructor requires non-null phrq_io", PHRQ_io::OT_STOP);
-	}
-	else
-	{
-		m_line_save = io->Get_m_line();
-		m_line = io->Get_m_line();
-		m_line_type = io->Get_m_line_type();
-		m_line_iss.str(m_line);
-		m_line_iss.seekg(0, std::ios_base::beg);
-		m_line_iss.clear();
-		echo_file = EO_ALL;
-		echo_stream = EO_NONE;
-		accumulate = false;
-		phrq_io_only = true;
-	}
+    if (!io)
+    {
+        error_msg("This parser constructor requires non-null phrq_io", PHRQ_io::OT_STOP);
+    }
+    else
+    {
+        m_line_save = io->Get_m_line();
+        m_line = io->Get_m_line();
+        m_line_type = io->Get_m_line_type();
+        m_line_iss.str(m_line);
+        m_line_iss.seekg(0, std::ios_base::beg);
+        m_line_iss.clear();
+        echo_file = EO_ALL;
+        echo_stream = EO_NONE;
+        accumulate = false;
+        phrq_io_only = true;
+    }
 }
 
 CParser::CParser(std::istream & input, PHRQ_io *io):
 PHRQ_base(io),
 m_input_stream(input), 
-m_input_error(0),
-m_next_keyword(Keywords::KEY_NONE)
+m_input_error(0)
 {
 	m_line_save.reserve(80);
 	m_line.reserve(80);
@@ -355,11 +353,11 @@ CParser::check_key(std::string::iterator begin, std::string::iterator end)
 	copy_token(lowercase, begin, end);
 	std::transform(lowercase.begin(), lowercase.end(), lowercase.begin(),
 				   tolower);
-	m_next_keyword = Keywords::Keyword_search(lowercase);
-	if (m_next_keyword == Keywords::KEY_NONE)
-	{
-		return false;
-	}
+//	m_next_keyword = Keywords::Keyword_search(lowercase);
+//	if (m_next_keyword == Keywords::KEY_NONE)
+//	{
+//		return false;
+//	}
 	return true;
 }
 CParser::STATUS_TYPE CParser::check_units(std::string & tot_units,

@@ -1,6 +1,5 @@
 #include <time.h>
 #include <assert.h>
-#include <tclap/CmdLine.h>
 #include "Utils.h"
 #include "Phreeqc.h"
 #include "phqalloc.h"
@@ -215,17 +214,8 @@ initialize(void)
 	 */
 	llnl_count_temp = 0;
 	llnl_count_adh = 0;
-	llnl_bdh = (LDBLE *) PHRQ_malloc(sizeof(LDBLE));
-	if (llnl_bdh == NULL)
-		malloc_error();
 	llnl_count_bdh = 0;
-	llnl_bdot = (LDBLE *) PHRQ_malloc(sizeof(LDBLE));
-	if (llnl_bdot == NULL)
-		malloc_error();
 	llnl_count_bdot = 0;
-	llnl_co2_coefs = (LDBLE *) PHRQ_malloc(sizeof(LDBLE));
-	if (llnl_co2_coefs == NULL)
-		malloc_error();
 	llnl_count_co2_coefs = 0;
     // new PBasic
 	basic_interpreter = new PBasic(this, phrq_io);
@@ -2379,15 +2369,6 @@ read_database(void)
  */
 	try
 	{
-        TCLAP::UnlabeledValueArg<std::string> database_arg(
-            "project-file",
-            "Path to the ogs6 project file.",
-            true,
-            "",
-            "PROJECT_FILE");
-//        auto project_config = BaseLib::makeConfigTree(
-//            project_arg.getValue(), !nonfatal_arg.getValue(),
-//            "OpenGeoSysProject");
 		set_reading_database(TRUE);
 		dup_print("Reading data base.", TRUE);
 		read_input();

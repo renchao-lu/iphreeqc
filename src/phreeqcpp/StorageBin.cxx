@@ -996,9 +996,9 @@ cxxStorageBin::read_raw(CParser & parser)
 		switch (parser.next_keyword())
 		{
 		case Keywords::KEY_END:
-		case Keywords::KEY_NONE:
-			goto END_OF_SIMULATION_INPUT;
-			break;
+//		case Keywords::KEY_NONE:
+//			goto END_OF_SIMULATION_INPUT;
+//			break;
 		case Keywords::KEY_SOLUTION_RAW:
 			{
 				cxxSolution entity(this->Get_io());
@@ -1137,7 +1137,6 @@ cxxStorageBin::read_raw_keyword(CParser & parser)
 
 	switch (parser.next_keyword())
 	{
-	case Keywords::KEY_NONE:
 	case Keywords::KEY_END:
 		while ((i =
 				parser.check_line("StorageBin read_raw_keyword", false, true,

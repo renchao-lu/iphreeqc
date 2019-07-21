@@ -721,7 +721,7 @@ public:
 		DELTA_V_UNIT * units);
 	int read_phase_vm(char *ptr, LDBLE * delta_v,
 		DELTA_V_UNIT * units);
-	int read_llnl_aqueous_model_parameters(void);
+    void read_llnl_aqueous_model_parameters();
 	int read_exchange(void);
 	int read_exchange_master_species(void);
 	int read_exchange_species(void);
@@ -744,7 +744,7 @@ public:
 	int read_mix(void);
 	int read_entity_mix(std::map<int, cxxMix> &mix_map);
 	//int read_solution_mix(void);
-	int read_named_logk(void);
+    void read_named_logk();
 	int read_phases(void);
 	int read_print(void);
 	int read_pp_assemblage(void);
@@ -1155,7 +1155,7 @@ protected:
 public:
 	int main_method(int argc, char *argv[]);
 	void set_phast(int);
-	int next_user_number(Keywords::KEYWORDS key);
+    int next_user_number(Keywords key);
 	size_t list_components(std::list<std::string> &list_c);
 	size_t list_EquilibriumPhases(std::list<std::string> &list_pp);
 	size_t list_GasComponents(std::list<std::string> &list_gc);
@@ -1641,8 +1641,6 @@ protected:
 	LDBLE *residual;
 
 	int input_error;
-
-	Keywords::KEYWORDS next_keyword;
 	int parse_error;
 	int paren_count;
 	int iterations;
@@ -1690,7 +1688,9 @@ protected:
 	int phast;
     std::vector<double> llnl_temp;
     std::vector<double> llnl_adh;
-    LDBLE *llnl_bdh, *llnl_bdot, *llnl_co2_coefs;
+    std::vector<double> llnl_bdh;
+    std::vector<double> llnl_bdot;
+    std::vector<double> llnl_co2_coefs;
     int llnl_count_temp, llnl_count_adh, llnl_count_bdh, llnl_count_bdot,
         llnl_count_co2_coefs;
 
@@ -2018,8 +2018,6 @@ protected:
 	friend class IPhreeqcMMS;
 	friend class IPhreeqcPhast;
 	friend class PhreeqcRM;
-
-	std::vector<int> keycount;  // used to mark keywords that have been read 
 
 public:
 	static const struct const_iso iso_defaults[];

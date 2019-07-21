@@ -932,7 +932,6 @@ void Phreeqc::init(void)
 	delta					= NULL;
 	residual				= NULL;
 	input_error             = 0;
-	next_keyword            = Keywords::KEY_NONE;
 	parse_error             = 0;
 	paren_count             = 0;
 	iterations              = 0;
@@ -986,13 +985,9 @@ void Phreeqc::init(void)
 	numerical_deriv			= FALSE;
 	count_total_steps       = 0;
 	phast                   = FALSE;
-	llnl_count_temp			= 0;
 	llnl_count_adh			= 0;
-	llnl_bdh				= 0;
 	llnl_count_bdh			= 0;
-	llnl_bdot				= 0;
 	llnl_count_bdot			= 0;
-	llnl_co2_coefs			= 0;
 	llnl_count_co2_coefs	= 0;
 	//selected_output_file_name = NULL;
 	dump_file_name			= NULL;
@@ -1386,11 +1381,11 @@ void Phreeqc::init(void)
 	/* utilities.cpp ------------------------------- */
 	spinner                 = 0;
 	// keycount;
-	keycount.resize(Keywords::KEY_COUNT_KEYWORDS);
-	for (int i = 0; i < Keywords::KEY_COUNT_KEYWORDS; i++)
-	{
-		keycount[i] = 0;
-	}
+//	keycount.resize(Keywords::KEY_COUNT_KEYWORDS);
+//	for (int i = 0; i < Keywords::KEY_COUNT_KEYWORDS; i++)
+//	{
+//		keycount[i] = 0;
+//	}
 
 	return;
 }
@@ -2297,28 +2292,19 @@ Phreeqc::InternalCopy(const Phreeqc *pSrc)
 	}
 	llnl_count_bdh			= pSrc->llnl_count_bdh;
 	if (llnl_count_bdh > 0)
-	{
-		llnl_bdh = (LDBLE *) free_check_null(llnl_bdh);
-		llnl_bdh = (LDBLE *) PHRQ_malloc((size_t) llnl_count_bdh * sizeof(LDBLE));
-		if (llnl_bdh == NULL) malloc_error();
-		memcpy(llnl_bdh, pSrc->llnl_bdh, (size_t) llnl_count_bdh * sizeof(LDBLE));
-	}
-	llnl_count_bdot			= pSrc->llnl_count_bdot;
-	if (llnl_count_bdot > 0)
-	{
-		llnl_bdot = (LDBLE *) free_check_null(llnl_bdot);
-		llnl_bdot = (LDBLE *) PHRQ_malloc((size_t) llnl_count_bdot * sizeof(LDBLE));
-		if (llnl_bdot == NULL) malloc_error();
-		memcpy(llnl_bdot, pSrc->llnl_bdot, (size_t) llnl_count_bdot * sizeof(LDBLE));
-	}
+    {
+        llnl_bdh = pSrc->llnl_bdh;
+    }
+    llnl_count_bdot = pSrc->llnl_count_bdot;
+    if (llnl_count_bdot > 0)
+    {
+        llnl_bdot = pSrc->llnl_bdot;
+    }
 	llnl_count_co2_coefs	= pSrc->llnl_count_co2_coefs;
 	if (llnl_count_co2_coefs > 0)
 	{
-		llnl_co2_coefs = (LDBLE *) free_check_null(llnl_co2_coefs);
-		llnl_co2_coefs = (LDBLE *) PHRQ_malloc((size_t) llnl_count_co2_coefs * sizeof(LDBLE));
-		if (llnl_co2_coefs == NULL) malloc_error();
-		memcpy(llnl_co2_coefs, pSrc->llnl_co2_coefs, (size_t) llnl_count_co2_coefs * sizeof(LDBLE));
-	}
+        llnl_co2_coefs = pSrc->llnl_co2_coefs;
+    }
 
 	// Not implemented for now
 	SelectedOutput_map = pSrc->SelectedOutput_map;
@@ -2806,7 +2792,6 @@ protected:
 	sum_species_map_db = pSrc->sum_species_map_db;
 
 	// make sure new_model gets set
-	this->keycount[Keywords::KEY_SOLUTION_SPECIES] = 1;
 	this->tidy_model();
 	return;
 }
@@ -2837,7 +2822,7 @@ Phreeqc &Phreeqc::operator=(const Phreeqc &rhs)
 	return *this;
 }
 
-int Phreeqc::next_user_number(Keywords::KEYWORDS key)
+int Phreeqc::next_user_number(Keywords key)
 {
 	switch (key)
 	{

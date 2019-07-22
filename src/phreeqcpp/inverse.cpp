@@ -168,7 +168,7 @@ setup_inverse(struct inverse *inv_ptr)
 	struct phase *phase_ptr;
 	cxxSolution *solution_ptr;
 	struct reaction *rxn_ptr;
-	struct master *master_ptr;
+    struct master *master_ptr;
 /*
  *   Determine array sizes, row and column positions
  */
@@ -382,8 +382,8 @@ setup_inverse(struct inverse *inv_ptr)
 	/* initialize master species */
 	for (i = 0; i < count_master; i++)
 	{
-		master[i]->in = -1;
-		if (strstr(master[i]->elt->name, "Alk") == master[i]->elt->name)
+        master[i].in = -1;
+        if (strstr(master[i].elt.name, "Alk") == master[i].elt.name)
 		{
 			master_alk = master[i];
 		}
@@ -395,12 +395,12 @@ setup_inverse(struct inverse *inv_ptr)
 	for (i = 0; i < inv_ptr->count_elts; i++)
 	{
 		master_ptr = inv_ptr->elts[i].master;
-		if (master_ptr == master_alk)
+        if (master_ptr == &master_alk)
 			i_alk = i;
-		if (strcmp(master_ptr->elt->name, "C(4)") == 0)
+        if (strcmp(master_ptr->elt.name, "C(4)") == 0)
 			i_carb = i;
 		inv_ptr->elts[i].master->in = count_rows_t;
-		row_name[count_rows_t] = inv_ptr->elts[i].master->elt->name;
+        row_name[count_rows_t] = inv_ptr->elts[i].master->elt.name;
 		count_rows_t++;
 	}
 	/* put concentrations in array */
@@ -430,7 +430,7 @@ setup_inverse(struct inverse *inv_ptr)
 				warning_msg(error_string);
 			}
 		}
-		master_alk->total = solution_ptr->Get_total_alkalinity();
+        master_alk.total = solution_ptr->Get_total_alkalinity();
 		f = 1.0;
 		if (i == (inv_ptr->count_solns - 1))
 		{
@@ -441,13 +441,13 @@ setup_inverse(struct inverse *inv_ptr)
 		col_name[column] = string_hsave(token);
 		for (j = 0; j < count_master; j++)
 		{
-			if (master[j]->in >= 0)
+            if (master[j].in >= 0)
 			{
-				my_array[master[j]->in * max_column_count + i] =
-					f * master[j]->total;
-				if (master[j]->s == s_eminus)
+                my_array[master[j].in * max_column_count + i] =
+                    f * master[j].total;
+                if (master[j].s == s_eminus)
 				{
-					my_array[master[j]->in * max_column_count + i] = 0.0;
+                    my_array[master[j].in * max_column_count + i] = 0.0;
 				}
 			}
 		}
@@ -455,21 +455,21 @@ setup_inverse(struct inverse *inv_ptr)
 		cb = 0;
 		for (j = 0; j < count_master; j++)
 		{
-			if (master[j]->in >= 0)
+            if (master[j].in >= 0)
 			{
-				if (master[j]->s == s_eminus)
+                if (master[j].s == s_eminus)
 				{
 					coef = 0.0;
 				}
-				else if (master[j] == master_alk)
-				{
-					coef = -1.0;
-				}
+//                else if (master[j] == *master_alk)
+//				{
+//					coef = -1.0;
+//				}
 				else
 				{
-					coef = master[j]->s->z + master[j]->s->alk;
+                    coef = master[j].s->z + master[j].s->alk;
 				}
-				cb += coef * master[j]->total;
+                cb += coef * master[j].total;
 			}
 		}
 		if (fabs(cb) < toler)
@@ -523,7 +523,7 @@ setup_inverse(struct inverse *inv_ptr)
 			my_array[row * max_column_count + column] =
 				rxn_ptr->token[j].coef * coef;
 		}
-		row = master_alk->in;	/* include alkalinity for phase */
+        row = master_alk.in;	/* include alkalinity for phase */
 		my_array[row * max_column_count + column] = calc_alk(rxn_ptr);
 	}
 
@@ -537,7 +537,7 @@ setup_inverse(struct inverse *inv_ptr)
 			coef = inv_ptr->elts[i].master->coef;
 			rxn_ptr = inv_ptr->elts[i].master->rxn_primary;
 			column = col_redox + k;
-			col_name[column] = inv_ptr->elts[i].master->elt->name;
+            col_name[column] = inv_ptr->elts[i].master->elt.name;
 			k++;
 			for (j = 0; rxn_ptr->token[j].s != NULL; j++)
 			{
@@ -578,7 +578,7 @@ setup_inverse(struct inverse *inv_ptr)
 				if (j != 0)
 					my_array[row * max_column_count + column] /= coef;
 			}
-			row = master_alk->in;	/* include alkalinity for redox reaction */
+            row = master_alk.in;	/* include alkalinity for redox reaction */
 			my_array[row * max_column_count + column] =
 				(calc_alk(rxn_ptr) - inv_ptr->elts[i].master->s->alk) / coef;
 		}
@@ -705,7 +705,7 @@ setup_inverse(struct inverse *inv_ptr)
 			coef =
 				inv_ptr->elts[j].master->s->z +
 				inv_ptr->elts[j].master->s->alk;
-			if (inv_ptr->elts[j].master == master_alk)
+            if (inv_ptr->elts[j].master == &master_alk)
 			{
 				coef = -1.0;
 			}
@@ -828,7 +828,7 @@ setup_inverse(struct inverse *inv_ptr)
 			}
 			my_array[count_rows * max_column_count + column] = 1.0 * f;
 			my_array[count_rows * max_column_count + i] = -coef * f;
-			sprintf(token, "%s %s", inv_ptr->elts[j].master->elt->name,
+            sprintf(token, "%s %s", inv_ptr->elts[j].master->elt.name,
 					"eps+");
 			row_name[count_rows] = string_hsave(token);
 			count_rows++;
@@ -857,13 +857,13 @@ setup_inverse(struct inverse *inv_ptr)
 			   maximum negative is equal to concentrations,
 			   except alkalinity */
 			if (coef > fabs(conc) &&
-				(strstr(inv_ptr->elts[j].master->elt->name, "Alkalinity") !=
-				 inv_ptr->elts[j].master->elt->name))
+                (strstr(inv_ptr->elts[j].master->elt.name, "Alkalinity") !=
+                 inv_ptr->elts[j].master->elt.name))
 				coef = fabs(conc) + toler;
 
 			my_array[count_rows * max_column_count + i] = -coef * f;
 			my_array[count_rows * max_column_count + column] = -1.0 * f;
-			sprintf(token, "%s %s", inv_ptr->elts[j].master->elt->name,
+            sprintf(token, "%s %s", inv_ptr->elts[j].master->elt.name,
 					"eps-");
 			row_name[count_rows] = string_hsave(token);
 			count_rows++;
@@ -1795,7 +1795,7 @@ print_model(struct inverse *inv_ptr)
 		output_msg(sformatf(
 				   "\n%15.15s   %12.12s   %12.12s   %12.12s\n", "  ",
 				   "Input", "Delta", "Input+Delta"));
-		master_alk->total = solution_ptr->Get_total_alkalinity();
+        master_alk.total = solution_ptr->Get_total_alkalinity();
 		if (inv_ptr->carbon == TRUE)
 		{
 			d1 = solution_ptr->Get_ph();
@@ -1840,7 +1840,7 @@ print_model(struct inverse *inv_ptr)
 
 			output_msg(sformatf(
 					   "%15.15s   %12.3e  +%12.3e  =%12.3e\n",
-					   inv_ptr->elts[j].master->elt->name, (double) d1,
+                       inv_ptr->elts[j].master->elt.name, (double) d1,
 					   (double) d2, (double) d3));
 			if (equal(d1, 0.0, MIN_TOTAL_INVERSE) == FALSE)
 			{
@@ -3631,7 +3631,7 @@ count_isotope_unknowns(struct inverse *inv_ptr,
 			isotopes[count_isotopes].primary = primary_ptr;
 			isotopes[count_isotopes].master = primary_ptr;
 			isotopes[count_isotopes].isotope_number = isotope_number;
-			isotopes[count_isotopes].elt_name = primary_ptr->elt->name;
+            isotopes[count_isotopes].elt_name = primary_ptr->elt.name;
 			count_isotopes++;
 
 			/* redox element */
@@ -3640,17 +3640,17 @@ count_isotope_unknowns(struct inverse *inv_ptr,
 		{
 
 			/* find master */
-			for (k = 0; k < count_master; k++)
-			{
-				if (master[k] == primary_ptr)
-					break;
-			}
+//			for (k = 0; k < count_master; k++)
+//			{
+//                if (master[k] == primary_ptr)
+//					break;
+//			}
 
 			/* sum all secondary for master */
 			k++;
 			for (; k < count_master; k++)
 			{
-				if (master[k]->elt->primary != primary_ptr)
+                if (master[k].elt.primary != primary_ptr)
 					break;
 				isotopes =
 					(struct isotope *) PHRQ_realloc(isotopes,
@@ -3664,9 +3664,9 @@ count_isotope_unknowns(struct inverse *inv_ptr,
 					return (0);
 				}
 				isotopes[count_isotopes].primary = primary_ptr;
-				isotopes[count_isotopes].master = master[k];
+                isotopes[count_isotopes].master = &master[k];
 				isotopes[count_isotopes].isotope_number = isotope_number;
-				isotopes[count_isotopes].elt_name = master[k]->elt->name;
+                isotopes[count_isotopes].elt_name = master[k].elt.name;
 				count_isotopes++;
 			}
 		}
@@ -3739,7 +3739,7 @@ check_isotopes(struct inverse *inv_ptr)
 				error_string = sformatf(
 						"In solution %d, isotope ratio(s) are needed for element: %g%s.",
 						solution_ptr->Get_n_user(), (double) isotope_number,
-						primary_ptr->elt->name);
+                        primary_ptr->elt.name);
 				error_msg(error_string, CONTINUE);
 				input_error++;
 				continue;
@@ -3890,7 +3890,7 @@ check_isotopes(struct inverse *inv_ptr)
 						error_string = sformatf(
 								"In phase %s, isotope ratio(s) are needed for element: %g%s.",
 								phase_ptr->name, (double) isotope_number,
-								primary_ptr->elt->name);
+                                primary_ptr->elt.name);
 						error_msg(error_string, CONTINUE);
 						input_error++;
 						break;
@@ -4026,7 +4026,7 @@ write_optimize_names(struct inverse *inv_ptr)
 		for (i = 0; i < inv_ptr->count_solns; i++)
 		{
 			sprintf(token, "%s %s %d", "optimize",
-					inv_ptr->elts[j].master->elt->name, inv_ptr->solns[i]);
+                    inv_ptr->elts[j].master->elt.name, inv_ptr->solns[i]);
 			row_name[row] = string_hsave(token);
 			row++;
 		}
@@ -4950,29 +4950,29 @@ dump_netpath_pat(struct inverse *inv_ptr)
 	xsolution_zero();
 	for (j = 0; j < count_master; j++)
 	{
-		master[j]->in = FALSE;
+        master[j].in = FALSE;
 	}
 	for (j = 0; j < inv_ptr->count_elts; j++)
 	{
 		master_ptr = inv_ptr->elts[j].master;
-		master_ptr = master_ptr->elt->primary;
-		if (strcmp(master_ptr->elt->name, "Alkalinity") == 0)
+        master_ptr = master_ptr->elt.primary;
+        if (strcmp(master_ptr->elt.name, "Alkalinity") == 0)
 			continue;
-		if (strcmp(master_ptr->elt->name, "H") == 0)
+        if (strcmp(master_ptr->elt.name, "H") == 0)
 			continue;
-		if (strcmp(master_ptr->elt->name, "O") == 0)
+        if (strcmp(master_ptr->elt.name, "O") == 0)
 			continue;
-		if (strcmp(master_ptr->elt->name, "X") == 0)
+        if (strcmp(master_ptr->elt.name, "X") == 0)
 			continue;
-		if (strcmp(master_ptr->elt->name, "E") == 0)
+        if (strcmp(master_ptr->elt.name, "E") == 0)
 			continue;
 		master_ptr->in = TRUE;
 	}
 	for (j = 0; j < count_master; j++)
 	{
-		if (master[j]->in == TRUE)
+        if (master[j].in == TRUE)
 		{
-			string = master[j]->elt->name;
+            string = master[j].elt.name;
 			Utilities::str_toupper(string);
 			fprintf(model_file, " %-2s", string.c_str());
 		}
@@ -5082,17 +5082,17 @@ dump_netpath_pat(struct inverse *inv_ptr)
 			if (exch == TRUE)
 				f = -1.0;
 			master_ptr = next_elt->elt->primary;
-			if (strcmp(master_ptr->elt->name, "Alkalinity") == 0)
+            if (strcmp(master_ptr->elt.name, "Alkalinity") == 0)
 				continue;
-			if (strcmp(master_ptr->elt->name, "H") == 0)
+            if (strcmp(master_ptr->elt.name, "H") == 0)
 				continue;
-			if (strcmp(master_ptr->elt->name, "O") == 0)
+            if (strcmp(master_ptr->elt.name, "O") == 0)
 				continue;
-			if (strcmp(master_ptr->elt->name, "E") == 0)
+            if (strcmp(master_ptr->elt.name, "E") == 0)
 				continue;
-			string = master_ptr->elt->name;
+            string = master_ptr->elt.name;
 
-			if (strcmp(master_ptr->elt->name, "X") == 0)
+            if (strcmp(master_ptr->elt.name, "X") == 0)
 			{
 				string = "Na";
 				f = 1.0;
@@ -5129,7 +5129,7 @@ dump_netpath_pat(struct inverse *inv_ptr)
 			}
 			else
 			{
-				string = rxn_ptr->s->secondary->elt->name;
+                string = rxn_ptr->s->secondary->elt.name;
 				replace("(", " ", string);
 				replace(")", " ", string);
 				std::string::iterator b = string.begin();

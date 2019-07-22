@@ -373,26 +373,26 @@ print_eh(void)
 	first = TRUE;
 	for (i = 0; i < count_master; i++)
 	{
-		if (master[i]->in != TRUE)
+        if (master[i].in != TRUE)
 			continue;
-		if (master[i]->primary == TRUE)
+        if (master[i].primary == TRUE)
 			continue;
 /*
  *   Secondary master species has mass balance equation
  */
-		master_ptr0 = master[i]->elt->primary;
+        master_ptr0 = master[i].elt.primary;
 		for (k = i + 1; k < count_master; k++)
 		{
-			if (master[k]->in != TRUE)
+            if (master[k].in != TRUE)
 				continue;
-			master_ptr1 = master[k]->elt->primary;
+            master_ptr1 = master[k].elt.primary;
 			if (master_ptr1 != master_ptr0)
 				break;
 /*
  *  Another secondary master species of same element has mass balance equation
  *  Rewrite equations to calculate pe
  */
-			rewrite_master_to_secondary(master[k], master[i]);
+//			rewrite_master_to_secondary(master[k], master[i]);
 			trxn_swap("e-");
 /* debug
 			trxn_print();
@@ -419,9 +419,9 @@ print_eh(void)
 /*
  *   Print result
  */
-			strcpy(token, master[i]->elt->name);
+            strcpy(token, master[i].elt.name);
 			strcat(token, "/");
-			strcat(token, master[k]->elt->name);
+            strcat(token, master[k].elt.name);
 			output_msg(sformatf("\t%-15s%12.4f%12.4f\n", token,
 					   (double) pe, (double) eh));
 		}
@@ -459,7 +459,7 @@ print_exchange(void)
  */
 
 	s_h2o->lm = s_h2o->la;
-	name = s_hplus->secondary->elt->name;
+    name = s_hplus->secondary->elt.name;
 	for (i = 0; i < count_species_list; i++)
 	{
 /*
@@ -470,12 +470,12 @@ print_exchange(void)
 		if (species_list[i].master_s->secondary != NULL)
 		{
 			master_ptr = species_list[i].master_s->secondary;
-			name1 = species_list[i].master_s->secondary->elt->name;
+            name1 = species_list[i].master_s->secondary->elt.name;
 		}
 		else
 		{
 			master_ptr = species_list[i].master_s->primary;
-			name1 = species_list[i].master_s->primary->elt->name;
+            name1 = species_list[i].master_s->primary->elt.name;
 		}
 /*
  *   Check if new master species, print total molality
@@ -1488,7 +1488,7 @@ print_species(void)
  *   Print list of species
  */
 	s_h2o->lm = s_h2o->la;
-	name = s_hplus->secondary->elt->name;
+    name = s_hplus->secondary->elt.name;
 	for (i = 0; i < count_species_list; i++)
 	{
 /*
@@ -1501,12 +1501,12 @@ print_species(void)
 		if (species_list[i].master_s->secondary != NULL)
 		{
 			master_ptr = species_list[i].master_s->secondary;
-			name1 = species_list[i].master_s->secondary->elt->name;
+            name1 = species_list[i].master_s->secondary->elt.name;
 		}
 		else
 		{
 			master_ptr = species_list[i].master_s->primary;
-			name1 = species_list[i].master_s->primary->elt->name;
+            name1 = species_list[i].master_s->primary->elt.name;
 		}
 /*
  *   Check if new master species, print total molality
@@ -1607,14 +1607,14 @@ print_surface(void)
 		{
 			if (x[j]->type != SURFACE_CB)
 				continue;
-			name = x[j]->master[0]->elt->name;
+            name = x[j]->master[0]->elt.name;
 			Utilities::replace("_psi", "", name);
 		}
 		else
 		{
 			if (x[j]->type != SURFACE)
 				continue;
-			token = x[j]->master[0]->elt->name;
+            token = x[j]->master[0]->elt.name;
 			Utilities::replace("_", " ", token);
 			std::string::iterator b = token.begin();
 			std::string::iterator e = token.end();
@@ -1751,7 +1751,7 @@ print_surface(void)
 					continue;
 				master_ptr = x[k]->master[0];
 				output_msg(sformatf("%-14s\n",
-						   x[k]->master[0]->elt->name));
+                           x[k]->master[0]->elt.name));
 				output_msg(sformatf("\t%11.3e  moles",
 						   (double) x[k]->moles));
 				cxxSurfaceComp * comp_k_ptr = surface_ptr->Find_comp(x[k]->surface_comp);
@@ -1811,7 +1811,7 @@ print_surface(void)
 		{
 			int k = j;
 			master_ptr = x[k]->master[0];
-			output_msg(sformatf("%-14s\n", x[k]->master[0]->elt->name));
+            output_msg(sformatf("%-14s\n", x[k]->master[0]->elt.name));
 			output_msg(sformatf("\t%11.3e  moles\n",
 					   (double) x[k]->moles));
 			output_msg(sformatf("\t%-15s%12s%12s%12s%12s\n", " ", " ",
@@ -1886,7 +1886,7 @@ print_surface_cd_music(void)
 	{
 		if (x[j]->type != SURFACE_CB)
 			continue;
-		name = x[j]->master[0]->elt->name;
+        name = x[j]->master[0]->elt.name;
 		Utilities::replace("_psi", "", name);
 		output_msg(sformatf("%-14s\n", name.c_str()));
 		cxxSurfaceCharge * charge_ptr = use.Get_surface_ptr()->Find_charge(x[j]->surface_charge);
@@ -2049,7 +2049,7 @@ print_surface_cd_music(void)
 					continue;
 				master_ptr = x[k]->master[0];
 				output_msg(sformatf("%-14s\n",
-						   x[k]->master[0]->elt->name));
+                           x[k]->master[0]->elt.name));
 				output_msg(sformatf("\t%11.3e  moles",
 						   (double) x[k]->moles));
 				cxxSurfaceComp * comp_k_ptr = surface_ptr->Find_comp(x[k]->surface_comp);

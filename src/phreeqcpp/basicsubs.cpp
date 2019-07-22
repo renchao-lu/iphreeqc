@@ -585,11 +585,11 @@ calc_solution_volume(void)
 
 	for (int i = 0; i < count_master; i++)
 	{
-		if (master[i]->s->type != AQ) continue;
-		struct master *master_ptr = master[i];
-		if (master_ptr->primary == TRUE && strcmp(master_ptr->elt->name, "Alkalinity"))
+        if (master[i].s->type != AQ) continue;
+        struct master master_ptr = master[i];
+        if (master_ptr.primary == TRUE && strcmp(master_ptr.elt.name, "Alkalinity"))
 		{
-			total_mass += master_ptr->total_primary * master_ptr->elt->gfw; 
+            total_mass += master_ptr.total_primary * master_ptr.elt.gfw;
 		}
 	}
 	LDBLE rho = calc_dens();
@@ -758,7 +758,7 @@ calc_surface_charge(const char *surface_name)
 			if (token_ptr->s->type != SURF)
 				continue;
 			master_ptr = trxn.token[i].s->primary;
-            token =  master_ptr->elt->name;
+            token =  master_ptr->elt.name;
 			replace("_", " ", token);
 			ptr = token;
             copy_token(token1, ptr, &j);
@@ -812,21 +812,21 @@ diff_layer_total(const char *total_name, const char *surface_name)
 		{
 			if (x[j]->type != SURFACE_CB)
 				continue;
-			name = x[j]->master[0]->elt->name;
+            name = x[j]->master[0]->elt.name;
 			Utilities::replace("_psi", "", name);
 		}
 		else if (use.Get_surface_ptr()->Get_type() == cxxSurface::CD_MUSIC)
 		{
 			if (x[j]->type != SURFACE_CB)
 				continue;
-			name = x[j]->master[0]->elt->name;
+            name = x[j]->master[0]->elt.name;
 			Utilities::replace("_psi", "", name);
 		}
 		else
 		{
 			if (x[j]->type != SURFACE)
 				continue;
-			token =  x[j]->master[0]->elt->name;
+            token =  x[j]->master[0]->elt.name;
 			Utilities::replace("_", " ", token);
 			std::string::iterator b = token.begin();
 			std::string::iterator e = token.end();
@@ -1088,7 +1088,7 @@ calc_t_sc(const char *name)
 
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-equi_phase(const char *phase_name)
+equi_phase(std::string phase_name)
 /* ---------------------------------------------------------------------- */
 {
 	int j;
@@ -2397,7 +2397,7 @@ surf_total(const char *total_name, const char *surface_name)
 			continue;
 		
 		std::string token;
-		token = x[j]->master[0]->elt->name;
+        token = x[j]->master[0]->elt.name;
 		replace("_", " ", token);
 		std::string::iterator b = token.begin();
 		std::string::iterator e = token.end();
@@ -2451,15 +2451,15 @@ surf_total(const char *total_name, const char *surface_name)
 			{
 				if (redox && rxn_ptr->s->secondary)
 				{
-					token = rxn_ptr->s->secondary->elt->name;
+                    token = rxn_ptr->s->secondary->elt.name;
 				}
 				else if (!redox && rxn_ptr->s->secondary)
 				{
-					token = rxn_ptr->s->secondary->elt->primary->elt->name;
+                    token = rxn_ptr->s->secondary->elt.primary->elt.name;
 				}
 				else if (!redox && rxn_ptr->s->primary)
 				{
-					token = rxn_ptr->s->primary->elt->name;
+                    token = rxn_ptr->s->primary->elt.name;
 				}
 				else
 				{
@@ -2646,7 +2646,7 @@ surf_total_no_redox(const char *total_name, const char *surface_name)
 	{
 		if (x[j]->type != SURFACE)
 			continue;
-        token = x[j]->master[0]->elt->name;
+        token = x[j]->master[0]->elt.name;
 		replace("_", " ", token);
 		ptr = token;
         copy_token(name, ptr, &k);
@@ -2763,10 +2763,10 @@ total(const char *total_name)
 		{
 			t = 0;
 			for (i = master_ptr->number + 1;
-				 (i < count_master && master[i]->elt->primary == master_ptr);
+                 (i < count_master && (master[i].elt.primary == master_ptr));
 				 i++)
 			{
-				t += master[i]->total / mass_water_aq_x;
+                t += master[i].total / mass_water_aq_x;
 			}
 		}
 	}
@@ -2833,10 +2833,10 @@ total_mole(const char *total_name)
 		{
 			t = 0;
 			for (i = master_ptr->number + 1;
-				 (i < count_master && master[i]->elt->primary == master_ptr);
+                 (i < count_master && master[i].elt.primary == master_ptr);
 				 i++)
 			{
-				t += master[i]->total;
+                t += master[i].total;
 			}
 		}
 	}
@@ -2968,7 +2968,7 @@ edl_species(const char *surf_name, LDBLE * count, char ***names, LDBLE ** moles,
 	(*moles)[0] = 0;
 	for (i = 0; i < count_sys; i++)
 	{
-		(*names)[i + 1] = sys[i].name;
+//		(*names)[i + 1] = sys[i].name;
 		(*moles)[i + 1] = sys[i].moles;
 	}
 	*count = (LDBLE) count_sys;
@@ -3065,7 +3065,7 @@ system_total(const char *total_name, LDBLE * count, char ***names,
 	(*moles)[0] = 0;
 	for (i = 0; i < count_sys; i++)
 	{
-		(*names)[i + 1] = sys[i].name;
+//		(*names)[i + 1] = sys[i].name;
 		(*types)[i + 1] = sys[i].type;
 		(*moles)[i + 1] = sys[i].moles;
 	}
@@ -3075,10 +3075,10 @@ system_total(const char *total_name, LDBLE * count, char ***names,
 		sys_tot = 0;;
 		for (i = 0; i < count_sys; i++)
 		{
-			if (strcmp(sys[i].type, "dis") == 0 &&
-				strstr(sys[i].name, "(") == NULL &&
-				strcmp(sys[i].name, "H") != 0
-				&& strcmp(sys[i].name, "O") != 0)
+//			if (strcmp(sys[i].type, "dis") == 0 &&
+//				strstr(sys[i].name, "(") == NULL &&
+//				strcmp(sys[i].name, "H") != 0
+//				&& strcmp(sys[i].name, "O") != 0)
 			{
 				sys_tot += sys[i].moles;
 			}
@@ -3210,8 +3210,8 @@ system_total_elements(void)
 {
 	int i, j;
 	LDBLE t;
-	char name[MAX_LENGTH];
-	struct master *master_ptr;
+    std::string name;
+    struct master master_ptr;
 
 	/*
 	 * Include H and O
@@ -3251,35 +3251,35 @@ system_total_elements(void)
 	for (i = 0; i < count_master; i++)
 	{
 		master_ptr = master[i];
-		if (master_ptr->primary == TRUE && master_ptr->total_primary <= 0)
+        if (master_ptr.primary == TRUE && master_ptr.total_primary <= 0)
 			continue;
-		if (master_ptr->in == FALSE
-			&& (master_ptr->primary == FALSE
-				|| master_ptr->total_primary == 0))
+        if (master_ptr.in == FALSE
+            && (master_ptr.primary == FALSE
+                || master_ptr.total_primary == 0))
 			continue;
 		/*
 		 *  H and O
 		 */
-		if (master_ptr->s == s_hplus)
+        if (master_ptr.s == s_hplus)
 		{
 			continue;
 		}
-		else if (master_ptr->s == s_h2o)
+        else if (master_ptr.s == s_h2o)
 		{
 			continue;
 		}
-		if (master_ptr->primary == TRUE)
+        if (master_ptr.primary == TRUE)
 		{
-			if (master_ptr->total_primary > 0)
+            if (master_ptr.total_primary > 0)
 			{
-				t = master_ptr->total_primary;
+                t = master_ptr.total_primary;
 				/*
 				 *  Not a redox element
 				 */
 			}
-			else if (master_ptr->s->secondary == NULL)
+            else if (master_ptr.s->secondary == NULL)
 			{
-				t = master_ptr->total;
+                t = master_ptr.total;
 				/*
 				 * Redox element, need to sum totals of all redox states
 				 */
@@ -3287,11 +3287,11 @@ system_total_elements(void)
 			else
 			{
 				t = 0;
-				for (j = master_ptr->number + 1;
-					 master[j]->elt->primary == master_ptr; j++)
-				{
-					t += master[j]->total;
-				}
+//                for (j = master_ptr.number + 1;
+//                     *(master[j].elt.primary) == master_ptr; j++)
+//				{
+//                    t += master[j].total;
+//				}
 			}
 			/*
 			 *  Secondary master species
@@ -3299,21 +3299,21 @@ system_total_elements(void)
 		}
 		else
 		{
-			t = master_ptr->total;
+            t = master_ptr.total;
 		}
-		strcpy(name, master[i]->elt->name);
-		sys[count_sys].name = string_duplicate(name);
+        name = master[i].elt.name;
+        sys[count_sys].name =name;
 		sys[count_sys].moles = t;
 		sys_tot += sys[count_sys].moles;
-		if (master[i]->s->type <= SOLID)
+        if (master[i].s->type <= SOLID)
 		{
 			sys[count_sys].type = string_duplicate("dis");
 		}
-		else if (master[i]->s->type == EX)
+        else if (master[i].s->type == EX)
 		{
 			sys[count_sys].type = string_duplicate("ex");
 		}
-		else if (master[i]->s->type == SURF || master[i]->s->type == SURF_PSI)
+        else if (master[i].s->type == SURF || master[i].s->type == SURF_PSI)
 		{
 			sys[count_sys].type = string_duplicate("surf");
 		}
@@ -3686,7 +3686,7 @@ system_total_elt(const char *total_name)
 			{
 				if (strcmp(elt_list[j].elt->name, total_name) == 0)
 				{
-					strcpy(name, x[k]->master[0]->elt->name);
+                    strcpy(name, x[k]->master[0]->elt.name);
 					replace("_psi", "", name);
 					sys[count_sys].name = string_duplicate(name);
 					sys[count_sys].moles = elt_list[j].coef;
@@ -3960,7 +3960,7 @@ system_total_elt_secondary(const char *total_name)
 				}
 				if (l >= count_elts)
 					continue;
-				strcpy(name, x[k]->master[0]->elt->name);
+                strcpy(name, x[k]->master[0]->elt.name);
 				replace("_psi", "", name);
 				sys[count_sys].name = string_duplicate(name);
 				sys[count_sys].moles = sum;

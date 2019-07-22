@@ -878,7 +878,7 @@ calc_all_donnan(void)
 		}
 		if (debug_diffuse_layer == TRUE)
 		{
-			std::string name =  x[j]->master[0]->elt->name;
+            std::string name =  x[j]->master[0]->elt.name;
 			Utilities::replace("_psi", "", name);
 			output_msg(sformatf(
 					   "\nDonnan all on %s (%d): charge, \tg, \tdg, Psi_surface = %8f V. \n",
@@ -1000,7 +1000,7 @@ calc_init_donnan(void)
 		}
 		if (debug_diffuse_layer == TRUE)
 		{
-			std::string name = x[j]->master[0]->elt->name;
+            std::string name = x[j]->master[0]->elt.name;
 			Utilities::replace("_psi", "", name);
 			output_msg(sformatf(
 					   "\nDonnan init on %s : charge, \tg, \tdg, Psi_surface = %8f V. \n",

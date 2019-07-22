@@ -31,6 +31,10 @@ inline Keywords convertStringToKeywords(std::string const& inString)
     {
         return Keywords::KEY_NAMED_EXPRESSIONS;
     }
+    if (boost::iequals(inString, "SOLUTION_MASTER_SPECIES"))
+    {
+        return Keywords::KEY_SOLUTION_MASTER_SPECIES;
+    }
 }
 
 /* ---------------------------------------------------------------------- */
@@ -1176,15 +1180,15 @@ read_exchange_master_species(void)
 			space((void **) ((void *) &master), count_master + 1,
 				  &max_master, sizeof(struct master *));
 		}
-		master[count_master] = master_alloc();
+//		master[count_master] = master_alloc();
 /*
  *   Set type to EX
  */
-		master[count_master]->type = EX;
+        master[count_master].type = EX;
 /*
  *   Save element name
  */
-		master[count_master]->elt = element_store(token);
+//        master[count_master].elt = element_store(token);
 /*
  *   Save pointer to species data for master species
  */
@@ -1199,21 +1203,21 @@ read_exchange_master_species(void)
 		s_ptr = s_search(token);
 		if (s_ptr != NULL)
 		{
-			master[count_master]->s = s_ptr;
+            master[count_master].s = s_ptr;
 		}
 		else
 		{
 			ptr1 = token;
             get_token(ptr1, token1, &l_z, &l);
-			master[count_master]->s = s_store(token1, l_z, FALSE);
+            master[count_master].s = s_store(token1, l_z, FALSE);
 		}
 /*
  *   MAKE LISTS OF PRIMARY AND SECONDARY MASTER SPECIES
  */
-		master[count_master]->primary = TRUE;
-		if (strcmp(master[count_master]->elt->name, "E") != 0)
+        master[count_master].primary = TRUE;
+        if (strcmp(master[count_master].elt.name, "E") != 0)
 		{
-			elts_ptr = element_store(master[count_master]->elt->name);
+            elts_ptr = element_store(master[count_master].elt.name);
 			elts_ptr->gfw = 0.0;
 		}
 
@@ -3213,8 +3217,8 @@ read_incremental_reactions(void)
 }
 
 /* ---------------------------------------------------------------------- */
-int Phreeqc::
-read_master_species(void)
+void Phreeqc::
+read_master_species()
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -3228,56 +3232,41 @@ read_master_species(void)
 	char token[MAX_LENGTH], token1[MAX_LENGTH];
 
 	elts_ptr = NULL;
-	for (;;)
+    auto in = phrq_io->get_istream();
+    while (std::getline(*in, line))
 	{
-		j = check_line("Master species", FALSE, TRUE, TRUE, TRUE);
-		if (j == EOF || j == KEYWORD)
-		{
-			break;
-		}
+        if (line.at(0) == '#')
+        {
+            if (line == "#ende")
+                break;
+            continue;
+        }
 /*
  *   Get element name with valence, allocate space, store
  */
 		ptr = line;
+        std::vector<std::string> items;
+        boost::trim_if(line, boost::is_any_of("\t "));
+        boost::algorithm::split(items, line,
+                                boost::is_any_of("\t "),
+                                boost::token_compress_on);
 /*
  *   Get element name and save pointer to character string
  */
-        if (copy_token(token, ptr, &l) != UPPER && token[0] != '[')
-		{
-			parse_error++;
-			error_msg("Reading element for master species.", CONTINUE);
-            error_msg(line_save.c_str(), CONTINUE);
-			continue;
-		}
-		/*
-		   if (token[0] == '[') {
-		   ptr1 = token;
-		   get_elt(&ptr, element, &l);
-		   strcpy(token, element);
-		   }
-		 */
-		replace("(+", "(", token);
+//		replace("(+", "(", token);
 /*
  *   Delete master if it exists
  */
-		master_delete(token);
+//		master_delete(token);
 /*
- *   Increase pointer array, if necessary,  and malloc space
- */
-		if (count_master >= max_master)
-		{
-			space((void **) ((void *) &master), count_master + 1,
-				  &max_master, sizeof(struct master *));
-		}
-		master[count_master++] = master_alloc();
 /*
  *   Set type to AQ
  */
-		master[count_master-1]->type = AQ;
+        master[count_master-1].type = AQ;
 /*
  *   Save element name
  */
-		master[count_master-1]->elt = element_store(token);
+//        master[count_master-1].elt = element_store(token);
 		std::string ename = token;
 /*
  *   Save pointer to species data for master species
@@ -3294,13 +3283,13 @@ read_master_species(void)
 		s_ptr = s_search(token);
 		if (s_ptr != NULL)
 		{
-			master[count_master-1]->s = s_ptr;
+            master[count_master-1].s = s_ptr;
 		}
 		else
 		{
 			ptr1 = token;
             get_token(ptr1, token1, &l_z, &l);
-			master[count_master-1]->s = s_store(token1, l_z, FALSE);
+            master[count_master-1].s = s_store(token1, l_z, FALSE);
 		}
 		
 		std::string sname = token;
@@ -3320,7 +3309,7 @@ read_master_species(void)
  *   Read alkalinity for species
  */
         copy_token(token, ptr, &l);
-		i = sscanf(token, SCANFORMAT, &master[count_master-1]->alk);
+        i = sscanf(token, SCANFORMAT, &master[count_master-1].alk);
 		if (i != 1)
 		{
 			input_error++;
@@ -3344,11 +3333,11 @@ read_master_species(void)
         i = copy_token(token, ptr, &l);
 		if (i == DIGIT)
 		{
-			sscanf(token, SCANFORMAT, &master[count_master-1]->gfw);
+            sscanf(token, SCANFORMAT, &master[count_master-1].gfw);
 		}
 		else if (i == UPPER)
 		{
-			master[count_master-1]->gfw_formula = string_hsave(token);
+            master[count_master-1].gfw_formula = string_hsave(token);
 		}
 		else
 		{
@@ -3370,17 +3359,17 @@ read_master_species(void)
 /*
  *   MAKE LISTS OF PRIMARY AND SECONDARY MASTER SPECIES
  */
-		if (strchr(master[count_master-1]->elt->name, '(') == NULL)
+        if (strchr(master[count_master-1].elt.name, '(') == NULL)
 		{
-			master[count_master-1]->primary = TRUE;
+            master[count_master-1].primary = TRUE;
 			/* Read gram formula weight for primary */
-			if (strcmp(master[count_master-1]->elt->name, "E") != 0)
+            if (strcmp(master[count_master-1].elt.name, "E") != 0)
 			{
-				elts_ptr = master[count_master-1]->elt;
+//                elts_ptr = master[count_master-1].elt;
                 i = copy_token(token, ptr, &l);
 				if (i == DIGIT)
 				{
-					sscanf(token, SCANFORMAT, &elts_ptr->gfw);
+                    sscanf(token, SCANFORMAT, &elts_ptr->gfw);
 				}
 				else
 				{
@@ -3404,7 +3393,7 @@ read_master_species(void)
 		}
 		else
 		{
-			master[count_master-1]->primary = FALSE;
+            master[count_master-1].primary = FALSE;
 		}
 		if (count_master >= max_master)
 		{
@@ -3414,7 +3403,6 @@ read_master_species(void)
 
 	}
 	gfw_map.clear();
-	return (j);
 }
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
@@ -7868,9 +7856,9 @@ read_surface_master_species(void)
 			/*
 			 *   Save values in master and species structure for surface sites
 			 */
-			master[count_master] = master_alloc();
-			master[count_master]->type = SURF;
-			master[count_master]->elt = element_store(token);
+//			master[count_master] = master_alloc();
+            master[count_master].type = SURF;
+//            master[count_master].elt = element_store(token);
             if (copy_token(token, ptr, &l) != UPPER && token[0] != '[')
 			{
 				parse_error++;
@@ -7881,16 +7869,16 @@ read_surface_master_species(void)
 			s_ptr = s_search(token);
 			if (s_ptr != NULL)
 			{
-				master[count_master]->s = s_ptr;
+                master[count_master].s = s_ptr;
 			}
 			else
 			{
 				ptr1 = token;
                 get_token(ptr1, token1, &l_z, &l);
-				master[count_master]->s = s_store(token1, l_z, FALSE);
+                master[count_master].s = s_store(token1, l_z, FALSE);
 			}
-			master[count_master]->primary = TRUE;
-			strcpy(token, master[count_master]->elt->name);
+            master[count_master].primary = TRUE;
+            strcpy(token, master[count_master].elt.name);
 			count_master++;
 			/*
 			 *   Save values in master and species structure for surface psi
@@ -7939,40 +7927,40 @@ add_psi_master_species(char *token)
 		master_ptr = master_search(token, &n);
 		if (master_ptr == NULL)
 		{
-			master[count_master] = master_alloc();
-			master[count_master]->type = plane;
-			master[count_master]->elt = element_store(token);
+//			master[count_master] = master_alloc();
+            master[count_master].type = plane;
+//            master[count_master].elt = element_store(token);
 			s_ptr = s_search(token);
 			if (s_ptr != NULL)
 			{
-				master[count_master]->s = s_ptr;
+                master[count_master].s = s_ptr;
 			}
 			else
 			{
-				master[count_master]->s = s_store(token, 0.0, FALSE);
+                master[count_master].s = s_store(token, 0.0, FALSE);
 			}
 			count_elts = 0;
 			paren_count = 0;
 			ptr = token;
             get_elts_in_species(ptr, 1.0);
-			master[count_master]->s->next_elt = elt_list_save();
-			master[count_master]->s->type = plane;
-			master[count_master]->primary = TRUE;
-			master[count_master]->s->rxn = rxn_alloc(3);
+            master[count_master].s->next_elt = elt_list_save();
+            master[count_master].s->type = plane;
+            master[count_master].primary = TRUE;
+            master[count_master].s->rxn = rxn_alloc(3);
 			/*
 			 *   Define reaction for psi
 			 */
 			for (i = 0; i < MAX_LOG_K_INDICES; i++)
 			{
-				master[count_master]->s->rxn->logk[i] = 0.0;
+                master[count_master].s->rxn->logk[i] = 0.0;
 			}
-			master[count_master]->s->rxn->token[0].s =
-				master[count_master]->s;
-			master[count_master]->s->rxn->token[0].coef = -1.0;
-			master[count_master]->s->rxn->token[1].s =
-				master[count_master]->s;
-			master[count_master]->s->rxn->token[1].coef = 1.0;
-			master[count_master]->s->rxn->token[2].s = NULL;
+            master[count_master].s->rxn->token[0].s =
+                master[count_master].s;
+            master[count_master].s->rxn->token[0].coef = -1.0;
+            master[count_master].s->rxn->token[1].s =
+                master[count_master].s;
+            master[count_master].s->rxn->token[1].coef = 1.0;
+            master[count_master].s->rxn->token[2].s = NULL;
 			count_master++;
 		}
 	}

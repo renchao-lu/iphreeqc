@@ -157,22 +157,22 @@ quick_setup(void)
 	int i;
 	for (i = 0; i < count_master; i++)
 	{
-		if (master[i]->s->type == SURF_PSI)
+        if (master[i].s->type == SURF_PSI)
 			continue;
-		if (master[i]->s == s_eminus ||
-			master[i]->s == s_hplus ||
-			master[i]->s == s_h2o || master[i]->s == s_h2
-			|| master[i]->s == s_o2)
+        if (master[i].s == s_eminus ||
+            master[i].s == s_hplus ||
+            master[i].s == s_h2o || master[i].s == s_h2
+            || master[i].s == s_o2)
 			continue;
-		if (master[i]->total > 0)
+        if (master[i].total > 0)
 		{
-			if (master[i]->s->secondary != NULL)
+            if (master[i].s->secondary != NULL)
 			{
-				master[i]->s->secondary->unknown->moles = master[i]->total;
+                master[i].s->secondary->unknown->moles = master[i].total;
 			}
 			else
 			{
-				master[i]->unknown->moles = master[i]->total;
+                master[i].unknown->moles = master[i].total;
 			}
 		}
 	}
@@ -551,7 +551,7 @@ build_gas_phase(void)
 				{
 					error_string = sformatf(
 							"Element, %s, in phase, %s, is not in model.",
-							master_ptr->elt->name, phase_ptr->name);
+                            master_ptr->elt.name, phase_ptr->name);
 					error_msg(error_string, CONTINUE);
 					input_error++;
 				}
@@ -643,7 +643,7 @@ build_gas_phase(void)
 					{
 						error_string = sformatf(
 							"Element, %s, in phase, %s, is not in model.",
-							master_ptr->elt->name, phase_ptr->name);
+                            master_ptr->elt.name, phase_ptr->name);
 						warning_msg(error_string);
 					}
 					col = master_ptr->unknown->number;
@@ -1837,21 +1837,21 @@ clear(void)
 	const char * pe_str = string_hsave("pe");
 	for (i = 0; i < count_master; i++)
 	{
-		master[i]->in = FALSE;
-		master[i]->unknown = NULL;
+        master[i].in = FALSE;
+        master[i].unknown = NULL;
 		if (solution_ptr->Get_initial_data())
 		{
-			master[i]->pe_rxn = solution_ptr->Get_initial_data()->Get_default_pe();
+            master[i].pe_rxn = solution_ptr->Get_initial_data()->Get_default_pe();
 		}
 		else
 		{
-			master[i]->pe_rxn = pe_str;
+            master[i].pe_rxn = pe_str;
 		}
 /*
  *   copy primary reaction to secondary reaction
  */
-		rxn_free(master[i]->rxn_secondary);
-		master[i]->rxn_secondary = rxn_dup(master[i]->rxn_primary);
+        rxn_free(master[i].rxn_secondary);
+        master[i].rxn_secondary = rxn_dup(master[i].rxn_primary);
 	}
 
 	if (state == INITIAL_SOLUTION)
@@ -2124,14 +2124,14 @@ get_list_master_ptrs(char *ptr, struct master *master_ptr)
  */
 		for (j = 0; j < count_master; j++)
 		{
-			if (master[j] == master_ptr0)
-				break;
+//			if (master[j] == master_ptr0)
+//				break;
 		}
 		j++;
 /*
  *   Element has only one valence
  */
-		if (j >= count_master || master[j]->elt->primary != master_ptr0)
+        if (j >= count_master || master[j].elt.primary != master_ptr0)
 		{
 			master_ptr_list[count_list++] = master_ptr0;
 /*
@@ -2144,14 +2144,14 @@ get_list_master_ptrs(char *ptr, struct master *master_ptr)
 			{
 				error_string = sformatf(
 						"Master species for valence states of element %s are not correct.\n\tPossibly related to master species for %s.",
-						master_ptr0->elt->name, master[j]->elt->name);
+                        master_ptr0->elt.name, master[j].elt.name);
 				error_msg(error_string, CONTINUE);
 				input_error++;
 			}
 			master_ptr_list[count_list++] = master_ptr0->s->secondary;
-			while (j < count_master && master[j]->elt->primary == master_ptr0)
+            while (j < count_master && master[j].elt.primary == master_ptr0)
 			{
-				if (master[j]->s->primary == NULL)
+                if (master[j].s->primary == NULL)
 				{
 					master_ptr_list =
 						(struct master **) PHRQ_realloc((void *)
@@ -2163,7 +2163,7 @@ get_list_master_ptrs(char *ptr, struct master *master_ptr)
 															   *));
 					if (master_ptr_list == NULL)
 						malloc_error();
-					master_ptr_list[count_list++] = master[j];
+//					master_ptr_list[count_list++] = master[j];
 				}
 				j++;
 			}
@@ -2679,10 +2679,10 @@ reprep(void)
  */
 	for (i = 0; i < count_master; i++)
 	{
-		if (master[i]->in == FALSE)
+        if (master[i].in == FALSE)
 			continue;
-		rxn_free(master[i]->rxn_secondary);
-		master[i]->rxn_secondary = rxn_dup(master[i]->rxn_primary);
+        rxn_free(master[i].rxn_secondary);
+        master[i].rxn_secondary = rxn_dup(master[i].rxn_primary);
 	}
 	resetup_master();
 /*
@@ -2904,7 +2904,7 @@ add_potential_factor(void)
 		input_error++;
 		return (ERROR);
 	}
-	token =  master_ptr->elt->name;
+    token =  master_ptr->elt.name;
 	unknown_ptr = find_surface_charge_unknown(token, SURF_PSI);
 	if (unknown_ptr == NULL)
 	{
@@ -3000,7 +3000,7 @@ add_cd_music_factors(int n)
 		input_error++;
 		return (ERROR);
 	}
-	token = master_ptr->elt->name;
+    token = master_ptr->elt.name;
 	/*
 	 *  Plane 0
 	 */
@@ -3122,7 +3122,7 @@ add_surface_charge_balance(void)
 /*
  *  Find potential unknown for surface species
  */
-	token = master_ptr->elt->name;
+    token = master_ptr->elt.name;
 	unknown_ptr = find_surface_charge_unknown(token, SURF_PSI);
 	if (unknown_ptr == NULL)
 	{
@@ -3135,7 +3135,7 @@ add_surface_charge_balance(void)
 /*
  *   Include charge balance in list for mass-balance equations
  */
-	char * temp_name = string_duplicate(master_ptr->elt->name);
+    char * temp_name = string_duplicate(master_ptr->elt.name);
 	ptr = temp_name;
     get_secondary_in_species(ptr, 1.0);
 	free_check_null(temp_name);
@@ -3191,14 +3191,14 @@ add_cd_music_charge_balances(int n)
 	/*
 	 *  Find potential unknown for plane 0
 	 */
-	token = master_ptr->elt->name;
+    token = master_ptr->elt.name;
 	unknown_ptr = find_surface_charge_unknown(token, SURF_PSI);
 	master_ptr = unknown_ptr->master[0];	/* potential for surface component */
 	/*
 	 *   Include charge balance in list for mass-balance equations
 	 */
 	{
-		char * temp_name = string_duplicate( master_ptr->elt->name);
+        char * temp_name = string_duplicate( master_ptr->elt.name);
 		char *ptr = temp_name;
         get_secondary_in_species(ptr, s[n]->dz[0]);
 		free_check_null(temp_name);
@@ -3206,14 +3206,14 @@ add_cd_music_charge_balances(int n)
 	/*
 	 *  Find potential unknown for plane 1
 	 */
-	token = master_ptr->elt->name;
+    token = master_ptr->elt.name;
 	unknown_ptr = find_surface_charge_unknown(token, SURF_PSI1);
 	master_ptr = unknown_ptr->master[0];	/* potential for surface component */
 	/*
 	 *   Include charge balance in list for mass-balance equations
 	 */
 	{
-		char * temp_name = string_duplicate( master_ptr->elt->name);
+        char * temp_name = string_duplicate( master_ptr->elt.name);
 		char *ptr = temp_name;
         get_secondary_in_species(ptr, s[n]->dz[1]);
 		free_check_null(temp_name);
@@ -3221,14 +3221,14 @@ add_cd_music_charge_balances(int n)
 	/*
 	 *  Find potential unknown for plane 2
 	 */
-	token = master_ptr->elt->name;
+    token = master_ptr->elt.name;
 	unknown_ptr = find_surface_charge_unknown(token, SURF_PSI2);
 	master_ptr = unknown_ptr->master[0];	/* potential for surface component */
 	/*
 	 *   Include charge balance in list for mass-balance equations
 	 */
 	{
-		char * temp_name = string_duplicate(master_ptr->elt->name);
+        char * temp_name = string_duplicate(master_ptr->elt.name);
 		char *ptr = temp_name;
         get_secondary_in_species(ptr, s[n]->dz[2]);
 		free_check_null(temp_name);
@@ -3252,13 +3252,13 @@ rewrite_master_to_secondary(struct master *master_ptr1,
 /*
  *   Check that the two master species have the same primary master species
  */
-	master_ptr_p1 = master_ptr1->elt->primary;
-	master_ptr_p2 = master_ptr2->elt->primary;
+    master_ptr_p1 = master_ptr1->elt.primary;
+    master_ptr_p2 = master_ptr2->elt.primary;
 	if (master_ptr_p1 != master_ptr_p2 || master_ptr_p1 == NULL)
 	{
 		error_string = sformatf(
 				"All redox states must be for the same element. %s\t%s.",
-				master_ptr1->elt->name, master_ptr2->elt->name);
+                master_ptr1->elt.name, master_ptr2->elt.name);
 		error_msg(error_string, CONTINUE);
 		input_error++;
 		return (ERROR);
@@ -3526,7 +3526,7 @@ setup_surface(void)
 				/*
 				 *   Setup surface-potential unknown
 				 */
-				std::string token = master_ptr->elt->name;
+                std::string token = master_ptr->elt.name;
 				struct unknown *unknown_ptr = find_surface_charge_unknown(token, SURF_PSI);
 				if (unknown_ptr != NULL)
 				{
@@ -3575,7 +3575,7 @@ setup_surface(void)
 				 *   Setup 3 surface-potential unknowns
 				 */
 				mb_unknown_number = count_unknowns - 1;
-				std::string token(master_ptr->elt->name);
+                std::string token(master_ptr->elt.name);
 				std::string mass_balance_name(token);
 				int plane;
 				for (plane = SURF_PSI; plane <= SURF_PSI2; plane++)
@@ -5149,19 +5149,19 @@ tidy_redox(void)
  */
 	for (int i = 0; i < count_master; i++)
 	{
-		if (master[i]->primary == TRUE &&
-			(master[i]->s == s_hplus || master[i]->s == s_h2o))
+        if (master[i].primary == TRUE &&
+            (master[i].s == s_hplus || master[i].s == s_h2o))
 		{
 			int j = i + 1;
-			while (j < count_master && master[j]->elt->primary == master[i])
-			{
-				if (master[j]->in == FALSE && master[j]->s != master[i]->s)
-				{
-					master[j]->in = REWRITE;
-					master[j]->pe_rxn = master[i]->pe_rxn;
-				}
-				j++;
-			}
+//            while (j < count_master && master[j].elt.primary == master[i])
+//			{
+//                if (master[j].in == FALSE && master[j].s != master[i].s)
+//				{
+//                    master[j].in = REWRITE;
+//                    master[j].pe_rxn = master[i].pe_rxn;
+//				}
+//				j++;
+//			}
 		}
 	}
 /*
@@ -5320,28 +5320,28 @@ write_mb_eqn_x(void)
 		{
 			if (trxn.token[i].s->secondary != NULL)
 			{
-				master_ptr = trxn.token[i].s->secondary->elt->primary;
+                master_ptr = trxn.token[i].s->secondary->elt.primary;
 			}
 			else
 			{
-				master_ptr = trxn.token[i].s->primary;
+                master_ptr = trxn.token[i].s->primary;
 			}
-			if (elt_list[k].elt == master_ptr->elt)
-			{
-				elt_list[k].coef = 0.0;
-				break;
-			}
+//			if (elt_list[k].elt == master_ptr->elt)
+//			{
+//				elt_list[k].coef = 0.0;
+//				break;
+//			}
 		}
 		if (trxn.token[i].s->secondary == NULL)
 		{
-			char * temp_name = string_duplicate(trxn.token[i].s->primary->elt->name);
+            char * temp_name = string_duplicate(trxn.token[i].s->primary->elt.name);
 			char *ptr = temp_name;
             get_secondary_in_species(ptr, trxn.token[i].coef);
 			free_check_null(temp_name);
 		}
 		else
 		{
-			char * temp_name = string_duplicate(trxn.token[i].s->secondary->elt->name);
+            char * temp_name = string_duplicate(trxn.token[i].s->secondary->elt.name);
 			ptr = temp_name;
             get_secondary_in_species(ptr, trxn.token[i].coef);
 			free_check_null(temp_name);
@@ -5380,19 +5380,19 @@ write_mb_for_species_list(int n)
 	{
 		if (trxn.token[i].s->secondary == NULL)
 		{
-			char * temp_name = string_duplicate(trxn.token[i].s->primary->elt->name);
+            char * temp_name = string_duplicate(trxn.token[i].s->primary->elt.name);
 			char * ptr = temp_name;
             get_secondary_in_species(ptr, trxn.token[i].coef);
 			free_check_null(temp_name);
 		}
 		else
 		{
-			char * temp_name = string_duplicate(trxn.token[i].s->secondary->elt->name);
+            char * temp_name = string_duplicate(trxn.token[i].s->secondary->elt.name);
 			char * ptr = temp_name;
             if (get_secondary_in_species(ptr, trxn.token[i].coef) == ERROR)
 			{
 				input_error++;
-				error_string = sformatf( "Error parsing %s.", trxn.token[i].s->secondary->elt->name);
+                error_string = sformatf( "Error parsing %s.", trxn.token[i].s->secondary->elt.name);
 				error_msg(error_string, CONTINUE);
 			}
 			free_check_null(temp_name);
@@ -5448,14 +5448,14 @@ write_phase_sys_total(int n)
 	{
 		if (trxn.token[i].s->secondary == NULL)
 		{
-			char * temp_name = string_duplicate(trxn.token[i].s->primary->elt->name);
+            char * temp_name = string_duplicate(trxn.token[i].s->primary->elt.name);
 			char *ptr = temp_name;
             get_secondary_in_species(ptr, trxn.token[i].coef);
 			free_check_null(temp_name);
 		}
 		else
 		{
-			char * temp_name = string_duplicate(trxn.token[i].s->secondary->elt->name);
+            char * temp_name = string_duplicate(trxn.token[i].s->secondary->elt.name);
 			char *ptr = temp_name;
             get_secondary_in_species(ptr, trxn.token[i].coef);
 			free_check_null(temp_name);
@@ -5838,17 +5838,17 @@ save_model(void)
  */
 	for (i = 0; i < count_master; i++)
 	{
-		master[i]->last_model = FALSE;
-		if (master[i]->total > 0)
+        master[i].last_model = FALSE;
+        if (master[i].total > 0)
 		{
-			if (master[i]->primary == TRUE)
+            if (master[i].primary == TRUE)
 			{
-				master[i]->last_model = TRUE;
+                master[i].last_model = TRUE;
 			}
 			else
 			{
 				/* mark primary master */
-				master[i]->s->secondary->elt->primary->last_model = TRUE;
+                master[i].s->secondary->elt.primary->last_model = TRUE;
 			}
 		}
 	}
@@ -6031,22 +6031,22 @@ check_same_model(void)
 		output_msg(sformatf("%s\t%e\t%d\n", master[i]->elt->name,
 			master[i]->total, master[i]->last_model);
  */
-		if (master[i]->s == s_hplus || master[i]->s == s_h2o)
+        if (master[i].s == s_hplus || master[i].s == s_h2o)
 			continue;
-		if (master[i]->total > MIN_TOTAL && master[i]->last_model == TRUE)
+        if (master[i].total > MIN_TOTAL && master[i].last_model == TRUE)
 		{
-			if (master[i]->s->secondary != NULL)
+            if (master[i].s->secondary != NULL)
 			{
-				if (master[i]->s->secondary->unknown != NULL)
+                if (master[i].s->secondary->unknown != NULL)
 					continue;
 			}
 			else
 			{
-				if (master[i]->unknown != NULL)
+                if (master[i].unknown != NULL)
 					continue;
 			}
 		}
-		if (master[i]->total <= MIN_TOTAL && master[i]->last_model == FALSE)
+        if (master[i].total <= MIN_TOTAL && master[i].last_model == FALSE)
 			continue;
 		return (FALSE);
 	}
@@ -6323,7 +6323,7 @@ build_min_exch(void)
 				input_error++;
 				error_string = sformatf(
 						"Did not find unknown for %s, exchange related to mineral %s",
-						elt_list[jj].elt->primary->elt->name, comp_ref.Get_phase_name().c_str());
+                        elt_list[jj].elt->primary->elt.name, comp_ref.Get_phase_name().c_str());
 				error_msg(error_string, STOP);
 			}
 			if (master_ptr->in == FALSE)
@@ -6461,7 +6461,7 @@ build_min_surface(void)
 				input_error++;
 				error_string = sformatf(
 						"Did not find unknown for %s, surface related to mineral %s",
-						elt_list[jj].elt->primary->elt->name, comp_ptr->Get_phase_name().c_str());
+                        elt_list[jj].elt->primary->elt.name, comp_ptr->Get_phase_name().c_str());
 				error_msg(error_string, STOP);
 			}
 			if (master_ptr->s->type == SURF)
@@ -6611,7 +6611,7 @@ change_hydrogen_in_elt_list(LDBLE charge)
 		return (OK);
 	if (found_h < 0 && found_o >= 0)
 	{
-		elt_list[count_elts].elt = s_hplus->primary->elt;
+        elt_list[count_elts].elt = &s_hplus->primary->elt;
 		elt_list[count_elts].coef = coef;
 		count_elts++;
 		qsort(elt_list, (size_t) count_elts,

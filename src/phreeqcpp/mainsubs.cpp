@@ -1516,30 +1516,30 @@ xsolution_save(int n_user)
  */
 	for (int i = 0; i < count_master; i++)
 	{
-		if (master[i]->s->type == EX ||
-			master[i]->s->type == SURF || master[i]->s->type == SURF_PSI)
+        if (master[i].s->type == EX ||
+            master[i].s->type == SURF || master[i].s->type == SURF_PSI)
 			continue;
-		if (master[i]->s == s_hplus)
+        if (master[i].s == s_hplus)
 			continue;
-		if (master[i]->s == s_h2o)
+        if (master[i].s == s_h2o)
 			continue;
 /*
  *   Save list of log activities
  */
-		if (master[i]->in != FALSE)
+        if (master[i].in != FALSE)
 		{
-			temp_solution.Get_master_activity()[master[i]->elt->name] = master[i]->s->la;
+            temp_solution.Get_master_activity()[master[i].elt.name] = master[i].s->la;
 		}
-		if (master[i]->total <= MIN_TOTAL)
+        if (master[i].total <= MIN_TOTAL)
 		{
-			master[i]->total = 0.0;
-			master[i]->total_primary = 0.0;
+            master[i].total = 0.0;
+            master[i].total_primary = 0.0;
 			continue;
 		}
 /*
  *   Save list of concentrations
  */
-		temp_solution.Get_totals()[master[i]->elt->name] = master[i]->total;
+        temp_solution.Get_totals()[master[i].elt.name] = master[i].total;
 	}
 	if (pitzer_model == TRUE || sit_model == TRUE)
 	{
@@ -1972,9 +1972,9 @@ step_save_exch(int n_user)
 	// Set exchange total in one component
 	for (int i = 0; i < count_master; i++)
 	{
-		if (master[i]->s->type != EX)
+        if (master[i].s->type != EX)
 			continue;
-		std::string e(master[i]->elt->name);
+        std::string e(master[i].elt.name);
 		for (size_t j = 0; j < temp_exchange.Get_exchange_comps().size(); j++)
 		{
 			cxxNameDouble *nd = &(temp_exchange.Get_exchange_comps()[j].Get_totals());
@@ -1982,13 +1982,13 @@ step_save_exch(int n_user)
 			if (nd_it != nd->end())
 			{
 				LDBLE coef;
-				if (master[i]->total <= MIN_TOTAL)
+                if (master[i].total <= MIN_TOTAL)
 				{
 					coef = MIN_TOTAL;
 				}
 				else
 				{
-					coef = master[i]->total;
+                    coef = master[i].total;
 				}
 				nd->insert(nd_it->first.c_str(), coef);
 				break;
@@ -2017,24 +2017,24 @@ step_save_surf(int n_user)
 	cxxSurface *surface_ptr = Utilities::Rxn_find(Rxn_surface_map, n_user);
 	for (int i = 0; i < count_master; i++)
 	{
-		if (master[i]->s->type != SURF)
+        if (master[i].s->type != SURF)
 			continue;
 		for (size_t j = 0; j < surface_ptr->Get_surface_comps().size(); j++)
 		{
 			cxxSurfaceComp * comp_ptr = &(surface_ptr->Get_surface_comps()[j]);
 			cxxNameDouble & totals = comp_ptr->Get_totals();
-			if (totals.find(master[i]->elt->name) == totals.end())
+            if (totals.find(master[i].elt.name) == totals.end())
 			{
 				continue;
 			}
 			else
 			{
-				LDBLE coef = master[i]->total;
-				if (master[i]->total <= MIN_TOTAL)
+                LDBLE coef = master[i].total;
+                if (master[i].total <= MIN_TOTAL)
 				{
 					coef = MIN_TOTAL;
 				}
-				totals[master[i]->elt->name] = coef;
+                totals[master[i].elt.name] = coef;
 				break;
 			}
 		}

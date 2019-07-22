@@ -1209,7 +1209,7 @@ str_toupper(char *str)
 
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-strcmp_nocase(const char *str1, const char *str2)
+strcmp_nocase(std::string str1, std::string str2)
 /* ---------------------------------------------------------------------- */
 {
 /*

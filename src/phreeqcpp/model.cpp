@@ -2375,9 +2375,9 @@ molalities(int allow_overflow)
  */
 	for (i = 0; i < count_master; i++)
 	{
-		if (master[i]->in == REWRITE)
+        if (master[i].in == REWRITE)
 		{
-			master[i]->s->la = master[i]->s->lm + master[i]->s->lg;
+            master[i].s->la = master[i].s->lm + master[i].s->lg;
 		}
 	}
 	if (dl_type_x != cxxSurface::NO_DL)
@@ -5178,8 +5178,8 @@ sum_species(void)
  */
 	for (i = 0; i < count_master; i++)
 	{
-		master[i]->total = 0.0;
-		master[i]->total_primary = 0.0;
+        master[i].total = 0.0;
+        master[i].total_primary = 0.0;
 	}
 	for (i = 0; i < count_species_list; i++)
 	{
@@ -5220,7 +5220,7 @@ sum_species(void)
  */
 	for (i = 0; i < count_master; i++)
 	{
-		master[i]->elt->primary->total_primary += master[i]->total;
+        master[i].elt.primary->total_primary += master[i].total;
 	}
 	/*
 	 *  Calculate isotope ratios

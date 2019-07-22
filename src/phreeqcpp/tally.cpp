@@ -84,7 +84,7 @@ get_all_components(void)
 	// add secondary master species
 	for (i = 0; i < count_master; i++)
 	{
-		if (master[i]->total > 0.0 && master[i]->s->type == AQ && master[i]->primary == TRUE)
+        if (master[i].total > 0.0 && master[i]->s->type == AQ && master[i]->primary == TRUE)
 		{
 			for (int j = i + 1; j < count_master; j++)
 			{

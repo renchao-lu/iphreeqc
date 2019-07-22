@@ -153,7 +153,7 @@ size_t Phreeqc::list_components(std::list<std::string> &list_c)
 		struct master *master_ptr = master_bsearch_primary(string);
 		if (master_ptr == NULL) continue;
 		if (master_ptr->type != AQ) continue;
-		accumulator.add(master_ptr->elt->name, 1);
+        accumulator.add(master_ptr->elt.name, 1);
 	}
 	// print list
 	for (it = accumulator.begin(); it != accumulator.end(); it++)
@@ -789,7 +789,7 @@ void Phreeqc::init(void)
 	/*----------------------------------------------------------------------
 	*   Master species
 	*---------------------------------------------------------------------- */
-	master                  = NULL;
+    master;
 	dbg_master              = NULL;
 	count_master            = 0;
 	max_master              = MAX_MASTER;
@@ -1156,7 +1156,7 @@ void Phreeqc::init(void)
 	error                   = 0;
 	max_pct                 = 0;
 	scaled_error            = 0;
-	master_alk              = NULL;
+    master_alk;
 	row_back                = NULL;
 	col_back                = NULL;
 	good                    = NULL;
@@ -1977,37 +1977,34 @@ Phreeqc::InternalCopy(const Phreeqc *pSrc)
 	//max_master = pSrc->max_master;
 	//master = (struct master **) free_check_null(master);
 	//master = (struct master **) PHRQ_malloc((size_t) max_master * sizeof(struct master *));
-	space((void **)((void *)&master), pSrc->max_master, &max_master,
-		sizeof(struct master *));
-	if (master == NULL) malloc_error();
-	dbg_master = master;
+//	space((void **)((void *)&master), pSrc->max_master, &max_master,
+//		sizeof(struct master *));
+//    dbg_master = master;
 	for (int i = 0; i < count_master; i++)
-	{
-		master[i] = (struct master *) PHRQ_malloc( sizeof(struct master));
-		if (master[i] == NULL) malloc_error();
-		memcpy(master[i], pSrc->master[i], sizeof(struct master));
+    {
+        master[i] = pSrc->master[i];
 		// clean up pointers
-		master[i]->gfw_formula = NULL;
-		if (pSrc->master[i]->gfw_formula != NULL)
+        master[i].gfw_formula ="";
+        if (!pSrc->master[i].gfw_formula.empty())
 		{
-			master[i]->gfw_formula = string_hsave(pSrc->master[i]->gfw_formula);
+            master[i].gfw_formula = pSrc->master[i].gfw_formula;
 		}
-		master[i]->elt = element_store(pSrc->master[i]->elt->name);
-		master[i]->unknown = NULL;
-		master[i]->s = s_store(pSrc->master[i]->s->name, pSrc->master[i]->s->z, false);
+//        master[i].elt = element_store(pSrc->master[i].elt.name);
+        master[i].unknown = NULL;
+        master[i].s = s_store(pSrc->master[i].s->name, pSrc->master[i].s->z, false);
 		//rxn_primary
-		master[i]->rxn_primary = NULL;
-		if (pSrc->master[i]->rxn_primary != NULL)
+        master[i].rxn_primary = NULL;
+        if (pSrc->master[i].rxn_primary != NULL)
 		{
-			cxxChemRxn rxn_primary(pSrc->master[i]->rxn_primary);
-			master[i]->rxn_primary = cxxChemRxn2rxn(rxn_primary);
+            cxxChemRxn rxn_primary(pSrc->master[i].rxn_primary);
+            master[i].rxn_primary = cxxChemRxn2rxn(rxn_primary);
 		}
 		//rxn_secondary
-		master[i]->rxn_secondary = NULL;
-		if (pSrc->master[i]->rxn_secondary != NULL)
+        master[i].rxn_secondary = NULL;
+        if (pSrc->master[i].rxn_secondary != NULL)
 		{
-			cxxChemRxn rxn_secondary(pSrc->master[i]->rxn_secondary);
-			master[i]->rxn_secondary = cxxChemRxn2rxn(rxn_secondary);	
+            cxxChemRxn rxn_secondary(pSrc->master[i].rxn_secondary);
+            master[i].rxn_secondary = cxxChemRxn2rxn(rxn_secondary);
 		}
 	}
 	/*----------------------------------------------------------------------
@@ -2369,9 +2366,9 @@ Phreeqc::InternalCopy(const Phreeqc *pSrc)
 		master_isotope_ptr->master = NULL;
 		if (pSrc->master_isotope[i]->master)
 		{
-			char * name = string_duplicate(pSrc->master_isotope[i]->master->elt->name);
-			master_isotope_ptr->master = master_search(name, &n);
-			free_check_null(name);
+            auto name = pSrc->master_isotope[i]->master->elt.name;
+            master_isotope_ptr->master = master_search(const_cast<char*>(name), &n);
+//			free_check_null(name);
 		}
 		if (master_isotope_ptr->master == NULL)
 		{

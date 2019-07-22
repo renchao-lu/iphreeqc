@@ -73,11 +73,11 @@ clean_up(void)
 
 /* master species */
 
-	for (j = 0; j < count_master; j++)
-	{
-		master_free(master[j]);
-	}
-	master = (struct master **) free_check_null(master);
+//	for (j = 0; j < count_master; j++)
+//	{
+//		master_free(master[j]);
+//	}
+//	master = (struct master **) free_check_null(master);
 
 /* elements */
 
@@ -1012,47 +1012,6 @@ inverse_sort(void)
  *
  * ********************************************************************** */
 /* ---------------------------------------------------------------------- */
-struct master * Phreeqc::
-master_alloc(void)
-/* ---------------------------------------------------------------------- */
-/*
- *   Allocates space to a master structure and initializes the space.
- *      arguments: void
- *      return: pointer to a master structure
- */
-{
-	struct master *ptr;
-	ptr = (struct master *) PHRQ_malloc(sizeof(struct master));
-	if (ptr == NULL)
-		malloc_error();
-/*
- *   set pointers in structure to NULL
- */
-	ptr->in = FALSE;
-	ptr->number = -1;
-	ptr->last_model = -1;
-	ptr->type = 0;
-	ptr->primary = FALSE;
-	ptr->coef = 0.0;
-	ptr->total = 0.0;
-	ptr->isotope_ratio = 0;
-	ptr->isotope_ratio_uncertainty = 0;
-	ptr->isotope = 0;
-	ptr->total_primary = 0;
-	ptr->elt = NULL;
-	ptr->alk = 0.0;
-	ptr->gfw = 0.0;
-	ptr->gfw_formula = NULL;
-	ptr->unknown = NULL;
-	ptr->s = NULL;
-	ptr->rxn_primary = NULL;
-	ptr->rxn_secondary = NULL;
-	ptr->pe_rxn = NULL;
-	ptr->minor_isotope = FALSE;
-	return (ptr);
-}
-
-/* ---------------------------------------------------------------------- */
 int Phreeqc::
 master_delete(char *ptr)
 /* ---------------------------------------------------------------------- */
@@ -1071,7 +1030,7 @@ master_delete(char *ptr)
 
 	if (master_search(ptr, &n) == NULL)
 		return (FALSE);
-	master_free(master[n]);
+//	master_free(master[n]);
 	for (j = n; j < (count_master - 1); j++)
 	{
 		master[j] = master[j + 1];
@@ -1115,18 +1074,18 @@ master_bsearch(const char *ptr)
 	{
 		return (NULL);
 	}
-	void_ptr = bsearch((const char *) ptr,
-					   (char *) master,
-					   (unsigned) count_master,
-					   sizeof(struct master *), master_compare_string);
+//	void_ptr = bsearch((const char *) ptr,
+//					   (char *) master,
+//					   (unsigned) count_master,
+//					   sizeof(struct master *), master_compare_string);
 	if (void_ptr == NULL)
 	{
 		char * dup = string_duplicate(ptr);
 		replace("(+","(", dup);
-		void_ptr = bsearch((const char *) dup,
-			(char *) master,
-			(unsigned) count_master,
-			sizeof(struct master *), master_compare_string);
+//		void_ptr = bsearch((const char *) dup,
+//			(char *) master,
+//			(unsigned) count_master,
+//			sizeof(struct master *), master_compare_string);
 		dup = (char *) free_check_null(dup);
 	}
 	if (void_ptr == NULL)
@@ -1149,7 +1108,7 @@ master_compare_string(const void *ptr1, const void *ptr2)
 
 	string_ptr = (const char *) ptr1;
 	master_ptr = *(const struct master **) ptr2;
-	return (strcmp_nocase(string_ptr, master_ptr->elt->name));
+    return (strcmp_nocase(string_ptr, master_ptr->elt.name));
 }
 
 /* ---------------------------------------------------------------------- */
@@ -1160,7 +1119,7 @@ master_compare(const void *ptr1, const void *ptr2)
 	const struct master *master_ptr1, *master_ptr2;
 	master_ptr1 = *(const struct master **) ptr1;
 	master_ptr2 = *(const struct master **) ptr2;
-	return (strcmp_nocase(master_ptr1->elt->name, master_ptr2->elt->name));
+    return (strcmp_nocase(master_ptr1->elt.name, master_ptr2->elt.name));
 }
 
 /* ---------------------------------------------------------------------- */
@@ -1232,7 +1191,7 @@ master_bsearch_secondary(char *ptr)
 	if (master_ptr_primary)
 	{
 		if ((master_ptr_primary->number >= count_master - 1) || 
-			(master[master_ptr_primary->number + 1]->elt->primary != master_ptr_primary))
+            (master[master_ptr_primary->number + 1].elt.primary != master_ptr_primary))
 		{
 			return(master_ptr_primary);
 		}
@@ -1242,26 +1201,26 @@ master_bsearch_secondary(char *ptr)
 		master_ptr = NULL;
 		for (j = master_ptr_primary->number + 1; j < count_master; j++)
 		{
-			if (master[j]->s == master_ptr_primary->s)
+            if (master[j].s == master_ptr_primary->s)
 			{
-				master_ptr = master[j];
+//				master_ptr = master[j];
 			}
 		}
 	}
 /*
  *
  */
-	if (master_ptr != NULL && master_ptr->elt != NULL && (master_ptr->elt->primary == master_ptr_primary))
-	{
-		master_ptr_secondary = master_ptr;
-	}
-	else
-	{		
-		input_error++;
-		error_string = sformatf(
-				"Could not find secondary master species for %s.", ptr);
-		error_msg(error_string, STOP);
-	}
+//    if (master_ptr != NULL && master_ptr->elt != NULL && (master_ptr->elt.primary == master_ptr_primary))
+//	{
+//		master_ptr_secondary = master_ptr;
+//	}
+//	else
+//	{
+//		input_error++;
+//		error_string = sformatf(
+//				"Could not find secondary master species for %s.", ptr);
+//		error_msg(error_string, STOP);
+//	}
 
 
 	return (master_ptr_secondary);
@@ -1284,10 +1243,10 @@ master_search(char *ptr, int *n)
 	*n = -999;
 	for (i = 0; i < count_master; i++)
 	{
-		if (strcmp(ptr, master[i]->elt->name) == 0)
+        if (strcmp(ptr, master[i].elt.name) == 0)
 		{
 			*n = i;
-			master_ptr = master[i];
+//			master_ptr = master[i];
 			return (master_ptr);
 		}
 	}
@@ -2439,19 +2398,19 @@ species_list_compare(const void *ptr1, const void *ptr2)
  */
 	if (nptr1->master_s->secondary != NULL)
 	{
-		name1 = nptr1->master_s->secondary->elt->name;
+        name1 = nptr1->master_s->secondary->elt.name;
 	}
 	else
 	{
-		name1 = nptr1->master_s->primary->elt->name;
+        name1 = nptr1->master_s->primary->elt.name;
 	}
 	if (nptr2->master_s->secondary != NULL)
 	{
-		name2 = nptr2->master_s->secondary->elt->name;
+        name2 = nptr2->master_s->secondary->elt.name;
 	}
 	else
 	{
-		name2 = nptr2->master_s->primary->elt->name;
+        name2 = nptr2->master_s->primary->elt.name;
 	}
 /*
  *   Compare name of primary or secondary master species; log molality
@@ -2543,19 +2502,19 @@ species_list_compare_master(const void *ptr1, const void *ptr2)
  */
 	if (nptr1->master_s->secondary != NULL)
 	{
-		name1 = nptr1->master_s->secondary->elt->name;
+        name1 = nptr1->master_s->secondary->elt.name;
 	}
 	else
 	{
-		name1 = nptr1->master_s->primary->elt->name;
+        name1 = nptr1->master_s->primary->elt.name;
 	}
 	if (nptr2->master_s->secondary != NULL)
 	{
-		name2 = nptr2->master_s->secondary->elt->name;
+        name2 = nptr2->master_s->secondary->elt.name;
 	}
 	else
 	{
-		name2 = nptr2->master_s->primary->elt->name;
+        name2 = nptr2->master_s->primary->elt.name;
 	}
 /*
  *   Compare name of primary or secondary master species; log molality
@@ -3187,7 +3146,7 @@ unknown_alloc(void)
 	unknown_ptr->si = 0.0;
 	unknown_ptr->s = NULL;
 	unknown_ptr->exch_comp = NULL;
-	unknown_ptr->pp_assemblage_comp_name = NULL;
+    unknown_ptr->pp_assemblage_comp_name;
 	unknown_ptr->pp_assemblage_comp_ptr = NULL;
 	unknown_ptr->ss_name = NULL;
 	unknown_ptr->ss_ptr = NULL;

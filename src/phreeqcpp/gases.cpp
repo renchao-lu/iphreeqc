@@ -205,7 +205,7 @@ build_fixed_volume_gas(void)
 				{
 					error_string = sformatf(
 							"Element, %s, in phase, %s, is not in model.",
-							master_ptr->elt->name, phase_ptr->name);
+                            master_ptr->elt.name, phase_ptr->name);
 					error_msg(error_string, CONTINUE);
 					input_error++;
 				}
@@ -298,7 +298,7 @@ build_fixed_volume_gas(void)
 					{
 						error_string = sformatf(
 							"Element, %s, in phase, %s, is not in model.",
-							master_ptr->elt->name, phase_ptr->name);
+                            master_ptr->elt.name, phase_ptr->name);
 						warning_msg(error_string);
 					}
 					col = master_ptr->unknown->number;

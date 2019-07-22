@@ -242,7 +242,7 @@ step(LDBLE step_fraction)
 				LDBLE min = 1e10;
 				for (e_ptr = p_ptr->next_elt; e_ptr->elt != NULL; e_ptr++)
 				{
-					std::string e(e_ptr->elt->primary->elt->name);
+                    std::string e(e_ptr->elt->primary->elt.name);
 					cxxNameDouble::iterator st = sys_tots.find(e.c_str());
 					if (st != sys_tots.end())
 					{
@@ -270,7 +270,7 @@ step(LDBLE step_fraction)
 					LDBLE min = 1e10;
 					for (e_ptr = p_ptr->next_elt; e_ptr->elt != NULL; e_ptr++)
 					{
-						std::string e(e_ptr->elt->primary->elt->name);
+                        std::string e(e_ptr->elt->primary->elt.name);
 						cxxNameDouble::iterator st = sys_tots.find(e.c_str());
 						if (st != sys_tots.end())
 						{
@@ -320,9 +320,9 @@ xsolution_zero(void)
 
 	for (i = 0; i < count_master; i++)
 	{
-		master[i]->total = 0.0;
-		master[i]->total_primary = 0.0;
-		master[i]->s->la = 0.0;
+        master[i].total = 0.0;
+        master[i].total_primary = 0.0;
+        master[i].s->la = 0.0;
 	}
 	if (pitzer_model == TRUE || sit_model == TRUE)
 	{
@@ -461,9 +461,9 @@ add_exchange(cxxExchange *exchange_ptr)
 	{
 		for (int i = 0; i < count_master; i++)
 		{
-			if (master[i]->type == EX && master[i]->total > 0)
+            if (master[i].type == EX && master[i].total > 0)
 			{
-				master[i]->s->la = log10(0.1 * master[i]->total);
+                master[i].s->la = log10(0.1 * master[i].total);
 			}
 		}
 	}
@@ -1345,9 +1345,9 @@ pp_assemblage_check(cxxPPassemblage *pp_assemblage_ptr)
  */
 					for (int k = 0; k < count_master; k++)
 					{
-						if (master[k]->elt->primary == master_ptr)
+                        if (master[k].elt.primary == master_ptr)
 						{
-							master[k]->s->la = -9999.999;
+                            master[k].s->la = -9999.999;
 						}
 					}
 				}
@@ -1420,9 +1420,9 @@ ss_assemblage_check(cxxSSassemblage *ss_assemblage_ptr)
 					 */
 					for (k = 0; k < count_master; k++)
 					{
-						if (master[k]->elt->primary == master_ptr)
+                        if (master[k].elt.primary == master_ptr)
 						{
-							master[k]->s->la = -9999.999;
+                            master[k].s->la = -9999.999;
 						}
 					}
 				}
@@ -1447,7 +1447,7 @@ solution_check(void)
  */
 	for (i = 0; i < count_master; i++)
 	{
-		master_ptr = master[i];
+//		master_ptr = master[i];
 		if (master_ptr->total <= MIN_TOTAL && master_ptr->total >= -MIN_TOTAL)
 		{
 			master_ptr->total = 0;
@@ -1475,7 +1475,7 @@ solution_check(void)
 		{
 			error_string = sformatf(
 				"Negative moles in solution %d for %s, %e. Recovering...",
-				cell_no, master_ptr->elt->name, (double)master_ptr->total);
+                cell_no, master_ptr->elt.name, (double)master_ptr->total);
 			warning_msg(error_string);
 		}
 		return (MASS_BALANCE);

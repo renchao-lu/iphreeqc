@@ -449,7 +449,7 @@ struct inverse
 struct inv_elts
 {
 	const char *name;
-	struct master *master;
+        struct master *master;
 	int row;
 	int count_uncertainties;
 	LDBLE *uncertainties;
@@ -777,30 +777,30 @@ struct phase
  *---------------------------------------------------------------------- */
  struct master
  {								/* list of name and number of elements in an equation */
- 	int in;						/* TRUE if in model, FALSE if out, REWRITE if other mb eq */
- 	int number;					/* sequence number in list of masters */
- 	int last_model;				/* saved to determine if model has changed */
- 	int type;					/* AQ or EX */
- 	int primary;				/* TRUE if master species is primary */
- 	LDBLE coef;					/* coefficient of element in master species */
- 	LDBLE total;				/* total concentration for element or valence state */
- 	LDBLE isotope_ratio;
- 	LDBLE isotope_ratio_uncertainty;
- 	int isotope;
- 	LDBLE total_primary;
+        int in = 0;						/* TRUE if in model, FALSE if out, REWRITE if other mb eq */
+        int number = -1;					/* sequence number in list of masters */
+        int last_model = -1;				/* saved to determine if model has changed */
+        int type = 0;					/* AQ or EX */
+        int primary = 0;				/* TRUE if master species is primary */
+        double coef = 0.0;					/* coefficient of element in master species */
+        double total = 0.0;				/* total concentration for element or valence state */
+        double isotope_ratio = 0.0;
+        double isotope_ratio_uncertainty = 0.0;
+        int isotope = 0;
+        double total_primary = 0.0;
  	/*    LDBLE la;  */ /* initial guess of master species log activity */
- 	struct element *elt;		/* element structure */
- 	LDBLE alk;					/* alkalinity of species */
- 	LDBLE gfw;					/* default gfw for species */
- 	const char *gfw_formula;			/* formula from which to calcuate gfw */
- 	struct unknown *unknown;	/* pointer to unknown structure */
- 	struct species *s;			/* pointer to species structure */
- 	struct reaction *rxn_primary;	/* reaction writes master species in terms of primary
+        struct element elt;		/* element structure */
+        double alk = 0.0;					/* alkalinity of species */
+        double gfw = 0.0;					/* default gfw for species */
+        std::string gfw_formula;			/* formula from which to calcuate gfw */
+        struct unknown *unknown = nullptr;	/* pointer to unknown structure */
+        struct species *s = nullptr;			/* pointer to species structure */
+        struct reaction *rxn_primary = nullptr;	/* reaction writes master species in terms of primary
  									   master species */
- 	struct reaction *rxn_secondary;	/* reaction writes master species in terms of secondary
+        struct reaction *rxn_secondary = nullptr;	/* reaction writes master species in terms of secondary
  									   master species */
-	const char * pe_rxn;
- 	int minor_isotope;
+        std::string pe_rxn;
+        int minor_isotope = 0;
 };
 /*----------------------------------------------------------------------
  *   Unknowns
@@ -822,7 +822,7 @@ struct unknown
 	int n_gas_phase_user;
 	struct species *s;
 	const char * exch_comp;
-	const char *pp_assemblage_comp_name;
+        std::string pp_assemblage_comp_name;
 	void *pp_assemblage_comp_ptr; 
 	const char * ss_name;
 	void *ss_ptr; 
@@ -998,7 +998,7 @@ struct isotope_alpha
 };
 struct system_species
 {
-	char *name;
+        std::string name;
 	char *type;
 	LDBLE moles;
 };

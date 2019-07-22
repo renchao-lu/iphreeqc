@@ -119,7 +119,7 @@ public:
 	LDBLE diff_layer_total(const char *total_name, const char *surface_name);
 	LDBLE edl_species(const char *surf_name, LDBLE * count, char ***names, LDBLE ** moles, LDBLE * area, LDBLE * thickness);
 	int get_edl_species(cxxSurfaceCharge & charge_ref);
-	LDBLE equi_phase(const char *phase_name);
+    LDBLE equi_phase(std::string phase_name);
 	LDBLE equi_phase_delta(const char *phase_name);
 	LDBLE equivalent_fraction(const char *name, LDBLE *eq, std::string &elt_name);
 	LDBLE find_gas_comp(const char *gas_comp_name);
@@ -740,7 +740,7 @@ public:
     LDBLE *read_list_doubles(std::string ptr, int *count_doubles);
     int *read_list_ints(std::string ptr, int *count_ints, int positive);
     int *read_list_t_f(std::string ptr, int *count_ints);
-	int read_master_species(void);
+    void read_master_species();
 	int read_mix(void);
 	int read_entity_mix(std::map<int, cxxMix> &mix_map);
 	//int read_solution_mix(void);
@@ -1116,7 +1116,7 @@ protected:
 public:
 	static int replace(const char *str1, const char *str2, char *str);
 	static bool replace(const char *str1, const char *str2, std::string & str);
-	static int strcmp_nocase(const char *str1, const char *str2);
+    static int strcmp_nocase(std::string str1, std::string str2);
 	static int strcmp_nocase_arg1(const char *str1, const char *str2);
 protected:
 	void space(void **ptr, int i, int *max, int struct_size);
@@ -1519,7 +1519,7 @@ protected:
 	/*----------------------------------------------------------------------
 	*   Master species
 	*---------------------------------------------------------------------- */
-	struct master **master;	/* structure array of master species */
+    std::vector<struct master> master;	/* structure array of master species */
 	struct master **dbg_master;
 	int count_master;
 	int max_master;
@@ -1839,7 +1839,7 @@ protected:
 	int *inv_iu, *inv_is;
 	int klmd, nklmd, n2d, kode, iter;
 	LDBLE toler, error, max_pct, scaled_error;
-	struct master *master_alk;
+    struct master master_alk;
 	int *row_back, *col_back;
 	unsigned long *good, *bad, *minimal;
 	int max_good, max_bad, max_minimal;

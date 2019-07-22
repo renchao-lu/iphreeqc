@@ -189,7 +189,7 @@ typedef enum {
 /* HSEARCH(3C) */
 typedef struct entry
 {
-	const char *key;
+        std::string key;
 	void *data;
 } ENTRY;
 typedef enum
@@ -206,7 +206,7 @@ typedef struct Element
 	 ** as we pretend to pass back only a pointer to ENTRY.
 	 ** {S}he doesn`t know what else is in here.
 	 */
-	const char *Key;
+        std::string Key;
 	char *Data;
 	struct Element *Next;		/* secret from user    */
 } Element, *Segment;

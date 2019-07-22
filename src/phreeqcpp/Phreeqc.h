@@ -388,7 +388,7 @@ public:
 	struct isotope_ratio *isotope_ratio_search(const char *name);
 	struct isotope_ratio *isotope_ratio_store(const char *name,
 		int replace_if_found);
-	struct master_isotope *master_isotope_store(const char *name,
+    struct master_isotope *master_isotope_store(std::string name,
 		int replace_if_found);
 	struct master_isotope *master_isotope_alloc(void);
 	struct master_isotope *master_isotope_search(const char *name);
@@ -887,7 +887,7 @@ public:
 protected:
 	struct logk *logk_alloc(void);
 	int logk_copy2orig(struct logk *logk_ptr);
-	struct logk *logk_store(char *name, int replace_if_found);
+    struct logk *logk_store(std::string name, int replace_if_found);
 	struct logk *logk_search(const char *name);
 	struct master *master_alloc(void);
 	static int master_compare(const void *ptr1, const void *ptr2);
@@ -1130,7 +1130,7 @@ public:
 #else
 	char *string_duplicate(const char *token);
 #endif
-    const char *string_hsave(const char * str);
+    const char *string_hsave(std::string str);
 	void strings_map_clear();
 #ifdef HASH
 	void strings_hash_clear();
@@ -1150,7 +1150,7 @@ protected:
 	extern int clean_up_null(void);
 #endif
 	int isamong(char c, const char *s_l);
-	Address Hash_multi(HashTable * Table, const char *Key);
+    Address Hash_multi(HashTable * Table, std::string Key);
 	void ExpandTable_multi(HashTable * Table);
 public:
 	int main_method(int argc, char *argv[]);

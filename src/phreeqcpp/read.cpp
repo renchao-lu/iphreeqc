@@ -10638,6 +10638,17 @@ next_keyword_or_option(const char **opt_list, int count_opt_list)
 enum class NamedExpressionKeywords
 {
     log_k,
+    logk,
+    delta_h,
+    deltah,
+    analytical_expression,
+    a_e,
+    ae,
+    ln_alpha1000,
+    add_logk,
+    add_log_k,
+    vm,
+    name
 };
 
 inline NamedExpressionKeywords convertStringToNamedExpressionKeywords(std::string const& inString)
@@ -10669,31 +10680,16 @@ read_named_logk()
 
 	int l;
 	int i, empty;
-	struct logk *logk_ptr;
-	char token[MAX_LENGTH];
+    struct logk* logk_ptr = nullptr;
 
-	int return_value, opt, opt_save;
-	char *next_char;
-	const char *opt_list[] = {
-		"log_k",				/* 0 */
-		"logk",					/* 1 */
-		"delta_h",				/* 2 */
-		"deltah",				/* 3 */
-		"analytical_expression",	/* 4 */
-		"a_e",					/* 5 */
-		"ae",					/* 6 */
-		"ln_alpha1000",			/* 7 */
-		"add_logk",				/* 8 */
-		"add_log_k",			/* 9 */
-		"vm"					/* 10 */
-	};
-	int count_opt_list = 11;
-	logk_ptr = NULL;
+    int return_value, opt, opt_save;
+    char *next_char;
 /*
  *   Read name followed by options
  */
 	opt_save = OPTION_DEFAULT;
 	return_value = UNKNOWN;
+    auto in = phrq_io->get_istream();
     while (std::getline(*in, line))
 	{
         if (line.at(0) == '#')
@@ -10702,174 +10698,174 @@ read_named_logk()
                 break;
             continue;
         }
+
         auto opt = convertStringToNamedExpressionKeywords(line);
 		switch (opt)
 		{
-		case 0:				/* log_k */
-		case 1:				/* logk */
-			if (logk_ptr == NULL)
-			{
-				error_string = sformatf(
-						"No reaction defined before option, %s.",
-						opt_list[opt]);
-				error_msg(error_string, CONTINUE);
-				input_error++;
-				break;
-			}
-			read_log_k_only(next_char, &logk_ptr->log_k[0]);
-			logk_copy2orig(logk_ptr);
-			opt_save = OPTION_DEFAULT;
-			break;
-		case 2:				/* delta_h */
-		case 3:				/* deltah */
-			if (logk_ptr == NULL)
-			{
-				error_string = sformatf(
-						"No reaction defined before option, %s.",
-						opt_list[opt]);
-				error_msg(error_string, CONTINUE);
-				input_error++;
-				break;
-			}
-			read_delta_h_only(next_char, &logk_ptr->log_k[1],
-							  &logk_ptr->original_units);
-			logk_copy2orig(logk_ptr);
-			opt_save = OPTION_DEFAULT;
-			break;
-//		case 4:				/* analytical_expression */
-//		case 5:				/* a_e */
-//		case 6:				/* ae */
-//			if (logk_ptr == NULL)
-//			{
-//				error_string = sformatf(
-//						"No reaction defined before option, %s.",
-//						opt_list[opt]);
-//				error_msg(error_string, CONTINUE);
-//				input_error++;
-//				break;
-//			}
-//			read_analytical_expression_only(next_char, &(logk_ptr->log_k[T_A1]));
-//			logk_copy2orig(logk_ptr);
-//			opt_save = OPTION_DEFAULT;
-//			break;
-//		case 7:				/* ln_alpha1000 */
-//			if (logk_ptr == NULL)
-//			{
-//				error_string = sformatf(
-//						"No reaction defined before option, %s.",
-//						opt_list[opt]);
-//				error_msg(error_string, CONTINUE);
-//				input_error++;
-//				break;
-//			}
-//			empty = TRUE;
-//			for (i = T_A1; i <= T_A6; i++)
-//			{
-//				if (logk_ptr->log_k[i] != 0.0)
-//				{
-//					empty = FALSE;
-//					logk_ptr->log_k[i] = 0.0;
-//				}
-//			}
-//			if (empty == FALSE)
-//			{
-//				error_string = sformatf(
-//						"Analytical expression previously defined for %s in NAMED_EXPRESSIONS\nAnalytical expression will be overwritten.",
-//						logk_ptr->name);
-//				warning_msg(error_string);
-//			}
-//			read_analytical_expression_only(next_char, &(logk_ptr->log_k[T_A1]));
-//			for (i = T_A1; i < T_A6; i++)
-//			{
-//				logk_ptr->log_k[i] /= 1000. * LOG_10;
-//			}
-//			logk_copy2orig(logk_ptr);
-//			opt_save = OPTION_DEFAULT;
-//			break;
-//		case 8:				/* add_logk */
-//		case 9:				/* add_log_k */
-//			if (logk_ptr == NULL)
-//			{
-//				error_string = sformatf(
-//						"No reaction defined before option, %s.",
-//						opt_list[opt]);
-//				error_msg(error_string, CONTINUE);
-//				input_error++;
-//				break;
-//			}
-//			if (logk_ptr->count_add_logk == 0)
-//			{
-//				logk_ptr->add_logk =
-//					(struct name_coef *)
-//					PHRQ_malloc(sizeof(struct name_coef));
-//				if (logk_ptr->add_logk == NULL)
-//					malloc_error();
-//			}
-//			else
-//			{
-//				logk_ptr->add_logk =
-//					(struct name_coef *) PHRQ_realloc(logk_ptr->add_logk,
-//													  (size_t) ((logk_ptr->
-//																 count_add_logk
-//																 +
-//																 1) *
-//																sizeof
-//																(struct
-//																 name_coef)));
-//				if (logk_ptr->add_logk == NULL)
-//					malloc_error();
-//			}
-//			/* read name */
-//            if (copy_token(token, next_char, &i) == EMPTY)
-//			{
-//				input_error++;
-//				error_string = sformatf(
-//						"Expected the name of a NAMED_EXPRESSION.");
-//				error_msg(error_string, CONTINUE);
-//				break;
-//			}
-//			logk_ptr->add_logk[logk_ptr->count_add_logk].name =
-//				string_hsave(token);
-//			/* read coef */
-//			i = sscanf(next_char, SCANFORMAT,
-//					   &logk_ptr->add_logk[logk_ptr->count_add_logk].coef);
-//			if (i <= 0)
-//			{
-//				logk_ptr->add_logk[logk_ptr->count_add_logk].coef = 1;
-//			}
-//			logk_ptr->count_add_logk++;
-//			opt_save = OPTION_DEFAULT;
-//			break;
-//		case 10:            /* vm, molar volume */
-//			if (logk_ptr == NULL)
-//			{
-//				error_string = sformatf(
-//					"No reaction defined before option, %s.",
-//				opt_list[opt]);
-//				error_msg(error_string, CONTINUE);
-//				input_error++;
-//				break;
-//			}
-//			read_vm_only(next_char, &logk_ptr->log_k[vm0],
-//				&logk_ptr->original_deltav_units);
-//			logk_copy2orig(logk_ptr);
-//			opt_save = OPTION_DEFAULT;
-//			break;
-//		case OPTION_DEFAULT:
-///*
-// *   Get space for logk information
-// */
-//			logk_ptr = NULL;
-//            copy_token(token, next_char, &l);
-
-//			logk_ptr = logk_store(token, TRUE);
-///*
-// *   Get pointer to each species in the reaction, store new species if necessary
-// */
-//			opt_save = OPTION_DEFAULT;
-//			break;
-		}
-		if (return_value == EOF || return_value == KEYWORD)
+            case NamedExpressionKeywords::log_k:
+            case NamedExpressionKeywords::logk:
+            {
+                if (logk_ptr == NULL)
+                {
+                    error_string =
+                        sformatf("No reaction defined before option, logk.");
+                    error_msg(error_string, CONTINUE);
+                    input_error++;
+                    break;
+                }
+                read_log_k_only(next_char, &logk_ptr->log_k[0]);
+                logk_copy2orig(logk_ptr);
+                opt_save = OPTION_DEFAULT;
+                break;
+            }
+            case NamedExpressionKeywords::delta_h:
+            case NamedExpressionKeywords::deltah:
+            {
+                if (logk_ptr == NULL)
+                {
+                    error_string =
+                        sformatf("No reaction defined before option, deltah.");
+                    error_msg(error_string, CONTINUE);
+                    input_error++;
+                    break;
+                }
+                read_delta_h_only(next_char, &logk_ptr->log_k[1],
+                                  &logk_ptr->original_units);
+                logk_copy2orig(logk_ptr);
+                opt_save = OPTION_DEFAULT;
+                break;
+            }
+                //		case 4:				/* analytical_expression */
+                //		case 5:				/* a_e */
+                //		case 6:				/* ae */
+                //			if (logk_ptr == NULL)
+                //			{
+                //				error_string = sformatf(
+                //						"No reaction defined before option,
+                //%s.", 						opt_list[opt]);
+                // error_msg(error_string, CONTINUE); 				input_error++;
+                // break;
+                //			}
+                //			read_analytical_expression_only(next_char,
+                //&(logk_ptr->log_k[T_A1])); logk_copy2orig(logk_ptr); opt_save
+                //= OPTION_DEFAULT; 			break; 		case 7: /*
+                // ln_alpha1000
+                //*/ 			if (logk_ptr == NULL)
+                //			{
+                //				error_string = sformatf(
+                //						"No reaction defined before option,
+                //%s.", 						opt_list[opt]);
+                // error_msg(error_string, CONTINUE); 				input_error++;
+                // break;
+                //			}
+                //			empty = TRUE;
+                //			for (i = T_A1; i <= T_A6; i++)
+                //			{
+                //				if (logk_ptr->log_k[i] != 0.0)
+                //				{
+                //					empty = FALSE;
+                //					logk_ptr->log_k[i] = 0.0;
+                //				}
+                //			}
+                //			if (empty == FALSE)
+                //			{
+                //				error_string = sformatf(
+                //						"Analytical expression previously defined
+                //for %s in NAMED_EXPRESSIONS\nAnalytical expression will be
+                // overwritten.", 						logk_ptr->name);
+                // warning_msg(error_string);
+                //			}
+                //			read_analytical_expression_only(next_char,
+                //&(logk_ptr->log_k[T_A1])); 			for (i = T_A1; i < T_A6;
+                // i++)
+                //			{
+                //				logk_ptr->log_k[i] /= 1000. * LOG_10;
+                //			}
+                //			logk_copy2orig(logk_ptr);
+                //			opt_save = OPTION_DEFAULT;
+                //			break;
+                //		case 8:				/* add_logk */
+                //		case 9:				/* add_log_k */
+                //			if (logk_ptr == NULL)
+                //			{
+                //				error_string = sformatf(
+                //						"No reaction defined before option,
+                //%s.", 						opt_list[opt]);
+                // error_msg(error_string, CONTINUE); 				input_error++;
+                // break;
+                //			}
+                //			if (logk_ptr->count_add_logk == 0)
+                //			{
+                //				logk_ptr->add_logk =
+                //					(struct name_coef *)
+                //					PHRQ_malloc(sizeof(struct name_coef));
+                //				if (logk_ptr->add_logk == NULL)
+                //					malloc_error();
+                //			}
+                //			else
+                //			{
+                //				logk_ptr->add_logk =
+                //					(struct name_coef *)
+                // PHRQ_realloc(logk_ptr->add_logk,
+                // (size_t)
+                // ((logk_ptr->
+                // count_add_logk
+                //																 +
+                //																 1)
+                //* sizeof (struct
+                //name_coef))); if (logk_ptr->add_logk == NULL)
+                // malloc_error();
+                //			}
+                //			/* read name */
+                //            if (copy_token(token, next_char, &i) == EMPTY)
+                //			{
+                //				input_error++;
+                //				error_string = sformatf(
+                //						"Expected the name of a
+                // NAMED_EXPRESSION."); 				error_msg(error_string,
+                // CONTINUE); break;
+                //			}
+                //			logk_ptr->add_logk[logk_ptr->count_add_logk].name =
+                //				string_hsave(token);
+                //			/* read coef */
+                //			i = sscanf(next_char, SCANFORMAT,
+                //					   &logk_ptr->add_logk[logk_ptr->count_add_logk].coef);
+                //			if (i <= 0)
+                //			{
+                //				logk_ptr->add_logk[logk_ptr->count_add_logk].coef
+                //= 1;
+                //			}
+                //			logk_ptr->count_add_logk++;
+                //			opt_save = OPTION_DEFAULT;
+                //			break;
+                //		case 10:            /* vm, molar volume */
+                //			if (logk_ptr == NULL)
+                //			{
+                //				error_string = sformatf(
+                //					"No reaction defined before option, %s.",
+                //				opt_list[opt]);
+                //				error_msg(error_string, CONTINUE);
+                //				input_error++;
+                //				break;
+                //			}
+                //			read_vm_only(next_char, &logk_ptr->log_k[vm0],
+                //				&logk_ptr->original_deltav_units);
+                //			logk_copy2orig(logk_ptr);
+                //			opt_save = OPTION_DEFAULT;
+                //			break;
+            default:
+            {
+                /*
+                 *   Get space for logk information
+                 */
+                std::vector<std::string> items;
+                boost::trim_if(line, boost::is_any_of("\t "));
+                boost::algorithm::split(items, line, boost::is_any_of("\t "),
+                                        boost::token_compress_on);
+                logk_ptr = logk_store(items[0], TRUE);
+            }
+        }
+        if (return_value == EOF || return_value == KEYWORD)
 			break;
 	}
 }

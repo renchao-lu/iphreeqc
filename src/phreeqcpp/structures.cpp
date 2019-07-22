@@ -1,7 +1,7 @@
 #include "Utils.h"
 #include "Phreeqc.h"
 #include <iostream>
-
+#include <boost/algorithm/string.hpp>
 #include "phqalloc.h"
 #include "Temperature.h"
 #include "cxxMix.h"
@@ -3282,7 +3282,7 @@ system_duplicate(int i, int save_old)
 
 /* ---------------------------------------------------------------------- */
 struct logk * Phreeqc::
-logk_store(char *name, int replace_if_found)
+logk_store(std::string name, int replace_if_found)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -3311,7 +3311,7 @@ logk_store(char *name, int replace_if_found)
 /*
  *   Search list
  */
-	str_tolower(name);
+    boost::algorithm::to_lower(name);
 	item.key = name;
 	item.data = NULL;
 	found_item = hsearch_multi(logk_hash_table, item, FIND);

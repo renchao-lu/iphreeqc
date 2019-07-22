@@ -1321,7 +1321,7 @@ strings_hash_clear()
 #else
 /* ---------------------------------------------------------------------- */
 const char * Phreeqc::
-string_hsave(const char *str)
+string_hsave(std::string str)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -1694,7 +1694,7 @@ hsearch_multi(HashTable * Table, ENTRY item, ACTION action)
 	/*
 	 ** Follow collision chain
 	 */
-	while (q != NULL && strcmp(q->Key, item.key))
+    while (q != NULL && (q->Key == item.key))
 	{
 		p = &q->Next;
 		q = *p;
@@ -1737,17 +1737,17 @@ hsearch_multi(HashTable * Table, ENTRY item, ACTION action)
 */
 
  Address Phreeqc::
-Hash_multi(HashTable * Table, const char *Key)
+Hash_multi(HashTable * Table, std::string Key)
 {
 	Address h, address;
-	unsigned char *k = (unsigned char *) Key;
+    auto k = Key;
 
 	h = 0;
 	/*
 	 ** Convert string to integer
 	 */
-	while (*k)
-		h = h * Prime1 ^ (*k++ - ' ');
+//    while (!k.empty())
+//        h = h * Prime1 ^ (k++ - ' ');
 	h %= Prime2;
 	address = MOD(h, Table->maxp);
 	if (address < (unsigned long) Table->p)

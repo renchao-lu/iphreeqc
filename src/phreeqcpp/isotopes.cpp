@@ -1447,7 +1447,7 @@ convert_isotope(struct master_isotope * master_isotope_ptr, LDBLE ratio)
 
 /* ---------------------------------------------------------------------- */
 struct master_isotope * Phreeqc::
-master_isotope_store(const char *name, int replace_if_found)
+master_isotope_store(std::string name, int replace_if_found)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -1473,13 +1473,10 @@ master_isotope_store(const char *name, int replace_if_found)
 	int n;
 	struct master_isotope *master_isotope_ptr;
 	ENTRY item, *found_item;
-	char token[MAX_LENGTH];
 /*
  *   Search list
  */
-	strcpy(token, name);
-
-	item.key = token;
+    item.key = name;
 	item.data = NULL;
 	found_item = hsearch_multi(master_isotope_hash_table, item, FIND);
 
@@ -1507,7 +1504,7 @@ master_isotope_store(const char *name, int replace_if_found)
 		master_isotope_ptr = master_isotope[n];
 	}
 	/* set name and z in pointer in master_isotope structure */
-	master_isotope_ptr->name = string_hsave(token);
+    master_isotope_ptr->name = string_hsave(name);
 /*
  *   Update hash table
  */

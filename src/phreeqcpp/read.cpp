@@ -772,21 +772,21 @@ read_exchange_species(void)
  *   Save element list and carbon, hydrogen, and oxygen in species
  */
 			trxn.token[0].s->next_elt = next_elt;
-			for (; next_elt->elt != NULL; next_elt++)
-			{
-				if (strcmp(next_elt->elt->name, "C") == 0)
-				{
-					trxn.token[0].s->carbon = next_elt->coef;
-				}
-				if (strcmp(next_elt->elt->name, "H") == 0)
-				{
-					trxn.token[0].s->h = next_elt->coef;
-				}
-				if (strcmp(next_elt->elt->name, "O") == 0)
-				{
-					trxn.token[0].s->o = next_elt->coef;
-				}
-			}
+//			for (; next_elt->elt != NULL; next_elt++)
+//			{
+//				if (strcmp(next_elt->elt->name, "C") == 0)
+//				{
+//					trxn.token[0].s->carbon = next_elt->coef;
+//				}
+//				if (strcmp(next_elt->elt->name, "H") == 0)
+//				{
+//					trxn.token[0].s->h = next_elt->coef;
+//				}
+//				if (strcmp(next_elt->elt->name, "O") == 0)
+//				{
+//					trxn.token[0].s->o = next_elt->coef;
+//				}
+//			}
 #ifdef SKIP
 			// Need to do this in tidy species in case X- is not first species read.
 /*
@@ -1136,7 +1136,7 @@ read_exchange_master_species(void)
 	int j, l;
     std::string ptr; std::string ptr1;
 	LDBLE l_z;
-	struct element *elts_ptr;
+    struct element elts_ptr;
 	struct species *s_ptr;
 	char token[MAX_LENGTH], token1[MAX_LENGTH];
 	for (;;)
@@ -1218,7 +1218,7 @@ read_exchange_master_species(void)
         if (strcmp(master[count_master].elt.name, "E") != 0)
 		{
             elts_ptr = element_store(master[count_master].elt.name);
-			elts_ptr->gfw = 0.0;
+            elts_ptr.gfw = 0.0;
 		}
 
 		count_master++;
@@ -3235,6 +3235,9 @@ read_master_species()
     auto in = phrq_io->get_istream();
     while (std::getline(*in, line))
 	{
+        if (line.empty())
+            continue;
+
         if (line.at(0) == '#')
         {
             if (line == "#ende")
@@ -3262,11 +3265,12 @@ read_master_species()
 /*
  *   Set type to AQ
  */
-        master[count_master-1].type = AQ;
+        struct master master_data;
 /*
  *   Save element name
  */
-//        master[count_master-1].elt = element_store(token);
+        auto& element_name = items[0];
+        struct element elt = element_store(element_name);
 		std::string ename = token;
 /*
  *   Save pointer to species data for master species
@@ -6428,21 +6432,21 @@ read_species(void)
  */
 			trxn.token[0].s->next_elt = next_elt;
 			trxn.token[0].s->next_secondary = NULL;
-			for (; next_elt->elt != NULL; next_elt++)
-			{
-				if (strcmp(next_elt->elt->name, "C") == 0)
-				{
-					trxn.token[0].s->carbon = next_elt->coef;
-				}
-				if (strcmp(next_elt->elt->name, "H") == 0)
-				{
-					trxn.token[0].s->h = next_elt->coef;
-				}
-				if (strcmp(next_elt->elt->name, "O") == 0)
-				{
-					trxn.token[0].s->o = next_elt->coef;
-				}
-			}
+//			for (; next_elt->elt != NULL; next_elt++)
+//			{
+//				if (strcmp(next_elt->elt->name, "C") == 0)
+//				{
+//					trxn.token[0].s->carbon = next_elt->coef;
+//				}
+//				if (strcmp(next_elt->elt->name, "H") == 0)
+//				{
+//					trxn.token[0].s->h = next_elt->coef;
+//				}
+//				if (strcmp(next_elt->elt->name, "O") == 0)
+//				{
+//					trxn.token[0].s->o = next_elt->coef;
+//				}
+//			}
 /*
  *   Malloc space for species reaction
  */
@@ -7097,21 +7101,21 @@ read_surface_species(void)
 			 *   Save element list and carbon, hydrogen, and oxygen in species
 			 */
 			trxn.token[0].s->next_elt = next_elt;
-			for (; next_elt->elt != NULL; next_elt++)
-			{
-				if (strcmp(next_elt->elt->name, "C") == 0)
-				{
-					trxn.token[0].s->carbon = next_elt->coef;
-				}
-				if (strcmp(next_elt->elt->name, "H") == 0)
-				{
-					trxn.token[0].s->h = next_elt->coef;
-				}
-				if (strcmp(next_elt->elt->name, "O") == 0)
-				{
-					trxn.token[0].s->o = next_elt->coef;
-				}
-			}
+//			for (; next_elt->elt != NULL; next_elt++)
+//			{
+//				if (strcmp(next_elt->elt->name, "C") == 0)
+//				{
+//					trxn.token[0].s->carbon = next_elt->coef;
+//				}
+//				if (strcmp(next_elt->elt->name, "H") == 0)
+//				{
+//					trxn.token[0].s->h = next_elt->coef;
+//				}
+//				if (strcmp(next_elt->elt->name, "O") == 0)
+//				{
+//					trxn.token[0].s->o = next_elt->coef;
+//				}
+//			}
 #ifdef SKIP
 			// need to do this in tidy in case surface master species not yet defined
 			/*

@@ -1729,10 +1729,10 @@ Phreeqc::InternalCopy(const Phreeqc *pSrc)
 	for (int i = 0; i < pSrc->count_elements; i++)
 	{
 		string_hsave(pSrc->elements[i]->name);
-		struct element *elt_ptr = element_store(pSrc->elements[i]->name);
-		elt_ptr->gfw = pSrc->elements[i]->gfw;
+        struct element elt_ptr = element_store(pSrc->elements[i]->name);
+        elt_ptr.gfw = pSrc->elements[i]->gfw;
 	}
-	element_h_one = element_store("H(1)");
+    *element_h_one = element_store("H(1)");
 	/*
 	elements                 = NULL;
 	count_elements           = 0;
@@ -2377,7 +2377,7 @@ Phreeqc::InternalCopy(const Phreeqc *pSrc)
 		master_isotope_ptr->elt = NULL;
 		if (pSrc->master_isotope[i]->elt)
 		{
-			master_isotope_ptr->elt = element_store(pSrc->master_isotope[i]->elt->name);
+            *master_isotope_ptr->elt = element_store(pSrc->master_isotope[i]->elt->name);
 		}
 		master_isotope_ptr->units = NULL;
 		if (pSrc->master_isotope[i]->units)

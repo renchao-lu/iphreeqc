@@ -186,10 +186,10 @@ RESTART:   // if limiting rates, jump to here
 			}
 			else
 			{
-				char * temp_name = string_duplicate(name.c_str());
+                std::string temp_name = name;
                 std::string ptr = temp_name;
                 get_elts_in_species(ptr, coef * coef1);
-				free_check_null(temp_name);
+//				free_check_null(temp_name);
 			}
 		}
 		if (use.Get_exchange_ptr() != NULL

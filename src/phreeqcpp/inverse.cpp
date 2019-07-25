@@ -43,8 +43,8 @@ inverse_models(void)
 	inv_cu = NULL;
 	inv_iu = NULL;
 	inv_is = NULL;
-	col_name = NULL;
-	row_name = NULL;
+    col_name;
+    row_name;
 	min_delta = NULL;
 	max_delta = NULL;
 	good = NULL;
@@ -279,15 +279,6 @@ setup_inverse(struct inverse *inv_ptr)
 	if (array1 == NULL)
 		malloc_error();
 
-	col_name =
-		(const char **) PHRQ_malloc((size_t) max_column_count * sizeof(char *));
-	if (col_name == NULL)
-		malloc_error();
-
-	row_name = (const char **) PHRQ_malloc((size_t) max_row_count * sizeof(char *));
-	if (row_name == NULL)
-		malloc_error();
-
 	delta = (LDBLE *) free_check_null(delta);
 	delta = (LDBLE *) PHRQ_malloc((size_t) max_column_count * sizeof(LDBLE));
 	if (delta == NULL)
@@ -383,7 +374,7 @@ setup_inverse(struct inverse *inv_ptr)
 	for (i = 0; i < count_master; i++)
 	{
         master[i].in = -1;
-        if (strstr(master[i].elt.name, "Alk") == master[i].elt.name)
+        if (master[i].elt.name == "Alk")
 		{
 			master_alk = master[i];
 		}
@@ -397,7 +388,7 @@ setup_inverse(struct inverse *inv_ptr)
 		master_ptr = inv_ptr->elts[i].master;
         if (master_ptr == &master_alk)
 			i_alk = i;
-        if (strcmp(master_ptr->elt.name, "C(4)") == 0)
+        if (master_ptr->elt.name == "C(4)")
 			i_carb = i;
 		inv_ptr->elts[i].master->in = count_rows_t;
         row_name[count_rows_t] = inv_ptr->elts[i].master->elt.name;
@@ -857,8 +848,7 @@ setup_inverse(struct inverse *inv_ptr)
 			   maximum negative is equal to concentrations,
 			   except alkalinity */
 			if (coef > fabs(conc) &&
-                (strstr(inv_ptr->elts[j].master->elt.name, "Alkalinity") !=
-                 inv_ptr->elts[j].master->elt.name))
+                ( inv_ptr->elts[j].master->elt.name != "Alkalinity"))
 				coef = fabs(conc) + toler;
 
 			my_array[count_rows * max_column_count + i] = -coef * f;
@@ -1344,8 +1334,8 @@ solve_inverse(struct inverse *inv_ptr)
 	inv_cu = (LDBLE *) free_check_null(inv_cu);
 	inv_iu = (int *) free_check_null(inv_iu);
 	inv_is = (int *) free_check_null(inv_is);
-	col_name = (const char **) free_check_null(col_name);
-	row_name = (const char **) free_check_null(row_name);
+//	col_name = (const char **) free_check_null(col_name);
+//	row_name = (const char **) free_check_null(row_name);
 	col_back = (int *) free_check_null(col_back);
 	row_back = (int *) free_check_null(row_back);
 	min_delta = (LDBLE *) free_check_null(min_delta);
@@ -3875,29 +3865,29 @@ check_isotopes(struct inverse *inv_ptr)
 			/* did not find isotope, which is ok if element not in solution */
 			phase_ptr = inv_ptr->phases[j].phase;
 			k = 0;
-			while (phase_ptr->next_elt[k].elt != NULL)
-			{
-				if (phase_ptr->next_elt[k].elt->primary == primary_ptr)
-				{
-					if (s_hplus->primary == primary_ptr ||
-						s_h2o->primary == primary_ptr)
-					{
-						k++;
-						continue;
-					}
-					else
-					{
-						error_string = sformatf(
-								"In phase %s, isotope ratio(s) are needed for element: %g%s.",
-								phase_ptr->name, (double) isotope_number,
-                                primary_ptr->elt.name);
-						error_msg(error_string, CONTINUE);
-						input_error++;
-						break;
-					}
-				}
-				k++;
-			}
+//			while (phase_ptr->next_elt[k].elt != NULL)
+//			{
+//				if (phase_ptr->next_elt[k].elt->primary == primary_ptr)
+//				{
+//					if (s_hplus->primary == primary_ptr ||
+//						s_h2o->primary == primary_ptr)
+//					{
+//						k++;
+//						continue;
+//					}
+//					else
+//					{
+//						error_string = sformatf(
+//								"In phase %s, isotope ratio(s) are needed for element: %g%s.",
+//								phase_ptr->name, (double) isotope_number,
+//                                primary_ptr->elt.name);
+//						error_msg(error_string, CONTINUE);
+//						input_error++;
+//						break;
+//					}
+//				}
+//				k++;
+//			}
 		}
 	}
 	return (OK);
@@ -4089,7 +4079,7 @@ dump_netpath(struct inverse *inverse_ptr)
 {
 	int j;
 	std::string string;
-	char *ptr;
+    std::string ptr;
 
 	if (inverse_ptr->netpath == NULL)
 		return;
@@ -4123,7 +4113,7 @@ dump_netpath(struct inverse *inverse_ptr)
 			continue;
 
 		/* flags and description */
-		char * description = string_duplicate(it->second.Get_description().c_str());
+        std::string description = it->second.Get_description();
 		ptr = description;
         j = copy_token(string, ptr);
 		if (j != EMPTY)
@@ -4135,7 +4125,7 @@ dump_netpath(struct inverse *inverse_ptr)
 			string = sformatf("Solution %d", it->second.Get_n_user());
 		}
 		fprintf(netpath_file, "4020%s\n", string.c_str());
-		description = (char *) free_check_null(description);
+//		description = (char *) free_check_null(description);
 		/* lat/lon */
 		fprintf(netpath_file,
 				"                                                           # Lat/lon\n");
@@ -4442,7 +4432,7 @@ dump_netpath_pat(struct inverse *inv_ptr)
 	cxxSolution *solution_ptr, *solution_ptr_orig;
 	struct master *master_ptr;
 	LDBLE d1, d2, d3;
-	char *ptr;
+    std::string ptr;
 	LDBLE sum, sum1, sum_iso, d;
 	LDBLE *array_save, *l_delta_save;
 	int count_unknowns_save, max_row_count_save, max_column_count_save, temp,
@@ -4563,7 +4553,7 @@ dump_netpath_pat(struct inverse *inv_ptr)
 		solution_ptr = Utilities::Rxn_find(Rxn_solution_map, -7);
 
 		/* Header */
-		char * description = string_duplicate(solution_ptr_orig->Get_description().c_str());
+        std::string description = solution_ptr_orig->Get_description().c_str();
 		ptr = description;
 		std::string string;
         if (copy_token(string, ptr) != EMPTY)
@@ -4576,7 +4566,7 @@ dump_netpath_pat(struct inverse *inv_ptr)
 			fprintf(netpath_file, "%d. Solution %d\n", count_inverse_models,
 					solution_ptr_orig->Get_n_user());
 		}
-		description = (char *) free_check_null(description);
+//		description = (char *) free_check_null(description);
 
 		/* bookkeeping */
 		count_pat_solutions++;
@@ -4956,15 +4946,15 @@ dump_netpath_pat(struct inverse *inv_ptr)
 	{
 		master_ptr = inv_ptr->elts[j].master;
         master_ptr = master_ptr->elt.primary;
-        if (strcmp(master_ptr->elt.name, "Alkalinity") == 0)
+        if (master_ptr->elt.name == "Alkalinity")
 			continue;
-        if (strcmp(master_ptr->elt.name, "H") == 0)
+        if (master_ptr->elt.name == "H")
 			continue;
-        if (strcmp(master_ptr->elt.name, "O") == 0)
+        if (master_ptr->elt.name == "O")
 			continue;
-        if (strcmp(master_ptr->elt.name, "X") == 0)
+        if (master_ptr->elt.name == "X")
 			continue;
-        if (strcmp(master_ptr->elt.name, "E") == 0)
+        if (master_ptr->elt.name == "E")
 			continue;
 		master_ptr->in = TRUE;
 	}
@@ -5022,15 +5012,15 @@ dump_netpath_pat(struct inverse *inv_ptr)
  * Determine if exchange reaction
  */
 		exch = FALSE;
-		for (next_elt = inv_ptr->phases[i].phase->next_elt;
-			 next_elt->elt != NULL; next_elt++)
-		{
-			if (strcmp(next_elt->elt->name, "X") == 0)
-			{
-				exch = TRUE;
-				break;
-			}
-		}
+//		for (next_elt = inv_ptr->phases[i].phase->next_elt;
+//			 next_elt->elt != NULL; next_elt++)
+//		{
+//			if (strcmp(next_elt->elt->name, "X") == 0)
+//			{
+//				exch = TRUE;
+//				break;
+//			}
+//		}
 /*
  * Write phase name and constraints
  */
@@ -5075,32 +5065,32 @@ dump_netpath_pat(struct inverse *inv_ptr)
 /*
  *  Write stoichiometry
  */
-		for (next_elt = inv_ptr->phases[i].phase->next_elt;
-			 next_elt->elt != NULL; next_elt++)
-		{
-			f = 1.0;
-			if (exch == TRUE)
-				f = -1.0;
-			master_ptr = next_elt->elt->primary;
-            if (strcmp(master_ptr->elt.name, "Alkalinity") == 0)
-				continue;
-            if (strcmp(master_ptr->elt.name, "H") == 0)
-				continue;
-            if (strcmp(master_ptr->elt.name, "O") == 0)
-				continue;
-            if (strcmp(master_ptr->elt.name, "E") == 0)
-				continue;
-            string = master_ptr->elt.name;
+//		for (next_elt = inv_ptr->phases[i].phase->next_elt;
+//			 next_elt->elt != NULL; next_elt++)
+//		{
+//			f = 1.0;
+//			if (exch == TRUE)
+//				f = -1.0;
+//			master_ptr = next_elt->elt->primary;
+//            if (strcmp(master_ptr->elt.name, "Alkalinity") == 0)
+//				continue;
+//            if (strcmp(master_ptr->elt.name, "H") == 0)
+//				continue;
+//            if (strcmp(master_ptr->elt.name, "O") == 0)
+//				continue;
+//            if (strcmp(master_ptr->elt.name, "E") == 0)
+//				continue;
+//            string = master_ptr->elt.name;
 
-            if (strcmp(master_ptr->elt.name, "X") == 0)
-			{
-				string = "Na";
-				f = 1.0;
-			}
-			Utilities::str_toupper(string);
-			fprintf(model_file, " %-2s%12.7f", string.c_str(),
-					(double) (next_elt->coef * f));
-		}
+//            if (strcmp(master_ptr->elt.name, "X") == 0)
+//			{
+//				string = "Na";
+//				f = 1.0;
+//			}
+//			Utilities::str_toupper(string);
+//			fprintf(model_file, " %-2s%12.7f", string.c_str(),
+//					(double) (next_elt->coef * f));
+//		}
 /*
  * Calculate RS
  */

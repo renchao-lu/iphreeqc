@@ -129,7 +129,7 @@ public:
 	LDBLE find_misc2(const char *ss_name);
 	LDBLE find_ss_comp(const char *ss_comp_name);
 	LDBLE get_calculate_value(const char *name);
-	char * iso_unit(const char *total_name);
+    std::string iso_unit(const char *total_name);
 	LDBLE iso_value(const char *total_name);
 	LDBLE kinetics_moles(const char *kinetics_name);
 	LDBLE kinetics_moles_delta(const char *kinetics_name);
@@ -868,7 +868,7 @@ public:
 	int copier_init(struct copier *copier_ptr);
 	static int element_compare(const void *ptr1, const void *ptr2);
 public:
-	struct element *element_store(const char *element);
+    struct element element_store(std::string element);
 	int elt_list_combine(void);
 	static int elt_list_compare(const void *ptr1, const void *ptr2);
 protected:
@@ -1091,7 +1091,7 @@ protected:
 public:
 	LDBLE calc_rho_0(LDBLE tc, LDBLE pa);
 	LDBLE calc_dielectrics(LDBLE tc, LDBLE pa);
-	int compute_gfw(const char *string, LDBLE * gfw);
+    int compute_gfw(std::string string, LDBLE * gfw);
 #if defined PHREEQ98 
 	int copy_title(char *token_ptr, char **ptr, int *length);
 #endif
@@ -1127,8 +1127,6 @@ protected:
 public:
 #if !defined(NDEBUG) && defined(WIN32_MEMORY_DEBUG)
 	char *_string_duplicate(const char *token, const char *szFileName, int nLine);
-#else
-	char *string_duplicate(const char *token);
 #endif
     const char *string_hsave(std::string str);
 	void strings_map_clear();
@@ -1827,7 +1825,8 @@ protected:
 	/* inverse.cpp ------------------------------- */
 	int max_row_count, max_column_count;
 	int carbon;
-	const char **col_name, **row_name;
+    std::vector<std::string> col_name;
+    std::vector<std::string> row_name;
 	int count_rows, count_optimize;
 	int col_phases, col_redox, col_epsilon, col_ph, col_water,
 		col_isotopes, col_phase_isotopes;

@@ -240,16 +240,16 @@ step(LDBLE step_fraction)
 				struct phase *p_ptr = phase_bsearch((it->first).c_str(), &n, FALSE);
 				struct elt_list *e_ptr;
 				LDBLE min = 1e10;
-				for (e_ptr = p_ptr->next_elt; e_ptr->elt != NULL; e_ptr++)
-				{
-                    std::string e(e_ptr->elt->primary->elt.name);
-					cxxNameDouble::iterator st = sys_tots.find(e.c_str());
-					if (st != sys_tots.end())
-					{
-						LDBLE m1 = st->second / e_ptr->coef;
-						if (m1 < min) min = m1;
-					}
-				}
+//				for (e_ptr = p_ptr->next_elt; e_ptr->elt != NULL; e_ptr++)
+//				{
+//                    std::string e(e_ptr->elt->primary->elt.name);
+//					cxxNameDouble::iterator st = sys_tots.find(e.c_str());
+//					if (st != sys_tots.end())
+//					{
+//						LDBLE m1 = st->second / e_ptr->coef;
+//						if (m1 < min) min = m1;
+//					}
+//				}
 				p_ptr->delta_max = min;
 			}
 		}
@@ -268,19 +268,19 @@ step(LDBLE step_fraction)
 
 					struct elt_list *e_ptr;
 					LDBLE min = 1e10;
-					for (e_ptr = p_ptr->next_elt; e_ptr->elt != NULL; e_ptr++)
-					{
-                        std::string e(e_ptr->elt->primary->elt.name);
-						cxxNameDouble::iterator st = sys_tots.find(e.c_str());
-						if (st != sys_tots.end())
-						{
-							LDBLE m1 = st->second / e_ptr->coef;
-							if (m1 < min) 
-							{
-								min = m1;
-							}
-						}
-					}
+//					for (e_ptr = p_ptr->next_elt; e_ptr->elt != NULL; e_ptr++)
+//					{
+//                        std::string e(e_ptr->elt->primary->elt.name);
+//						cxxNameDouble::iterator st = sys_tots.find(e.c_str());
+//						if (st != sys_tots.end())
+//						{
+//							LDBLE m1 = st->second / e_ptr->coef;
+//							if (m1 < min)
+//							{
+//								min = m1;
+//							}
+//						}
+//					}
 					p_ptr->delta_max = min;
 				}
 			}
@@ -439,10 +439,10 @@ add_exchange(cxxExchange *exchange_ptr)
 		cxxNameDouble::iterator it = nd.begin();
 		for ( ; it != nd.end(); it++)
 		{
-			struct element *elt_ptr = element_store(it->first.c_str());
+            struct element elt_ptr = element_store(it->first.c_str());
 			LDBLE coef = it->second;
-			assert(elt_ptr != NULL && elt_ptr->primary != NULL);
-			master_ptr = elt_ptr->primary;
+            assert(&elt_ptr != nullptr && elt_ptr.primary != NULL);
+            master_ptr = elt_ptr.primary;
 			if (master_ptr->s == s_hplus)
 			{
 				total_h_x += coef;
@@ -476,11 +476,11 @@ add_exchange(cxxExchange *exchange_ptr)
 			cxxNameDouble::iterator it = nd.begin();
 			for ( ; it != nd.end(); it++)
 			{	
-				struct element *elt_ptr = element_store(it->first.c_str());
-				assert(elt_ptr->master);
-				if (elt_ptr->master->type == EX)
+                struct element elt_ptr = element_store(it->first.c_str());
+                assert(elt_ptr.master);
+                if (elt_ptr.master->type == EX)
 				{
-					elt_ptr->master->s->la = comp_ref.Get_la();
+                    elt_ptr.master->s->la = comp_ref.Get_la();
 				}
 			}
 			cb_x += comp_ref.Get_charge_balance();
@@ -505,12 +505,12 @@ add_surface(cxxSurface *surface_ptr)
 	for (size_t i = 0; i < surface_ptr->Get_surface_comps().size(); i++)
 	{
 		cxxSurfaceComp *comp_ptr = &(surface_ptr->Get_surface_comps()[i]);
-		struct element *elt_ptr = element_store(comp_ptr->Get_master_element().c_str());
-		if (elt_ptr->master == NULL)
+        struct element elt_ptr = element_store(comp_ptr->Get_master_element().c_str());
+        if (elt_ptr.master == NULL)
 		{
 			error_msg(sformatf("Data not defined for master in SURFACE, %s\n", comp_ptr->Get_formula().c_str()), STOP);
 		}
-		struct master *master_i_ptr = elt_ptr->master;
+        struct master *master_i_ptr = elt_ptr.master;
 
 		if (surface_ptr->Get_type() == cxxSurface::NO_EDL)
 		{
@@ -533,13 +533,13 @@ add_surface(cxxSurface *surface_ptr)
 		for (jit = comp_ptr->Get_totals().begin(); jit != comp_ptr->Get_totals().end(); jit++)
 		{
 			LDBLE coef = jit->second;
-			struct element *elt_j_ptr = element_store(jit->first.c_str());
-			struct master *master_j_ptr = elt_j_ptr->primary; 
+            struct element elt_j_ptr = element_store(jit->first.c_str());
+            struct master *master_j_ptr = elt_j_ptr.primary;
 			if (master_j_ptr == NULL)
 			{
 				input_error++;
 				error_string = sformatf( "Element not defined in database, %s.",
-						elt_j_ptr->name);
+                        elt_j_ptr.name);
 				error_msg(error_string, STOP);
 			}
 			if (master_j_ptr->s == s_hplus)
@@ -579,8 +579,8 @@ add_surface(cxxSurface *surface_ptr)
 			for (jit = charge_ptr->Get_diffuse_layer_totals().begin(); jit != charge_ptr->Get_diffuse_layer_totals().end(); jit++)
 			{
 				LDBLE coef = jit->second;
-				struct element *elt_j_ptr = element_store(jit->first.c_str());
-				struct master * master_j_ptr = elt_j_ptr->master;
+                struct element elt_j_ptr = element_store(jit->first.c_str());
+                struct master * master_j_ptr = elt_j_ptr.master;
 				if (master_j_ptr->s == s_hplus)
 				{
 					total_h_x += coef;
@@ -710,7 +710,7 @@ add_pp_assemblage(cxxPPassemblage *pp_assemblage_ptr)
 		{
 			for (i = 0; i < count_elts; i++)
 			{
-				master_ptr = elt_list[i].elt->primary;
+                master_ptr = elt_list[i].elt.primary;
 				if (master_ptr->s == s_hplus)
 				{
 					continue;
@@ -746,7 +746,7 @@ add_pp_assemblage(cxxPPassemblage *pp_assemblage_ptr)
  */
 			for (i = 0; i < count_elts; i++)
 			{
-				master_ptr = elt_list[i].elt->primary;
+                master_ptr = elt_list[i].elt.primary;
 				if (master_ptr->s == s_hplus)
 				{
 					total_h_x += elt_list[i].coef * amount_to_add;
@@ -780,13 +780,13 @@ check_pp_assemblage(cxxPPassemblage *pp_assemblage_ptr)
 	cxxNameDouble::iterator it;
 	for (it = nd.begin(); it != nd.end(); it++)
 	{
-		struct element *elt_ptr = element_store(it->first.c_str());
-		if (elt_ptr == NULL || elt_ptr->primary == NULL)
+        struct element elt_ptr = element_store(it->first.c_str());
+        if (&elt_ptr == nullptr || elt_ptr.primary == NULL)
 		{
 			return FALSE;
 		}
 
-		master_ptr = elt_ptr->primary;
+        master_ptr = elt_ptr.primary;
 		if (master_ptr->s == s_h2o || master_ptr->s == s_hplus)
 			continue;
 		if (master_ptr->total > MIN_TOTAL)
@@ -902,15 +902,15 @@ add_reaction(cxxReaction *reaction_ptr, int step_number, LDBLE step_fraction)
 	cxxNameDouble::const_iterator it = reaction_ptr->Get_elementList().begin();
 	for ( ; it != reaction_ptr->Get_elementList().end(); it++)
 	{
-		struct element * elt_ptr = element_store(it->first.c_str());
+        struct element elt_ptr = element_store(it->first.c_str());
 		LDBLE coef = it->second;
-		if (elt_ptr == NULL)
+        if (&elt_ptr == nullptr)
 		{
 			assert (false);
 		}
 		else
 		{
-			master_ptr = elt_ptr->primary;
+            master_ptr = elt_ptr.primary;
 			if (master_ptr == NULL)
 			{
 				// error msg has been called in reaction_calc
@@ -981,11 +981,11 @@ reaction_calc(cxxReaction *reaction_ptr)
  */
 	for (int i = 0; i < count_elts; i++)
 	{
-		if (elt_list[i].elt->master == NULL)
+        if (elt_list[i].elt.master == NULL)
 		{
 			error_string = sformatf(
 					"Element or phase not defined in database, %s.",
-					elt_list[i].elt->name);
+                    elt_list[i].elt.name);
 			error_msg(error_string, CONTINUE);
 			input_error++;
 			return_value = ERROR;
@@ -1043,7 +1043,7 @@ add_gas_phase(cxxGasPhase *gas_phase_ptr)
  */
 	for (i = 0; i < count_elts; i++)
 	{
-		master_ptr = elt_list[i].elt->primary;
+        master_ptr = elt_list[i].elt.primary;
 		if (master_ptr->s == s_hplus)
 		{
 			total_h_x += elt_list[i].coef;
@@ -1107,7 +1107,7 @@ add_ss_assemblage(cxxSSassemblage *ss_assemblage_ptr)
 				free_check_null(token);
 				for (k = 0; k < count_elts; k++)
 				{
-					master_ptr = elt_list[k].elt->primary;
+                    master_ptr = elt_list[k].elt.primary;
 					if (master_ptr->s == s_hplus)
 					{
 						continue;
@@ -1144,7 +1144,7 @@ add_ss_assemblage(cxxSSassemblage *ss_assemblage_ptr)
  */
 				for (k = 0; k < count_elts; k++)
 				{
-					master_ptr = elt_list[k].elt->primary;
+                    master_ptr = elt_list[k].elt.primary;
 					if (master_ptr->s == s_hplus)
 					{
 						total_h_x += elt_list[k].coef * amount_to_add;
@@ -1181,8 +1181,8 @@ add_kinetics(cxxKinetics *kinetics_ptr)
 	for (; it != kinetics_ptr->Get_totals().end(); it++)
 	{
 		LDBLE coef = it->second;
-		struct element *elt_ptr = element_store(it->first.c_str());
-		if (elt_ptr == NULL || (master_ptr = elt_ptr->primary) == NULL)
+        struct element elt_ptr = element_store(it->first.c_str());
+        if (&elt_ptr == nullptr || (master_ptr = elt_ptr.primary) == NULL)
 		{
 			input_error++;
 			error_string = sformatf(
@@ -1242,7 +1242,7 @@ gas_phase_check(cxxGasPhase *gas_phase_ptr)
 			add_elt_list(phase_ptr->next_elt, 1.0);
 			for (int j = 0; j < count_elts; j++)
 			{
-				master_ptr = elt_list[j].elt->primary;
+                master_ptr = elt_list[j].elt.primary;
 				if (master_ptr->s == s_hplus)
 				{
 					continue;
@@ -1262,7 +1262,7 @@ gas_phase_check(cxxGasPhase *gas_phase_ptr)
 					{
 						error_string = sformatf(
 								"Element %s is contained in gas %s (which has 0.0 mass),\nbut is not in solution or other phases.",
-								elt_list[j].elt->name,
+                                elt_list[j].elt.name,
 								phase_ptr->name);
 						warning_msg(error_string);
 					}
@@ -1314,7 +1314,7 @@ pp_assemblage_check(cxxPPassemblage *pp_assemblage_ptr)
 			}
 			for (int i = 0; i < count_elts; i++)
 			{
-				master_ptr = elt_list[i].elt->primary;
+                master_ptr = elt_list[i].elt.primary;
 				if (master_ptr->s == s_hplus)
 				{
 					continue;
@@ -1335,7 +1335,7 @@ pp_assemblage_check(cxxPPassemblage *pp_assemblage_ptr)
 						error_string = sformatf(
 								"Element %s is contained in %s (which has 0.0 mass),"
 								"\t\nbut is not in solution or other phases.",
-								elt_list[i].elt->name,
+                                elt_list[i].elt.name,
 								phase_ptr->name);
 						warning_msg(error_string);
 					}
@@ -1388,7 +1388,7 @@ ss_assemblage_check(cxxSSassemblage *ss_assemblage_ptr)
 				add_elt_list(phase_ptr->next_elt, 1.0);
 				for (l = 0; l < count_elts; l++)
 				{
-					master_ptr = elt_list[l].elt->primary;
+                    master_ptr = elt_list[l].elt.primary;
 					if (master_ptr->s == s_hplus)
 					{
 						continue;
@@ -1408,7 +1408,7 @@ ss_assemblage_check(cxxSSassemblage *ss_assemblage_ptr)
 						{
 							error_string = sformatf(
 									"Element %s is contained in solid solution %s (which has 0.0 mass),\nbut is not in solution or other phases.",
-									elt_list[l].elt->name,
+                                    elt_list[l].elt.name,
 									phase_ptr->name);
 							warning_msg(error_string);
 						}

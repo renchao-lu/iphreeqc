@@ -1,11 +1,12 @@
+#include <time.h>
+#include <boost/algorithm/string.hpp>
+
 #include "Utils.h"
 #include "Phreeqc.h"
 #include "phqalloc.h"
 #include "NameDouble.h"
 #include "Exchange.h"
 #include "Solution.h"
-#include <time.h>
-
 
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
@@ -17,18 +18,18 @@ add_elt_list(struct elt_list *elt_list_ptr, LDBLE coef)
 	if (elt_list_ptr == NULL)
 		return (OK);
 
-	for (elt_list_ptr1 = elt_list_ptr; elt_list_ptr1->elt != NULL;
-		 elt_list_ptr1++)
-	{
-		if (count_elts >= max_elts)
-		{
-			space((void **) ((void *) &elt_list), count_elts, &max_elts,
-				  sizeof(struct elt_list));
-		}
-		elt_list[count_elts].elt = elt_list_ptr1->elt;
-		elt_list[count_elts].coef = elt_list_ptr1->coef * coef;
-		count_elts++;
-	}
+//	for (elt_list_ptr1 = elt_list_ptr; elt_list_ptr1->elt != NULL;
+//		 elt_list_ptr1++)
+//	{
+//		if (count_elts >= max_elts)
+//		{
+//			space((void **) ((void *) &elt_list), count_elts, &max_elts,
+//				  sizeof(struct elt_list));
+//		}
+//		elt_list[count_elts].elt = elt_list_ptr1->elt;
+//		elt_list[count_elts].coef = elt_list_ptr1->coef * coef;
+//		count_elts++;
+//	}
 	return (OK);
 }
 
@@ -44,68 +45,68 @@ add_elt_list_multi_surf(struct elt_list *elt_list_ptr, LDBLE coef, struct elemen
 
 	// determine if surf_elt_ptr is first surface
 	bool first_surface = true;
-	for (elt_list_ptr1 = elt_list_ptr; elt_list_ptr1->elt != NULL;
-		elt_list_ptr1++)
-	{
-		if (elt_list_ptr1->elt->master->type == SURF)
-		{
-			if (elt_list_ptr1->elt == surf_elt_ptr)
-			{
-				first_surface = true;
-				break;
-			} 
-			else
-			{
-				first_surface = false;
-				break;
-			}
-		}
-	}
+//	for (elt_list_ptr1 = elt_list_ptr; elt_list_ptr1->elt != NULL;
+//		elt_list_ptr1++)
+//	{
+//		if (elt_list_ptr1->elt->master->type == SURF)
+//		{
+//			if (elt_list_ptr1->elt == surf_elt_ptr)
+//			{
+//				first_surface = true;
+//				break;
+//			}
+//			else
+//			{
+//				first_surface = false;
+//				break;
+//			}
+//		}
+//	}
 	if (first_surface)
 	{
-		for (elt_list_ptr1 = elt_list_ptr; elt_list_ptr1->elt != NULL;
-			elt_list_ptr1++)
-		{
-			if (count_elts >= max_elts)
-			{
-				space((void **) ((void *) &elt_list), count_elts, &max_elts,
-					sizeof(struct elt_list));
-			}
-			if (elt_list_ptr1->elt == surf_elt_ptr)
-			{
-				elt_list[count_elts].elt = elt_list_ptr1->elt;
-				elt_list[count_elts].coef = elt_list_ptr1->coef * coef; 
-				count_elts++;
-			}
-			else if (elt_list_ptr1->elt->master->type == SURF)
-			{
-				continue;
-			}
-			else
-			{
-				elt_list[count_elts].elt = elt_list_ptr1->elt;
-				elt_list[count_elts].coef = elt_list_ptr1->coef * coef;
-				count_elts++; 
-			}
-		}
+//		for (elt_list_ptr1 = elt_list_ptr; elt_list_ptr1->elt != NULL;
+//			elt_list_ptr1++)
+//		{
+//			if (count_elts >= max_elts)
+//			{
+//				space((void **) ((void *) &elt_list), count_elts, &max_elts,
+//					sizeof(struct elt_list));
+//			}
+//			if (elt_list_ptr1->elt == surf_elt_ptr)
+//			{
+//				elt_list[count_elts].elt = elt_list_ptr1->elt;
+//				elt_list[count_elts].coef = elt_list_ptr1->coef * coef;
+//				count_elts++;
+//			}
+//			else if (elt_list_ptr1->elt->master->type == SURF)
+//			{
+//				continue;
+//			}
+//			else
+//			{
+//				elt_list[count_elts].elt = elt_list_ptr1->elt;
+//				elt_list[count_elts].coef = elt_list_ptr1->coef * coef;
+//				count_elts++;
+//			}
+//		}
 	}
 	else
 	{
-		for (elt_list_ptr1 = elt_list_ptr; elt_list_ptr1->elt != NULL;
-			elt_list_ptr1++)
-		{
-			if (count_elts >= max_elts)
-			{
-				space((void **) ((void *) &elt_list), count_elts, &max_elts,
-					sizeof(struct elt_list));
-			}
-			if (elt_list_ptr1->elt == surf_elt_ptr)
-			{
-				elt_list[count_elts].elt = elt_list_ptr1->elt;
-				elt_list[count_elts].coef = elt_list_ptr1->coef * coef; 
-				count_elts++;
-			}
-		}
+//		for (elt_list_ptr1 = elt_list_ptr; elt_list_ptr1->elt != NULL;
+//			elt_list_ptr1++)
+//		{
+//			if (count_elts >= max_elts)
+//			{
+//				space((void **) ((void *) &elt_list), count_elts, &max_elts,
+//					sizeof(struct elt_list));
+//			}
+//			if (elt_list_ptr1->elt == surf_elt_ptr)
+//			{
+//				elt_list[count_elts].elt = elt_list_ptr1->elt;
+//				elt_list[count_elts].coef = elt_list_ptr1->coef * coef;
+//				count_elts++;
+//			}
+//		}
 	}
 	return (OK);
 }
@@ -297,7 +298,7 @@ calc_dielectrics(LDBLE tc, LDBLE pa)
 
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-compute_gfw(const char *string, LDBLE * gfw)
+compute_gfw(std::string string, LDBLE * gfw)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -314,13 +315,11 @@ compute_gfw(const char *string, LDBLE * gfw)
 	}
 
 	int i;
-	char token[MAX_LENGTH];
-	char *ptr;
 
 	count_elts = 0;
 	paren_count = 0;
-	strcpy(token, string);
-	ptr = token;
+    auto token = string;
+    auto ptr = token;
     if (get_elts_in_species(ptr, 1.0) == ERROR)
 	{
 		return (ERROR);
@@ -328,11 +327,11 @@ compute_gfw(const char *string, LDBLE * gfw)
 	*gfw = 0.0;
 	for (i = 0; i < count_elts; i++)
 	{
-		if (elt_list[i].elt->gfw <= 0.0)
+        if (elt_list[i].elt.gfw <= 0.0)
 		{
 			return (ERROR);
 		}
-		*gfw += elt_list[i].coef * (elt_list[i].elt)->gfw;
+        *gfw += elt_list[i].coef * (elt_list[i].elt).gfw;
 	}
 	gfw_map[str] = *gfw;
 	return (OK);
@@ -1215,10 +1214,10 @@ strcmp_nocase(std::string str1, std::string str2)
 /*
  *   Compare two strings disregarding case
  */
-	int c1, c2;
-	while ((c1 = tolower(*str1++)) == (c2 = tolower(*str2++)))
+    std::string c1, c2;
+    while ((c1 = boost::to_lower_copy(str1)) == (c2 = boost::to_lower_copy(str2)))
 	{
-		if (c1 == '\0')
+//		if (c1 == '\0')
 			return (0);
 	}
 	if (c1 < c2)
@@ -1252,25 +1251,6 @@ _string_duplicate(const char *token, const char *szFileName, int nLine)
 #else
 string_duplicate(const char *token)
 #endif
-/* ---------------------------------------------------------------------- */
-{
-	int l;
-	char *str;
-
-	if (token == NULL)
-		return NULL;
-	l = (int) strlen(token);
-#if !defined(NDEBUG) && defined(WIN32_MEMORY_DEBUG)
-	str = (char *) _malloc_dbg((size_t) (l + 1) * sizeof(char), _NORMAL_BLOCK, szFileName, nLine);
-#else
-	str = (char *) PHRQ_malloc((size_t) (l + 1) * sizeof(char));
-#endif
-
-	if (str == NULL)
-		malloc_error();
-	strcpy(str, token);
-	return (str);
-}
 #ifdef HASH
 /* ---------------------------------------------------------------------- */
 const char * Phreeqc::
@@ -1317,32 +1297,6 @@ strings_hash_clear()
 		delete it->second;
 	}
 	strings_hash.clear();
-}
-#else
-/* ---------------------------------------------------------------------- */
-const char * Phreeqc::
-string_hsave(std::string str)
-/* ---------------------------------------------------------------------- */
-{
-/*
- *      Save character string str
- *
- *      Arguments:
- *         str   input string to save.
- *
- *      Returns:
- *         starting address of saved string (str)
- */
-	std::map<std::string, std::string *>::const_iterator it;
-	it = strings_map.find(str);
-	if (it != strings_map.end())
-	{
-		return (it->second->c_str());
-	}
-
-	std::string *stdstr = new std::string(str);
-	strings_map[*stdstr] = stdstr;
-	return(stdstr->c_str());
 }
 #endif
 /* ---------------------------------------------------------------------- */

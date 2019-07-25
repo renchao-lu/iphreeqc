@@ -38,10 +38,10 @@ cxxNameDouble::cxxNameDouble(struct elt_list *elt_list_ptr)
 	int i;
 	if (elt_list_ptr != NULL)
 	{
-		for (i = 0; elt_list_ptr[i].elt != NULL; i++)
-		{
-			(*this)[elt_list_ptr[i].elt->name] = elt_list_ptr[i].coef;
-		}
+//		for (i = 0; elt_list_ptr[i].elt != NULL; i++)
+//		{
+//			(*this)[elt_list_ptr[i].elt->name] = elt_list_ptr[i].coef;
+//		}
 	}
 	this->type = ND_ELT_MOLES;
 }
@@ -56,7 +56,7 @@ cxxNameDouble::cxxNameDouble(struct elt_list *elt_list_ptr, int count)
 	{
 		for (i = 0; i < count; i++)
 		{
-			(*this)[elt_list_ptr[i].elt->name] = elt_list_ptr[i].coef;
+            (*this)[elt_list_ptr[i].elt.name] = elt_list_ptr[i].coef;
 		}
 	}
 	this->type = ND_ELT_MOLES;

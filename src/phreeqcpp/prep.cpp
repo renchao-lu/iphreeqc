@@ -365,8 +365,8 @@ quick_setup(void)
 					cxxNameDouble::iterator lit;
 					for (lit = comp_ptr->Get_totals().begin(); lit != comp_ptr->Get_totals().end(); lit++)
 					{
-						struct element *elt_ptr = element_store(lit->first.c_str());
-						struct master *master_ptr = elt_ptr->master;
+                        struct element elt_ptr = element_store(lit->first.c_str());
+                        struct master *master_ptr = elt_ptr.master;
 						if (master_ptr->type != SURF)
 							continue;
 						if (strcmp_nocase(x[i]->description, lit->first.c_str()) == 0)
@@ -442,24 +442,24 @@ build_gas_phase(void)
 		for (int j = 0; j < count_elts; j++)
 		{
 			unknown_ptr = NULL;
-			if (strcmp(elt_list[j].elt->name, "H") == 0)
+            if (strcmp(elt_list[j].elt.name, "H") == 0)
 			{
 				unknown_ptr = mass_hydrogen_unknown;
 			}
-			else if (strcmp(elt_list[j].elt->name, "O") == 0)
+            else if (strcmp(elt_list[j].elt.name, "O") == 0)
 			{
 				unknown_ptr = mass_oxygen_unknown;
 			}
 			else
 			{
-				if (elt_list[j].elt->primary->in == TRUE)
+                if (elt_list[j].elt.primary->in == TRUE)
 				{
-					unknown_ptr = elt_list[j].elt->primary->unknown;
+                    unknown_ptr = elt_list[j].elt.primary->unknown;
 				}
-				else if (elt_list[j].elt->primary->s->secondary != NULL)
+                else if (elt_list[j].elt.primary->s->secondary != NULL)
 				{
 					unknown_ptr =
-						elt_list[j].elt->primary->s->secondary->unknown;
+                        elt_list[j].elt.primary->s->secondary->unknown;
 				}
 			}
 			if (unknown_ptr != NULL)
@@ -489,24 +489,24 @@ build_gas_phase(void)
 		for (int j = 0; j < count_elts; j++)
 		{
 			unknown_ptr = NULL;
-			if (strcmp(elt_list[j].elt->name, "H") == 0)
+            if (strcmp(elt_list[j].elt.name, "H") == 0)
 			{
 				unknown_ptr = mass_hydrogen_unknown;
 			}
-			else if (strcmp(elt_list[j].elt->name, "O") == 0)
+            else if (strcmp(elt_list[j].elt.name, "O") == 0)
 			{
 				unknown_ptr = mass_oxygen_unknown;
 			}
 			else
 			{
-				if (elt_list[j].elt->primary->in == TRUE)
+                if (elt_list[j].elt.primary->in == TRUE)
 				{
-					unknown_ptr = elt_list[j].elt->primary->unknown;
+                    unknown_ptr = elt_list[j].elt.primary->unknown;
 				}
-				else if (elt_list[j].elt->primary->s->secondary != NULL)
+                else if (elt_list[j].elt.primary->s->secondary != NULL)
 				{
 					unknown_ptr =
-						elt_list[j].elt->primary->s->secondary->unknown;
+                        elt_list[j].elt.primary->s->secondary->unknown;
 				}
 			}
 			if (unknown_ptr == NULL)
@@ -792,7 +792,7 @@ build_ss_assemblage(void)
 		for (int j = 0; j < count_elts; j++)
 		{
 
-			if (strcmp(elt_list[j].elt->name, "H") == 0
+            if (strcmp(elt_list[j].elt.name, "H") == 0
 				&& mass_hydrogen_unknown != NULL)
 			{
 				store_jacob0(mass_hydrogen_unknown->number, x[i]->number,
@@ -801,7 +801,7 @@ build_ss_assemblage(void)
 								 elt_list[j].coef);
 
 			}
-			else if (strcmp(elt_list[j].elt->name, "O") == 0
+            else if (strcmp(elt_list[j].elt.name, "O") == 0
 					 && mass_oxygen_unknown != NULL)
 			{
 				store_jacob0(mass_oxygen_unknown->number, x[i]->number,
@@ -812,7 +812,7 @@ build_ss_assemblage(void)
 			}
 			else
 			{
-				master_ptr = elt_list[j].elt->primary;
+                master_ptr = elt_list[j].elt.primary;
 				if (master_ptr->in == FALSE)
 				{
 					master_ptr = master_ptr->s->secondary;
@@ -1284,7 +1284,7 @@ build_model(void)
 				for (j = 0; j < count_elts; j++)
 				{
 					output_msg(sformatf( "\t\t%-20s\t%10.2f\n",
-							   elt_list[j].elt->name,
+                               elt_list[j].elt.name,
 							   (double) elt_list[j].coef));
 				}
 			}
@@ -1535,7 +1535,7 @@ build_pure_phases(void)
 		for (int j = 0; j < count_elts; j++)
 		{
 
-			if (strcmp(elt_list[j].elt->name, "H") == 0
+            if (strcmp(elt_list[j].elt.name, "H") == 0
 				&& mass_hydrogen_unknown != NULL)
 			{
 				store_jacob0(mass_hydrogen_unknown->number, x[i]->number,
@@ -1544,7 +1544,7 @@ build_pure_phases(void)
 								 elt_list[j].coef);
 
 			}
-			else if (strcmp(elt_list[j].elt->name, "O") == 0
+            else if (strcmp(elt_list[j].elt.name, "O") == 0
 					 && mass_oxygen_unknown != NULL)
 			{
 				store_jacob0(mass_oxygen_unknown->number, x[i]->number,
@@ -1555,12 +1555,12 @@ build_pure_phases(void)
 			}
 			else
 			{
-				master_ptr = elt_list[j].elt->primary;
+                master_ptr = elt_list[j].elt.primary;
 				if (master_ptr == NULL)
 				{
 						error_string = sformatf(
 								"Element undefined, %s.",
-								elt_list[j].elt->name);
+                                elt_list[j].elt.name);
 						error_msg(error_string, STOP);					
 				}
 				if (master_ptr->in == FALSE)
@@ -1735,11 +1735,11 @@ build_species_list(int n)
 			return (OK);		/* master species has zero molality */
 		for (j = 0; j < count_elts; j++)
 		{
-			if (elt_list[j].elt->master->s->type != EX)
+            if (elt_list[j].elt.master->s->type != EX)
 				continue;
-			master_ptr = elt_list[j].elt->master;
+            master_ptr = elt_list[j].elt.master;
 			species_list[count_species_list].master_s =
-				elt_list[j].elt->master->s;
+                elt_list[j].elt.master->s;
 			species_list[count_species_list].s = s[n];
 			species_list[count_species_list].coef = master_ptr->coef *
 				elt_list[j].coef;
@@ -1756,11 +1756,11 @@ build_species_list(int n)
 	{
 		for (j = 0; j < count_elts; j++)
 		{
-			if (elt_list[j].elt->master->s->type != SURF)
+            if (elt_list[j].elt.master->s->type != SURF)
 				continue;
-			master_ptr = elt_list[j].elt->master;
+            master_ptr = elt_list[j].elt.master;
 			species_list[count_species_list].master_s =
-				elt_list[j].elt->master->s;
+                elt_list[j].elt.master->s;
 			species_list[count_species_list].s = s[n];
 			species_list[count_species_list].coef = master_ptr->coef *
 				elt_list[j].coef;
@@ -1773,15 +1773,15 @@ build_species_list(int n)
  */
 	for (j = 0; j < count_elts; j++)
 	{
-		if (is_special(elt_list[j].elt->master->s) == TRUE)
+        if (is_special(elt_list[j].elt.master->s) == TRUE)
 			continue;
-		if (elt_list[j].elt->master->s->secondary != NULL)
+        if (elt_list[j].elt.master->s->secondary != NULL)
 		{
-			master_ptr = elt_list[j].elt->master->s->secondary;
+            master_ptr = elt_list[j].elt.master->s->secondary;
 		}
 		else
 		{
-			master_ptr = elt_list[j].elt->master->s->primary;
+            master_ptr = elt_list[j].elt.master->s->primary;
 		}
 		species_list[count_species_list].master_s = master_ptr->s;
 		species_list[count_species_list].s = s[n];
@@ -2393,10 +2393,10 @@ mb_for_species_aq(int n)
  */
 	for (i = 0; i < count_elts; i++)
 	{
-		if (elt_list[i].elt->master->s->type > AQ &&
-			elt_list[i].elt->master->s->type < SOLID)
+        if (elt_list[i].elt.master->s->type > AQ &&
+            elt_list[i].elt.master->s->type < SOLID)
 			continue;
-		master_ptr = elt_list[i].elt->master;
+        master_ptr = elt_list[i].elt.master;
 		if (master_ptr->primary == TRUE)
 		{
 			if (master_ptr->s->secondary != NULL)
@@ -2497,10 +2497,10 @@ mb_for_species_ex(int n)
  */
 	for (i = 0; i < count_elts; i++)
 	{
-		if (elt_list[i].elt->master->s->type > AQ &&
-			elt_list[i].elt->master->s->type < SOLID)
+        if (elt_list[i].elt.master->s->type > AQ &&
+            elt_list[i].elt.master->s->type < SOLID)
 			continue;
-		master_ptr = elt_list[i].elt->master;
+        master_ptr = elt_list[i].elt.master;
 		if (master_ptr->primary == TRUE)
 		{
 			if (master_ptr->s->secondary != NULL)
@@ -2589,10 +2589,10 @@ mb_for_species_surf(int n)
 	for (i = 0; i < count_elts; i++)
 	{
 /*   Skip H+, e-, and H2O */
-		if (elt_list[i].elt->master->s->type > AQ &&
-			elt_list[i].elt->master->s->type < SOLID)
+        if (elt_list[i].elt.master->s->type > AQ &&
+            elt_list[i].elt.master->s->type < SOLID)
 			continue;
-		master_ptr = elt_list[i].elt->master;
+        master_ptr = elt_list[i].elt.master;
 		if (master_ptr->primary == TRUE)
 		{
 			if (master_ptr->s->secondary != NULL)
@@ -3106,9 +3106,9 @@ add_surface_charge_balance(void)
  */
 	for (i = 0; i < count_elts; i++)
 	{
-		if (elt_list[i].elt->primary->s->type == SURF)
+        if (elt_list[i].elt.primary->s->type == SURF)
 		{
-			master_ptr = elt_list[i].elt->primary;
+            master_ptr = elt_list[i].elt.primary;
 			break;
 		}
 	}
@@ -3175,9 +3175,9 @@ add_cd_music_charge_balances(int n)
  */
 	for (i = 0; i < count_elts; i++)
 	{
-		if (elt_list[i].elt->primary->s->type == SURF)
+        if (elt_list[i].elt.primary->s->type == SURF)
 		{
-			master_ptr = elt_list[i].elt->primary;
+            master_ptr = elt_list[i].elt.primary;
 			break;
 		}
 	}
@@ -3319,8 +3319,8 @@ setup_exchange(void)
 /*
  *   Find master species
  */
-			element * elt_ptr = element_store(it->first.c_str());
-			if (elt_ptr == NULL || elt_ptr->master == NULL)
+            element elt_ptr = element_store(it->first.c_str());
+            if (&elt_ptr == NULL || elt_ptr.master == NULL)
 			{
 				error_string = sformatf( "Master species not in database "
 						"for %s, skipping element.",
@@ -3329,7 +3329,7 @@ setup_exchange(void)
 				error_msg(error_string, CONTINUE);
 				continue;
 			}
-			master_ptr = elt_ptr->master;
+            master_ptr = elt_ptr.master;
 			if (master_ptr->type != EX)
 				continue;
 /*
@@ -3353,7 +3353,7 @@ setup_exchange(void)
  */
 				x[count_unknowns]->type = EXCH;
 				x[count_unknowns]->exch_comp = string_hsave(it->first.c_str());
-				x[count_unknowns]->description = elt_ptr->name;
+                x[count_unknowns]->description = elt_ptr.name;
 				x[count_unknowns]->moles = it->second;
 				x[count_unknowns]->master = master_ptr_list;
 				x[count_unknowns]->master[0]->unknown = x[count_unknowns];
@@ -3476,13 +3476,13 @@ setup_surface(void)
 		cxxNameDouble::iterator jit;
 		for (jit = comp_ptr->Get_totals().begin(); jit != comp_ptr->Get_totals().end(); jit++)
 		{
-			struct element *elt_ptr = element_store(jit->first.c_str());
-			struct master *master_ptr = elt_ptr->master;
+            struct element elt_ptr = element_store(jit->first.c_str());
+            struct master *master_ptr = elt_ptr.master;
 			if (master_ptr == NULL)
 			{
 				error_string = sformatf(
 						"Master species not in database for %s, skipping element.",
-						elt_ptr->name);
+                        elt_ptr.name);
 				warning_msg(error_string);
 				continue;
 			}
@@ -4787,15 +4787,15 @@ setup_unknowns(void)
 			cxxNameDouble::iterator it = nd.begin();
 			for ( ; it != nd.end(); it++)
 			{
-				element * elt_ptr = element_store(it->first.c_str());
-				if (elt_ptr == NULL || elt_ptr->master == NULL)
+                element elt_ptr = element_store(it->first.c_str());
+                if (&elt_ptr == NULL || elt_ptr.master == NULL)
 				{
 					error_string = sformatf(
 							"Master species missing for element %s",
 							it->first.c_str());
 					error_msg(error_string, STOP);
 				}
-				if (elt_ptr->master->type == EX)
+                if (elt_ptr.master->type == EX)
 				{
 					max_unknowns++;
 				}
@@ -5400,14 +5400,14 @@ write_mb_for_species_list(int n)
 	}
 	for (i = 0; i < count_elts; i++)
 	{
-		if (strcmp(elt_list[i].elt->name, "O(-2)") == 0)
+        if (strcmp(elt_list[i].elt.name, "O(-2)") == 0)
 		{
 			if (count_elts >= max_elts)
 			{
 				space((void **) ((void *) &elt_list), count_elts, &max_elts,
 					  sizeof(struct elt_list));
 			}
-			elt_list[count_elts].elt = element_h_one;
+            elt_list[count_elts].elt = *element_h_one;
 			elt_list[count_elts].coef = elt_list[i].coef * 2;
 			count_elts++;
 		}
@@ -5463,14 +5463,14 @@ write_phase_sys_total(int n)
 	}
 	for (i = 0; i < count_elts; i++)
 	{
-		if (strcmp(elt_list[i].elt->name, "O(-2)") == 0)
+        if (strcmp(elt_list[i].elt.name, "O(-2)") == 0)
 		{
 			if (count_elts >= max_elts)
 			{
 				space((void **) ((void *) &elt_list), count_elts, &max_elts,
 					  sizeof(struct elt_list));
 			}
-			elt_list[count_elts].elt = element_h_one;
+            elt_list[count_elts].elt = *element_h_one;
 			elt_list[count_elts].coef = elt_list[i].coef * 2;
 			count_elts++;
 		}
@@ -6250,11 +6250,11 @@ build_min_exch(void)
 		struct master *exchange_master = NULL;
 		for ( ; it != nd.end(); it++)
 		{
-			element * elt_ptr = element_store(it->first.c_str());
-			assert (elt_ptr);
-			if (elt_ptr->master->type == EX)
+            element elt_ptr = element_store(it->first.c_str());
+//			assert (elt_ptr);
+            if (elt_ptr.master->type == EX)
 			{
-				exchange_master = elt_ptr->master;
+                exchange_master = elt_ptr.master;
 			}
 		}
 		if (exchange_master == NULL)
@@ -6317,13 +6317,13 @@ build_min_exch(void)
 #endif
 		for (jj = 0; jj < count_elts; jj++)
 		{
-			master_ptr = elt_list[jj].elt->primary;
+            master_ptr = elt_list[jj].elt.primary;
 			if (master_ptr == NULL)
 			{
 				input_error++;
 				error_string = sformatf(
 						"Did not find unknown for %s, exchange related to mineral %s",
-                        elt_list[jj].elt->primary->elt.name, comp_ref.Get_phase_name().c_str());
+                        elt_list[jj].elt.primary->elt.name, comp_ref.Get_phase_name().c_str());
 				error_msg(error_string, STOP);
 			}
 			if (master_ptr->in == FALSE)
@@ -6394,14 +6394,14 @@ build_min_surface(void)
 		cxxSurfaceComp *comp_ptr = &(surface_ptr->Get_surface_comps()[i]);
 		if (comp_ptr->Get_phase_name().size() == 0)
 			continue;
-		struct element *elt_ptr = element_store(comp_ptr->Get_master_element().c_str());
+        struct element elt_ptr = element_store(comp_ptr->Get_master_element().c_str());
 		/* find unknown number */
 		int j;
 		for (j = count_unknowns - 1; j >= 0; j--)
 		{
 			if (x[j]->type != SURFACE)
 				continue;
-			if (x[j]->master[0] == elt_ptr->master)
+            if (x[j]->master[0] == elt_ptr.master)
 				break;
 		}
 		int k;
@@ -6418,7 +6418,7 @@ build_min_surface(void)
 			input_error++;
 			error_string = sformatf(
 					"Did not find unknown for master surface species %s",
-					elt_ptr->master->s->name);
+                    elt_ptr.master->s->name);
 			error_msg(error_string, CONTINUE);
 		}
 		if (j == -1 || k == -1)
@@ -6451,7 +6451,7 @@ build_min_surface(void)
 #endif
 		for (int jj = 0; jj < count_elts; jj++)
 		{
-			struct master * master_ptr = elt_list[jj].elt->primary;
+            struct master * master_ptr = elt_list[jj].elt.primary;
 			if (master_ptr->in == FALSE)
 			{
 				master_ptr = master_ptr->s->secondary;
@@ -6461,7 +6461,7 @@ build_min_surface(void)
 				input_error++;
 				error_string = sformatf(
 						"Did not find unknown for %s, surface related to mineral %s",
-                        elt_list[jj].elt->primary->elt.name, comp_ptr->Get_phase_name().c_str());
+                        elt_list[jj].elt.primary->elt.name, comp_ptr->Get_phase_name().c_str());
 				error_msg(error_string, STOP);
 			}
 			if (master_ptr->s->type == SURF)
@@ -6593,12 +6593,12 @@ change_hydrogen_in_elt_list(LDBLE charge)
 	elt_list_combine();
 	for (j = 0; j < count_elts; j++)
 	{
-		if (strcmp(elt_list[j].elt->name, "H") == 0)
+        if (strcmp(elt_list[j].elt.name, "H") == 0)
 		{
 			found_h = j;
 			coef_h = elt_list[j].coef;
 		}
-		else if (strcmp(elt_list[j].elt->name, "O") == 0)
+        else if (strcmp(elt_list[j].elt.name, "O") == 0)
 		{
 			found_o = j;
 			coef_o = elt_list[j].coef;
@@ -6611,7 +6611,7 @@ change_hydrogen_in_elt_list(LDBLE charge)
 		return (OK);
 	if (found_h < 0 && found_o >= 0)
 	{
-        elt_list[count_elts].elt = &s_hplus->primary->elt;
+        elt_list[count_elts].elt = s_hplus->primary->elt;
 		elt_list[count_elts].coef = coef;
 		count_elts++;
 		qsort(elt_list, (size_t) count_elts,

@@ -587,7 +587,7 @@ calc_solution_volume(void)
 	{
         if (master[i].s->type != AQ) continue;
         struct master master_ptr = master[i];
-        if (master_ptr.primary == TRUE && strcmp(master_ptr.elt.name, "Alkalinity"))
+        if (master_ptr.primary == TRUE && (master_ptr.elt.name =="Alkalinity"))
 		{
             total_mass += master_ptr.total_primary * master_ptr.elt.gfw;
 		}
@@ -1055,7 +1055,7 @@ diff_layer_total(const char *total_name, const char *surface_name)
  */
 		for (j = 0; j < count_elts; j++)
 		{
-			if (strcmp(elt_list[j].elt->name, total_name) == 0)
+            if (elt_list[j].elt.name == total_name)
 			{
 				return ((LDBLE) elt_list[j].coef);
 			}
@@ -1215,15 +1215,15 @@ equivalent_fraction(const char *name, LDBLE *eq, std::string &elt_name)
 		*eq = s_ptr->equiv;
 		struct elt_list *next_elt;
 		LDBLE tot=0.0;
-		for (next_elt = s_ptr->next_elt; next_elt->elt != NULL;	next_elt++)
-		{
-			if (next_elt->elt->master->s->type == SURF ||
-				next_elt->elt->master->s->type == EX)
-			{
-				tot = total_mole(next_elt->elt->name);
-				elt_name = next_elt->elt->name;
-			}
-		}
+//		for (next_elt = s_ptr->next_elt; next_elt->elt != NULL;	next_elt++)
+//		{
+//            if (next_elt->elt.master->s->type == SURF ||
+//                next_elt->elt.master->s->type == EX)
+//			{
+//                tot = total_mole(next_elt->elt.name);
+//                elt_name = next_elt->elt.name;
+//			}
+//		}
 		if (s_ptr->in == TRUE && tot > 0.0)
 		{
 			f = s_ptr->moles * s_ptr->equiv / tot; 
@@ -1729,15 +1729,15 @@ sum_match_gases(const char *mytemplate, const char *name)
 			}
 			else
 			{
-				for (next_elt = phase_ptr->next_elt;
-					 next_elt->elt != NULL; next_elt++)
-				{
-					if (strcmp(next_elt->elt->name, name) == 0)
-					{
-						tot += next_elt->coef * phase_ptr->moles_x;
-						break;
-					}
-				}
+//				for (next_elt = phase_ptr->next_elt;
+//					 next_elt->elt != NULL; next_elt++)
+//				{
+//					if (strcmp(next_elt->elt->name, name) == 0)
+//					{
+//						tot += next_elt->coef * phase_ptr->moles_x;
+//						break;
+//					}
+//				}
 			}
 		}
 	}
@@ -1780,15 +1780,15 @@ sum_match_species(const char *mytemplate, const char *name)
 		}
 		else
 		{
-			for (next_elt = s_ptr->next_elt; next_elt->elt != NULL;
-					next_elt++)
-			{
-				if (strcmp(next_elt->elt->name, name) == 0)
-				{
-					tot += next_elt->coef * s_ptr->moles;
-					break;
-				}
-			}
+//			for (next_elt = s_ptr->next_elt; next_elt->elt != NULL;
+//					next_elt++)
+//			{
+//				if (strcmp(next_elt->elt->name, name) == 0)
+//				{
+//					tot += next_elt->coef * s_ptr->moles;
+//					break;
+//				}
+//			}
 		}
 	}
 	return (tot);
@@ -1829,14 +1829,14 @@ sum_match_ss(const char *mytemplate, const char *name)
 				{
 					int l;
 					struct phase *phase_ptr = phase_bsearch(comp_ptr->Get_name().c_str(), &l, FALSE);
-					for (next_elt = phase_ptr->next_elt; next_elt->elt != NULL; next_elt++)
-					{
-						if (strcmp(next_elt->elt->name, name) == 0)
-						{
-							tot += next_elt->coef *	comp_ptr->Get_moles();
-							break;
-						}
-					}
+//					for (next_elt = phase_ptr->next_elt; next_elt->elt != NULL; next_elt++)
+//					{
+//						if (strcmp(next_elt->elt->name, name) == 0)
+//						{
+//							tot += next_elt->coef *	comp_ptr->Get_moles();
+//							break;
+//						}
+//					}
 				}
 			}
 			break;
@@ -2421,26 +2421,26 @@ surf_total(const char *total_name, const char *surface_name)
 		bool match = false; 
 
 		// find if surface matches 
-		for (int i = 0; s_x[j]->next_elt[i].elt != NULL; i++)
-		{
-			if (s_x[j]->next_elt[i].elt->master->type != SURF) continue;
+//		for (int i = 0; s_x[j]->next_elt[i].elt != NULL; i++)
+//		{
+//			if (s_x[j]->next_elt[i].elt->master->type != SURF) continue;
 
-			//strcpy(token, s_x[j]->next_elt[i].elt->name);
-			//replace("_", " ", token);
-			//ptr = token;
-			//copy_token(name, &ptr, &k);
-			token = s_x[j]->next_elt[i].elt->name;
-			replace("_", " ", token);
-			std::string::iterator b = token.begin();
-			std::string::iterator e = token.end();
-			std::string name;
-			CParser::copy_token(name, b, e);
-			if (strcmp(name.c_str(), surface_name) == 0)
-			{
-				match = true;
-				break;
-			}
-		}
+//			//strcpy(token, s_x[j]->next_elt[i].elt->name);
+//			//replace("_", " ", token);
+//			//ptr = token;
+//			//copy_token(name, &ptr, &k);
+//			token = s_x[j]->next_elt[i].elt->name;
+//			replace("_", " ", token);
+//			std::string::iterator b = token.begin();
+//			std::string::iterator e = token.end();
+//			std::string name;
+//			CParser::copy_token(name, b, e);
+//			if (strcmp(name.c_str(), surface_name) == 0)
+//			{
+//				match = true;
+//				break;
+//			}
+//		}
 		if (!match) continue;
 
 		// surface matches, now match element or redox state
@@ -2490,15 +2490,15 @@ surf_total(const char *total_name, const char *surface_name)
 		}
 		else
 		{
-			for (int i = 0; s_x[j]->next_secondary[i].elt != NULL; i++)
-			{
-				token = s_x[j]->next_secondary[i].elt->name;
-				if (strcmp(token.c_str(), total_name) == 0)
-				{
-					t += s_x[j]->next_secondary[i].coef * s_x[j]->moles;
-					break;
-				}
-			}
+//			for (int i = 0; s_x[j]->next_secondary[i].elt != NULL; i++)
+//			{
+//				token = s_x[j]->next_secondary[i].elt->name;
+//				if (strcmp(token.c_str(), total_name) == 0)
+//				{
+//					t += s_x[j]->next_secondary[i].coef * s_x[j]->moles;
+//					break;
+//				}
+//			}
 		}
 	}
 	return t;
@@ -2672,24 +2672,24 @@ surf_total_no_redox(const char *total_name, const char *surface_name)
 	{
 		if (s_x[j]->type != SURF)
 			continue;
-		for (i = 0; s_x[j]->next_elt[i].elt != NULL; i++)
-		{
-			if (s_x[j]->next_elt[i].elt->master->type != SURF) continue;
+//		for (i = 0; s_x[j]->next_elt[i].elt != NULL; i++)
+//		{
+//			if (s_x[j]->next_elt[i].elt->master->type != SURF) continue;
 
-            token = s_x[j]->next_elt[i].elt->name;
-			replace("_", " ", token);
-			ptr = token;
-            copy_token(name, ptr, &k);
-            if (name == surface_name_local)
-			{
-/*
- *   Accumulate elements in diffuse layer
- */
-				add_elt_list(s_x[j]->next_elt, s_x[j]->moles);
-				//fprintf(stderr, "%15s\t%e\t%s\t%s\n", s_x[j]->name, s_x[j]->moles, name, surface_name_local );
-				break;
-			}
-		}
+//            token = s_x[j]->next_elt[i].elt->name;
+//			replace("_", " ", token);
+//			ptr = token;
+//            copy_token(name, ptr, &k);
+//            if (name == surface_name_local)
+//			{
+///*
+// *   Accumulate elements in diffuse layer
+// */
+//				add_elt_list(s_x[j]->next_elt, s_x[j]->moles);
+//				//fprintf(stderr, "%15s\t%e\t%s\t%s\n", s_x[j]->name, s_x[j]->moles, name, surface_name_local );
+//				break;
+//			}
+//		}
 	}
 	if (count_elts > 0)
 	{
@@ -2702,7 +2702,7 @@ surf_total_no_redox(const char *total_name, const char *surface_name)
  */
 	for (j = 0; j < count_elts; j++)
 	{
-		if (strcmp(elt_list[j].elt->name, total_name) == 0)
+        if (elt_list[j].elt.name == total_name)
 		{
 			return ((LDBLE) elt_list[j].coef);
 		}
@@ -2863,7 +2863,7 @@ get_edl_species(cxxSurfaceCharge & charge_ref)
 	{
 		if (s_x[j]->type == H2O)
 		{
-			sys[count_sys].name = string_duplicate(s_x[j]->name);
+            sys[count_sys].name = s_x[j]->name;
 			sys[count_sys].moles = mass_water_surface / gfw_water;
 			sys_tot += sys[count_sys].moles;
 			count_sys++;
@@ -2873,7 +2873,7 @@ get_edl_species(cxxSurfaceCharge & charge_ref)
 			double molality = under(s_x[j]->lm);
 			double moles_excess = mass_water_aq_x * molality * charge_ref.Get_g_map()[s_x[j]->z].Get_g();
 			double moles_surface = mass_water_surface * molality + moles_excess;
-			sys[count_sys].name = string_duplicate(s_x[j]->name);
+            sys[count_sys].name = s_x[j]->name;
 			sys[count_sys].moles = moles_surface;
 			sys_tot += sys[count_sys].moles;
 			count_sys++;
@@ -3126,10 +3126,10 @@ kinetics_formula(std::string kin_name, cxxNameDouble &stoichiometry)
 						// add formula
 						std::string name = it->first;
 						LDBLE coef = it->second;
-						char * temp_name = string_duplicate(name.c_str());
+                        std::string temp_name = name;
                         std::string ptr = temp_name;
                         get_elts_in_species(ptr, coef);
-						free_check_null(temp_name);
+//						free_check_null(temp_name);
 					}
 				}
 				formula.append(kin_name);
@@ -3216,34 +3216,34 @@ system_total_elements(void)
 	/*
 	 * Include H and O
 	 */
-	sys[count_sys].name = string_duplicate("H");
+    sys[count_sys].name = "H";
 	sys[count_sys].moles = total_h_x;
 	sys_tot += sys[count_sys].moles;
-	sys[count_sys].type = string_duplicate("dis");
+    sys[count_sys].type = "dis";
 	count_sys++;
 	space((void **) ((void *) &sys), count_sys, &max_sys,
 		  sizeof(struct system_species));
-	sys[count_sys].name = string_duplicate("O");
+    sys[count_sys].name = "O";
 	sys[count_sys].moles = total_o_x;
 	sys_tot += sys[count_sys].moles;
-	sys[count_sys].type = string_duplicate("dis");
+    sys[count_sys].type = "dis";
 	count_sys++;
 	space((void **) ((void *) &sys), count_sys, &max_sys,
 		  sizeof(struct system_species));
 	/*
 	 * Include H(1) and O(-2)
 	 */
-	sys[count_sys].name = string_duplicate("H(1)");
+    sys[count_sys].name = "H(1)";
 	sys[count_sys].moles = solution_sum_secondary("H(1)");
 	sys_tot += sys[count_sys].moles;
-	sys[count_sys].type = string_duplicate("dis");
+    sys[count_sys].type = "dis";
 	count_sys++;
 	space((void **) ((void *) &sys), count_sys, &max_sys,
 		  sizeof(struct system_species));
-	sys[count_sys].name = string_duplicate("O(-2)");
+    sys[count_sys].name = "O(-2)";
 	sys[count_sys].moles = solution_sum_secondary("O(-2)");
 	sys_tot += sys[count_sys].moles;
-	sys[count_sys].type = string_duplicate("dis");
+    sys[count_sys].type = "dis";
 	count_sys++;
 	space((void **) ((void *) &sys), count_sys, &max_sys,
 		  sizeof(struct system_species));
@@ -3307,15 +3307,15 @@ system_total_elements(void)
 		sys_tot += sys[count_sys].moles;
         if (master[i].s->type <= SOLID)
 		{
-			sys[count_sys].type = string_duplicate("dis");
+            sys[count_sys].type = "dis";
 		}
         else if (master[i].s->type == EX)
 		{
-			sys[count_sys].type = string_duplicate("ex");
+            sys[count_sys].type = "ex";
 		}
         else if (master[i].s->type == SURF || master[i].s->type == SURF_PSI)
 		{
-			sys[count_sys].type = string_duplicate("surf");
+            sys[count_sys].type = "surf";
 		}
 		count_sys++;
 		space((void **) ((void *) &sys), count_sys, &max_sys,
@@ -3351,11 +3351,11 @@ system_total_si(void)
 		}
 		si = -phases[i]->lk + iap;
 		strcpy(name, phases[i]->name);
-		sys[count_sys].name = string_duplicate(name);
+        sys[count_sys].name = name;
 		sys[count_sys].moles = si;
 		if (si > sys_tot)
 			sys_tot = si;
-		sys[count_sys].type = string_duplicate("phase");
+        sys[count_sys].type = "phase";
 		count_sys++;
 		space((void **) ((void *) &sys), count_sys, &max_sys,
 			  sizeof(struct system_species));
@@ -3380,10 +3380,10 @@ system_total_aq(void)
 		//if (s_x[i]->type != AQ)
 		if (s_x[i]->type > HPLUS)
 			continue;
-		sys[count_sys].name = string_duplicate(s_x[i]->name);
+        sys[count_sys].name = s_x[i]->name;
 		sys[count_sys].moles = s_x[i]->moles;
 		sys_tot += sys[count_sys].moles;
-		sys[count_sys].type = string_duplicate("aq");
+        sys[count_sys].type = "aq";
 		count_sys++;
 		space((void **) ((void *) &sys), count_sys, &max_sys,
 			  sizeof(struct system_species));
@@ -3409,10 +3409,10 @@ system_total_ex(void)
 			continue;
 		if (s_x[i]->primary != NULL)
 			continue;
-		sys[count_sys].name = string_duplicate(s_x[i]->name);
+        sys[count_sys].name = s_x[i]->name;
 		sys[count_sys].moles = s_x[i]->moles;
 		sys_tot += sys[count_sys].moles;
-		sys[count_sys].type = string_duplicate("ex");
+        sys[count_sys].type = "ex";
 		count_sys++;
 		space((void **) ((void *) &sys), count_sys, &max_sys,
 			  sizeof(struct system_species));
@@ -3436,10 +3436,10 @@ system_total_surf(void)
 	{
 		if (s_x[i]->type != SURF)
 			continue;
-		sys[count_sys].name = string_duplicate(s_x[i]->name);
+        sys[count_sys].name = s_x[i]->name;
 		sys[count_sys].moles = s_x[i]->moles;
 		sys_tot += sys[count_sys].moles;
-		sys[count_sys].type = string_duplicate("surf");
+        sys[count_sys].type = "surf";
 		count_sys++;
 		space((void **) ((void *) &sys), count_sys, &max_sys,
 			  sizeof(struct system_species));
@@ -3467,10 +3467,10 @@ system_total_gas(void)
 		struct phase *phase_ptr = phase_bsearch(gas_phase_ptr->Get_gas_comps()[j].Get_phase_name().c_str(), 
 			&i, FALSE);
 		assert(phase_ptr);
-		sys[count_sys].name = string_duplicate(phase_ptr->name);
+        sys[count_sys].name = phase_ptr->name;
 		sys[count_sys].moles = phase_ptr->moles_x;
 		sys_tot += sys[count_sys].moles;
-		sys[count_sys].type = string_duplicate("gas");
+        sys[count_sys].type = "gas";
 		count_sys++;
 		space((void **) ((void *) &sys), count_sys, &max_sys,
 			  sizeof(struct system_species));
@@ -3494,11 +3494,11 @@ system_total_equi(void)
 			cxxPPassemblageComp *comp_ptr = &(it->second);
 			int l;
 			struct phase *phase_ptr = phase_bsearch(comp_ptr->Get_name().c_str(), &l, FALSE);
-			sys[count_sys].name = string_duplicate(phase_ptr->name);
+            sys[count_sys].name = phase_ptr->name;
 			//sys[count_sys].moles = comp_ptr->Get_moles();
 			sys[count_sys].moles = equi_phase(sys[count_sys].name);
 			sys_tot += sys[count_sys].moles;
-			sys[count_sys].type = string_duplicate("equi");
+            sys[count_sys].type = "equi";
 			count_sys++;
 			space((void **) ((void *) &sys), count_sys, &max_sys,
 				  sizeof(struct system_species));
@@ -3519,10 +3519,10 @@ system_total_kin(void)
 	for  (size_t i=0 ; i < comps.size(); i++)
 	{
 			cxxKineticsComp *comp_ptr = &comps[i]; 
-			sys[count_sys].name = string_duplicate(comp_ptr->Get_rate_name().c_str());
+            sys[count_sys].name = comp_ptr->Get_rate_name().c_str();
 			sys[count_sys].moles = comp_ptr->Get_m();
 			sys_tot += sys[count_sys].moles;
-			sys[count_sys].type = string_duplicate("kin");
+            sys[count_sys].type = "kin";
 			count_sys++;
 			space((void **) ((void *) &sys), count_sys, &max_sys,
 				  sizeof(struct system_species));
@@ -3552,10 +3552,10 @@ system_total_ss(void)
 			cxxSScomp *comp_ptr = &(ss_ptr->Get_ss_comps()[i]);
 			int l;
 			struct phase *phase_ptr = phase_bsearch(comp_ptr->Get_name().c_str(), &l, FALSE);
-			sys[count_sys].name = string_duplicate(phase_ptr->name);
+            sys[count_sys].name = phase_ptr->name;
 			sys[count_sys].moles = comp_ptr->Get_moles();
 			sys_tot += sys[count_sys].moles;
-			sys[count_sys].type = string_duplicate("s_s");
+            sys[count_sys].type = "s_s";
 			count_sys++;
 			space((void **) ((void *) &sys), count_sys, &max_sys,
 				  sizeof(struct system_species));
@@ -3573,7 +3573,7 @@ system_total_elt(const char *total_name)
  */
 	int i, j, k;
 	LDBLE molality, moles_excess, moles_surface, mass_water_surface;
-	char name[MAX_LENGTH];
+    std::string name;
 
 /*
  *   find total moles in aq, surface, and exchange
@@ -3595,18 +3595,18 @@ system_total_elt(const char *total_name)
 		 */
 		for (j = 0; j < count_elts; j++)
 		{
-			if (strcmp(elt_list[j].elt->name, total_name) == 0)
+            if (elt_list[j].elt.name == total_name)
 			{
-				sys[count_sys].name = string_duplicate(s_x[i]->name);
+                sys[count_sys].name = s_x[i]->name;
 				sys[count_sys].moles = elt_list[j].coef;
 				sys_tot += sys[count_sys].moles;
 				if (s_x[i]->type == AQ)
 				{
-					sys[count_sys].type = string_duplicate("aq");
+                    sys[count_sys].type = "aq";
 				}
 				else if (s_x[i]->type == EX)
 				{
-					sys[count_sys].type = string_duplicate("ex");
+                    sys[count_sys].type = "ex";
 					/* subtract again the dummy moles of primary exchange species... */
 					if (s_x[i]->primary != NULL)
 					{
@@ -3615,16 +3615,16 @@ system_total_elt(const char *total_name)
 				}
 				else if (s_x[i]->type == SURF)
 				{
-					sys[count_sys].type = string_duplicate("surf");
+                    sys[count_sys].type = "surf";
 				}
 				else if (s_x[i]->type == HPLUS)
 				{
-					sys[count_sys].type = string_duplicate("aq");
+                    sys[count_sys].type = "aq";
 					/* sys[count_sys].moles = total_h_x; */
 				}
 				else if (s_x[i]->type == H2O)
 				{
-					sys[count_sys].type = string_duplicate("aq");
+                    sys[count_sys].type = "aq";
 					/* sys[count_sys].moles = total_o_x; */
 				}
 				else
@@ -3684,14 +3684,14 @@ system_total_elt(const char *total_name)
 			 */
 			for (j = 0; j < count_elts; j++)
 			{
-				if (strcmp(elt_list[j].elt->name, total_name) == 0)
+                if (elt_list[j].elt.name == total_name)
 				{
-                    strcpy(name, x[k]->master[0]->elt.name);
+                    name = x[k]->master[0]->elt.name;
 					replace("_psi", "", name);
-					sys[count_sys].name = string_duplicate(name);
+                    sys[count_sys].name = name;
 					sys[count_sys].moles = elt_list[j].coef;
 					sys_tot += sys[count_sys].moles;
-					sys[count_sys].type = string_duplicate("diff");
+                    sys[count_sys].type = "diff";
 					count_sys++;
 					space((void **) ((void *) &sys), count_sys, &max_sys,
 						  sizeof(struct system_species));
@@ -3729,13 +3729,12 @@ system_total_elt(const char *total_name)
 			}
 			for (j = 0; j < count_elts; j++)
 			{
-				if (strcmp(elt_list[j].elt->name, total_name) == 0)
+                if (elt_list[j].elt.name == total_name)
 				{
-					sys[count_sys].name =
-						string_duplicate(phase_ptr->name);
+                    sys[count_sys].name = phase_ptr->name;
 					sys[count_sys].moles = elt_list[j].coef;
 					sys_tot += sys[count_sys].moles;
-					sys[count_sys].type = string_duplicate("equi");
+                    sys[count_sys].type = "equi";
 					count_sys++;
 					space((void **) ((void *) &sys), count_sys, &max_sys,
 						  sizeof(struct system_species));
@@ -3773,13 +3772,12 @@ system_total_elt(const char *total_name)
 					}
 					for (j = 0; j < count_elts; j++)
 					{
-						if (strcmp(elt_list[j].elt->name, total_name) == 0)
+                        if (elt_list[j].elt.name == total_name)
 						{
-							sys[count_sys].name =
-								string_duplicate(phase_ptr->name);
+                            sys[count_sys].name = phase_ptr->name;
 							sys[count_sys].moles = elt_list[j].coef;
 							sys_tot += sys[count_sys].moles;
-							sys[count_sys].type = string_duplicate("s_s");
+                            sys[count_sys].type = "s_s";
 							count_sys++;
 							space((void **) ((void *) &sys), count_sys,
 								  &max_sys, sizeof(struct system_species));
@@ -3817,12 +3815,12 @@ system_total_elt(const char *total_name)
 				 */
 				for (j = 0; j < count_elts; j++)
 				{
-					if (strcmp(elt_list[j].elt->name, total_name) == 0)
+                    if (elt_list[j].elt.name == total_name)
 					{
-						sys[count_sys].name = string_duplicate(phase_ptr->name);
+                        sys[count_sys].name = phase_ptr->name;
 						sys[count_sys].moles = elt_list[j].coef;
 						sys_tot += sys[count_sys].moles;
-						sys[count_sys].type = string_duplicate("gas");
+                        sys[count_sys].type = "gas";
 						count_sys++;
 						space((void **) ((void *) &sys), count_sys, &max_sys,
 							  sizeof(struct system_species));
@@ -3846,7 +3844,7 @@ system_total_elt_secondary(const char *total_name)
 	int i, j, k, l;
 	LDBLE molality, moles_excess, moles_surface, mass_water_surface, sum,
 		coef;
-	char name[MAX_LENGTH];
+    std::string name;
 /*
  *   find total moles in aq, surface, and exchange
  */
@@ -3873,31 +3871,31 @@ system_total_elt_secondary(const char *total_name)
 		 */
 		for (j = 0; j < count_elts; j++)
 		{
-			if (strcmp(elt_list[j].elt->name, total_name) == 0)
+            if (elt_list[j].elt.name == total_name)
 			{
-				sys[count_sys].name = string_duplicate(s_x[i]->name);
+                sys[count_sys].name = s_x[i]->name;
 				sys[count_sys].moles = elt_list[j].coef;
 				sys_tot += sys[count_sys].moles;
 				if (s_x[i]->type == AQ)
 				{
-					sys[count_sys].type = string_duplicate("aq");
+                    sys[count_sys].type = "aq";
 				}
 				else if (s_x[i]->type == EX)
 				{
-					sys[count_sys].type = string_duplicate("ex");
+                    sys[count_sys].type = "ex";
 				}
 				else if (s_x[i]->type == SURF)
 				{
-					sys[count_sys].type = string_duplicate("surf");
+                    sys[count_sys].type = "surf";
 				}
 				else if (s_x[i]->type == HPLUS)
 				{
-					sys[count_sys].type = string_duplicate("aq");
+                    sys[count_sys].type = "aq";
 					/* sys[count_sys].moles = total_h_x; */
 				}
 				else if (s_x[i]->type == H2O)
 				{
-					sys[count_sys].type = string_duplicate("aq");
+                    sys[count_sys].type = "aq";
 					/* sys[count_sys].moles = total_o_x; */
 				}
 				else
@@ -3943,7 +3941,7 @@ system_total_elt_secondary(const char *total_name)
 				}
 				for (l = 0; l < count_elts; l++)
 				{
-					if (strcmp(elt_list[l].elt->name, total_name) == 0)
+                    if (elt_list[l].elt.name == total_name)
 					{
 						coef = elt_list[l].coef;
 						if (s_x[j]->type > H2O)
@@ -3960,12 +3958,12 @@ system_total_elt_secondary(const char *total_name)
 				}
 				if (l >= count_elts)
 					continue;
-                strcpy(name, x[k]->master[0]->elt.name);
+                name = x[k]->master[0]->elt.name;
 				replace("_psi", "", name);
-				sys[count_sys].name = string_duplicate(name);
+                sys[count_sys].name = name;
 				sys[count_sys].moles = sum;
 				sys_tot += sys[count_sys].moles;
-				sys[count_sys].type = string_duplicate("diff");
+                sys[count_sys].type = "diff";
 				count_sys++;
 				space((void **) ((void *) &sys), count_sys, &max_sys,
 					  sizeof(struct system_species));
@@ -4002,13 +4000,12 @@ system_total_elt_secondary(const char *total_name)
 			}
 			for (j = 0; j < count_elts; j++)
 			{
-				if (strcmp(elt_list[j].elt->name, total_name) == 0)
+                if (elt_list[j].elt.name == total_name)
 				{
-					sys[count_sys].name =
-						string_duplicate(phase_ptr->name);
+                    sys[count_sys].name = phase_ptr->name;
 					sys[count_sys].moles = elt_list[j].coef;
 					sys_tot += sys[count_sys].moles;
-					sys[count_sys].type = string_duplicate("equi");
+                    sys[count_sys].type = "equi";
 					count_sys++;
 					space((void **) ((void *) &sys), count_sys, &max_sys,
 						  sizeof(struct system_species));
@@ -4046,13 +4043,12 @@ system_total_elt_secondary(const char *total_name)
 					}
 					for (j = 0; j < count_elts; j++)
 					{
-						if (strcmp(elt_list[j].elt->name, total_name) == 0)
+                        if (elt_list[j].elt.name == total_name)
 						{
-							sys[count_sys].name =
-								string_duplicate(phase_ptr->name);
+                            sys[count_sys].name = phase_ptr->name;
 							sys[count_sys].moles = elt_list[j].coef;
 							sys_tot += sys[count_sys].moles;
-							sys[count_sys].type = string_duplicate("s_s");
+                            sys[count_sys].type = "s_s";
 							count_sys++;
 							space((void **) ((void *) &sys), count_sys,
 								  &max_sys, sizeof(struct system_species));
@@ -4092,13 +4088,12 @@ system_total_elt_secondary(const char *total_name)
 				 */
 				for (size_t j1 = 0; j1 < (size_t) count_elts; j1++)
 				{
-					if (strcmp(elt_list[j1].elt->name, total_name) == 0)
+                    if (elt_list[j1].elt.name == total_name)
 					{
-						sys[count_sys].name =
-							string_duplicate(phase_ptr->name);
+                        sys[count_sys].name = phase_ptr->name;
 						sys[count_sys].moles = elt_list[j1].coef;
 						sys_tot += sys[count_sys].moles;
-						sys[count_sys].type = string_duplicate("gas");
+                        sys[count_sys].type = "gas";
 						count_sys++;
 						space((void **) ((void *) &sys), count_sys, &max_sys,
 							  sizeof(struct system_species));
@@ -4185,7 +4180,7 @@ solution_sum_secondary(const char *total_name)
 		 */
 		for (j = 0; j < count_elts; j++)
 		{
-			if (strcmp(elt_list[j].elt->name, total_name) == 0)
+            if (elt_list[j].elt.name == total_name)
 			{
 				sum += elt_list[j].coef;
 				break;
@@ -4324,17 +4319,17 @@ iso_value(const char *total_name)
 	return -1000.;
 }
 
-char * Phreeqc::
+std::string Phreeqc::
 iso_unit(const char *total_name)
 {
 	int j;
-	char token[MAX_LENGTH], unit[MAX_LENGTH];
+    char token[MAX_LENGTH];
 	struct master_isotope *master_isotope_ptr;
 	char my_total_name[MAX_LENGTH];
 	strcpy(token, "");
 	strcpy(my_total_name, total_name);
 	while (replace(" ","_",my_total_name));
-	strcpy(unit, "unknown");
+    std::string unit = "unknown";
 	for (j = 0; j < count_isotope_ratio; j++)
 	{
 		if (isotope_ratio[j]->ratio == MISSING)
@@ -4344,9 +4339,9 @@ iso_unit(const char *total_name)
 		master_isotope_ptr = master_isotope_search(isotope_ratio[j]->isotope_name);
 		if (master_isotope_ptr != NULL)
 		{
-			strcpy(unit, master_isotope_ptr->units);
+            unit = master_isotope_ptr->units;
 		}
-		return string_duplicate(unit);
+        return unit;
 	}
 	strcpy(my_total_name, total_name);
 	while (replace("[","",my_total_name));
@@ -4363,11 +4358,11 @@ iso_unit(const char *total_name)
 		master_isotope_ptr = master_isotope_search(isotope_ratio[j]->isotope_name);
 		if (master_isotope_ptr != NULL)
 		{
-			strcpy(unit, master_isotope_ptr->units);
+            unit = master_isotope_ptr->units;
 		}
-		return string_duplicate(unit);
+        return unit;
 	}
-	return string_duplicate(unit);
+    return unit;
 }
 
 int Phreeqc::

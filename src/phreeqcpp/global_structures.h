@@ -510,7 +510,7 @@ struct list2
  struct isotope
  {
  	LDBLE isotope_number;
- 	const char *elt_name;
+        std::string elt_name;
  	const char *isotope_name;
  	LDBLE total;
  	LDBLE ratio;
@@ -569,7 +569,7 @@ struct CellData
  *---------------------------------------------------------------------- */
 struct element
 {
-	const char *name;					/* element name */
+        std::string name;					/* element name */
 	/*    int in; */
 	struct master *master;
 	struct master *primary;
@@ -580,7 +580,7 @@ struct element
  *---------------------------------------------------------------------- */
 struct elt_list
 {								/* list of name and number of elements in an equation */
-	struct element *elt;		/* pointer to element structure */
+        struct element elt;		/* pointer to element structure */
 	LDBLE coef;					/* number of element e's in eqn */
 };
 /*----------------------------------------------------------------------

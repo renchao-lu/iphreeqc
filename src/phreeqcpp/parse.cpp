@@ -161,7 +161,7 @@ parse_eq(char *eqn, struct elt_list **elt_ptr, int association)
 			(*elt_ptr)[i].elt = elt_list[i].elt;
 			(*elt_ptr)[i].coef = -elt_list[i].coef;
 		}
-		(*elt_ptr)[count_elts].elt = NULL;
+//		(*elt_ptr)[count_elts].elt = NULL;
 	}
 /*
  *   Debugging print of parsed equation
@@ -247,11 +247,11 @@ check_eqn(int association)
 	for (i = 0; i < count_elts; i++)
 	{
 		if ((equal(elt_list[i].coef, 0.0, TOL) == FALSE) &&
-			strncmp((elt_list[i].elt)->name, "e", MAX_LENGTH) != 0)
+            strncmp((elt_list[i].elt).name, "e", MAX_LENGTH) != 0)
 		{
 			error_string = sformatf(
 				"Equation does not balance for element, %s: right - left = %7.4f moles",
-				(elt_list[i].elt)->name, elt_list[i].coef);
+                (elt_list[i].elt).name, elt_list[i].coef);
 			error_msg(error_string, CONTINUE);
 			oops++;
 		}

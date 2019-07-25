@@ -344,7 +344,7 @@ print_diffuse_layer(cxxSurfaceCharge *charge_ptr)
 		for (j = 0; j < count_elts; j++)
 		{
 			output_msg(sformatf("\t%-14s\t%12.4e\n",
-				elt_list[j].elt->name, (double)elt_list[j].coef));
+                elt_list[j].elt.name, (double)elt_list[j].coef));
 		}
 	}
 	return (OK);
@@ -881,10 +881,10 @@ print_reaction(void)
 	cit = reaction_ptr->Get_elementList().begin();
 	for ( ; cit != reaction_ptr->Get_elementList().end(); cit++)
 	{
-		struct element * elt_ptr = element_store(cit->first.c_str());
-		assert(elt_ptr);
+        struct element elt_ptr = element_store(cit->first.c_str());
+//		assert(elt_ptr);
 		output_msg(sformatf("\t%-15s%13.5f\n",
-				   elt_ptr->name,
+                   elt_ptr.name,
 				   (double) cit->second));
 	}
 	output_msg(sformatf("\n"));

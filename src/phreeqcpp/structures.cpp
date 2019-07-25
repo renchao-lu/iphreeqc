@@ -442,8 +442,8 @@ element_compare(const void *ptr1, const void *ptr2)
 }
 
 /* ---------------------------------------------------------------------- */
-struct element * Phreeqc::
-element_store(const char *element)
+struct element Phreeqc::
+element_store(std::string element)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -465,19 +465,16 @@ element_store(const char *element)
 	int n;
 	struct element *elts_ptr;
 	ENTRY item, *found_item;
-	char token[MAX_LENGTH];
 /*
  *   Search list
  */
-	strcpy(token, element);
-
-	item.key = token;
+    item.key = element;
 	item.data = NULL;
 	found_item = hsearch_multi(elements_hash_table, item, FIND);
 	if (found_item != NULL)
 	{
 		elts_ptr = (struct element *) (found_item->data);
-		return (elts_ptr);
+        return (*elts_ptr);
 	}
 /*
  *   Save new elt structure and return pointer to it
@@ -488,7 +485,7 @@ element_store(const char *element)
 	if (elements[count_elements] == NULL)
 		malloc_error();
 	/* set name pointer in elements structure */
-	elements[count_elements]->name = string_hsave(token);
+    elements[count_elements]->name = string_hsave(element);
 	/* set return value */
 	elements[count_elements]->master = NULL;
 	elements[count_elements]->primary = NULL;
@@ -510,7 +507,7 @@ element_store(const char *element)
 		error_string = sformatf( "Hash table error in element_store.");
 		error_msg(error_string, CONTINUE);
 	}
-	return (elements[n]);
+    return (*elements[n]);
 }
 
 /* **********************************************************************
@@ -542,19 +539,19 @@ elt_list_combine(void)
 	j = 0;
 	for (i = 1; i < count_elts; i++)
 	{
-		if (elt_list[i].elt == elt_list[j].elt)
-		{
-			elt_list[j].coef += elt_list[i].coef;
-		}
-		else
-		{
-			j++;
-			if (i != j)
-			{
-				elt_list[j].elt = elt_list[i].elt;
-				elt_list[j].coef = elt_list[i].coef;
-			}
-		}
+//		if (elt_list[i].elt == elt_list[j].elt)
+//		{
+//			elt_list[j].coef += elt_list[i].coef;
+//		}
+//		else
+//		{
+//			j++;
+//			if (i != j)
+//			{
+//				elt_list[j].elt = elt_list[i].elt;
+//				elt_list[j].coef = elt_list[i].coef;
+//			}
+//		}
 	}
 	count_elts = j + 1;
 	return (OK);
@@ -569,7 +566,7 @@ elt_list_compare(const void *ptr1, const void *ptr2)
 
 	a = (const struct elt_list *) ptr1;
 	b = (const struct elt_list *) ptr2;
-	return (strncmp(a->elt->name, b->elt->name, MAX_LENGTH));
+    return (strncmp(a->elt.name, b->elt.name, MAX_LENGTH));
 }
 
 /* ---------------------------------------------------------------------- */
@@ -587,7 +584,7 @@ elt_list_dup(struct elt_list *elt_list_ptr_old)
  */
 	if (elt_list_ptr_old == NULL)
 		return (NULL);
-	for (i = 0; elt_list_ptr_old[i].elt != NULL; i++);
+//	for (i = 0; elt_list_ptr_old[i].elt != NULL; i++);
 	count_totals = i;
 /*
  *   Malloc space and store element data
@@ -617,11 +614,11 @@ elt_list_print(struct elt_list *elt_list_ptr)
 	if (elt_list_ptr == NULL)
 		return (ERROR);
 	output_msg(sformatf( "Elt_list\n"));
-	for (i = 0; elt_list_ptr[i].elt != NULL; i++)
-	{
-		output_msg(sformatf( "\t%s\t%e\n", elt_list_ptr[i].elt->name,
-				   (double) elt_list_ptr[i].coef));
-	}
+//	for (i = 0; elt_list_ptr[i].elt != NULL; i++)
+//	{
+//		output_msg(sformatf( "\t%s\t%e\n", elt_list_ptr[i].elt->name,
+//				   (double) elt_list_ptr[i].coef));
+//	}
 	return (OK);
 }
 /* ---------------------------------------------------------------------- */
@@ -635,7 +632,7 @@ elt_list_NameDouble(void)
 	cxxNameDouble nd;
 	for(int i = 0; i < count_elts; i++)
 	{
-		nd.add(elt_list[i].elt->name, elt_list[i].coef);
+        nd.add(elt_list[i].elt.name, elt_list[i].coef);
 	}
 	return (nd);
 }
@@ -677,7 +674,7 @@ elt_list_save(void)
 			elt_list_ptr[j].elt = elt_list[j].elt;
 			elt_list_ptr[j].coef = elt_list[j].coef;
 		}
-		elt_list_ptr[count_elts].elt = NULL;
+//		elt_list_ptr[count_elts].elt = NULL;
 	}
 	return (elt_list_ptr);
 }
@@ -704,7 +701,7 @@ NameDouble2elt_list(const cxxNameDouble &nd)
 			elt_list_ptr[i].coef = it->second;
 			i++;
 		}
-		elt_list_ptr[i].elt = NULL;
+//		elt_list_ptr[i].elt = NULL;
 		elt_list_ptr[i].coef = 0;
 	}
 	return (elt_list_ptr);

@@ -25,7 +25,7 @@ read_isotopes(void)
 	int l;
 	struct master_isotope *master_isotope_ptr;
 	char token[MAX_LENGTH];
-	struct element *elt_ptr;
+    struct element* elt_ptr = nullptr;
 
 	int return_value, opt, opt_save;
     std::string next_char;
@@ -36,7 +36,6 @@ read_isotopes(void)
 	int count_opt_list = 2;
 
 	master_isotope_ptr = NULL;
-	elt_ptr = NULL;
 /*
  *   Read name followed by options
  */
@@ -128,7 +127,7 @@ read_isotopes(void)
 				input_error++;
 				break;
 			}
-			elt_ptr = element_store(token);
+            *elt_ptr = element_store(token);
 			master_isotope_ptr = master_isotope_store(token, TRUE);
 			master_isotope_ptr->elt = elt_ptr;
 			master_isotope_ptr->minor_isotope = FALSE;

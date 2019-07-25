@@ -82,23 +82,23 @@ get_all_components(void)
 	add_all_components_tally();
 
 	// add secondary master species
-	for (i = 0; i < count_master; i++)
-	{
-        if (master[i].total > 0.0 && master[i]->s->type == AQ && master[i]->primary == TRUE)
-		{
-			for (int j = i + 1; j < count_master; j++)
-			{
-				if (master[j]->elt->primary == master[i])
-				{
-					master[j]->total = 1.0;
-				}
-				else
-				{
-					break;
-				}
-			}
-		}
-	}
+//	for (i = 0; i < count_master; i++)
+//	{
+//        if (master[i].total > 0.0 && master[i].s->type == AQ && master[i].primary == TRUE)
+//		{
+//			for (int j = i + 1; j < count_master; j++)
+//			{
+//                if (master[j].elt.primary == master[i])
+//				{
+//                    master[j].total = 1.0;
+//				}
+//				else
+//				{
+//					break;
+//				}
+//			}
+//		}
+//	}
 
 
 /*
@@ -107,7 +107,7 @@ get_all_components(void)
 	tally_count_component = 3;
 	for (i = 0; i < count_master; i++)
 	{
-		if (master[i]->total > 0.0 && master[i]->s->type == AQ)
+        if (master[i].total > 0.0 && master[i].s->type == AQ)
 		{
 			tally_count_component++;
 		}
@@ -125,7 +125,7 @@ get_all_components(void)
 	j = 0;
 	t_buffer[j].name = string_hsave("Alkalinity");
 	t_buffer[j].master = master_bsearch("Alkalinity");
-	t_buffer[j].gfw = t_buffer[j].master->elt->gfw;
+    t_buffer[j].gfw = t_buffer[j].master->elt.gfw;
 	j++;		
 
 	// store total_h
@@ -142,11 +142,11 @@ get_all_components(void)
 
 	for (i = 0; i < count_master; i++)
 	{
-		if (master[i]->total > 0.0 && master[i]->s->type == AQ)
+        if (master[i].total > 0.0 && master[i].s->type == AQ)
 		{
-			t_buffer[j].name = master[i]->elt->name;
-			t_buffer[j].master = master[i];
-			t_buffer[j].gfw = master[i]->elt->gfw;
+            t_buffer[j].name = master[i].elt.name;
+//			t_buffer[j].master = master[i];
+            t_buffer[j].gfw = master[i].elt.gfw;
 			j++;
 		}
 	}
@@ -818,20 +818,20 @@ elt_list_to_tally_table(struct tally_buffer *buffer_ptr)
 
 	for (j = 0; j < count_elts; j++)
 	{
-		if (elt_list[j].elt->primary->s == s_h2o)
+        if (elt_list[j].elt.primary->s == s_h2o)
 			continue;
-		if (elt_list[j].elt->primary->s == s_hplus)
+        if (elt_list[j].elt.primary->s == s_hplus)
 			continue;
-		if (elt_list[j].elt->primary->s == s_h3oplus)
+        if (elt_list[j].elt.primary->s == s_h3oplus)
 			continue;
-		if (elt_list[j].elt->primary->type != AQ)
+        if (elt_list[j].elt.primary->type != AQ)
 			continue;
 		for (i = 0; i < count_tally_table_rows; i++)
 		{
 			if (buffer_ptr[i].master != NULL)
 			{
-				if (elt_list[j].elt->primary ==
-					buffer_ptr[i].master->elt->primary)
+                if (elt_list[j].elt.primary ==
+                    buffer_ptr[i].master->elt.primary)
 				{
 					buffer_ptr[i].moles = elt_list[j].coef;
 					break;
@@ -862,24 +862,24 @@ master_to_tally_table(struct tally_buffer *buffer_ptr)
 	 */
 	for (j  = 0; j < count_master; j++)
 	{
-		if (master[j]->total <= 0)
+        if (master[j].total <= 0)
 			continue;
-		if (master[j]->elt->primary->s == s_h2o)
+        if (master[j].elt.primary->s == s_h2o)
 			continue;
-		if (master[j]->elt->primary->s == s_hplus)
+        if (master[j].elt.primary->s == s_hplus)
 			continue;
-		if (master[j]->elt->primary->s == s_h3oplus)
+        if (master[j].elt.primary->s == s_h3oplus)
 			continue;
-		if (master[j]->elt->primary->type != AQ)
+        if (master[j].elt.primary->type != AQ)
 			continue;
-		for (i = 0; i < count_tally_table_rows; i++)
-		{
-			if (master[j] ==  buffer_ptr[i].master)
-			{
-				buffer_ptr[i].moles = master[j]->total;
-				break;
-			}
-		}
+//		for (i = 0; i < count_tally_table_rows; i++)
+//		{
+//			if (master[j] ==  buffer_ptr[i].master)
+//			{
+//				buffer_ptr[i].moles = master[j]->total;
+//				break;
+//			}
+//		}
 		if (i >= count_tally_table_rows)
 		{
 			error_msg("Should not be here in master_to_tally_table", STOP);

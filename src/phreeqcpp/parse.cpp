@@ -216,14 +216,14 @@ check_eqn(int association)
 	for (i = 0; i < count_trxn; i++)
 	{
 		sumcharge += (trxn.token[i].coef) * (trxn.token[i].z);
-		char * temp_name = string_duplicate(trxn.token[i].name);
+        std::string temp_name = trxn.token[i].name;
         std::string t_ptr = temp_name;
         if (get_elts_in_species(t_ptr, trxn.token[i].coef) == ERROR)
 		{
-			free_check_null(temp_name);
+//			free_check_null(temp_name);
 			return (ERROR);
 		}
-		free_check_null(temp_name);
+//		free_check_null(temp_name);
 	}
 /*
  *   Sort elements in reaction and combine
@@ -246,8 +246,8 @@ check_eqn(int association)
  */
 	for (i = 0; i < count_elts; i++)
 	{
-		if ((equal(elt_list[i].coef, 0.0, TOL) == FALSE) &&
-            strncmp((elt_list[i].elt).name, "e", MAX_LENGTH) != 0)
+        if ((equal(elt_list[i].coef, 0.0, TOL) == FALSE) /*&&
+            strncmp((elt_list[i].elt).name, "e", MAX_LENGTH) != 0*/)
 		{
 			error_string = sformatf(
 				"Equation does not balance for element, %s: right - left = %7.4f moles",

@@ -444,15 +444,15 @@ clearvar(varrec * v)
 			free_dim_stringvar(v);
 		}
 	}
-	else if (v->stringvar && v->UU.U1.sv != NULL)
+    else if (v->stringvar && !v->UU.U1.sv.empty())
 	{
-		PhreeqcPtr->PHRQ_free(v->UU.U1.sv);
+        PhreeqcPtr->PHRQ_free(&v->UU.U1.sv);
 	}
 	v->numdims = 0;
 	if (v->stringvar)
 	{
-		v->UU.U1.sv = NULL;
-		v->UU.U1.sval = &v->UU.U1.sv;
+        v->UU.U1.sv = "";
+        v->UU.U1.sval = v->UU.U1.sv;
 	}
 	else
 	{
@@ -608,14 +608,14 @@ parse(char * l_inbuf, tokenrec ** l_buf)
 				if (j + 1 > m)
 					m = j + 1;
 				t->UU.sp = (char *) PhreeqcPtr->PHRQ_calloc(m, sizeof(char));
-				if (t->UU.sp == NULL)
+                if (t->UU.sp.empty())
 				{
 					PhreeqcPtr->malloc_error();
 #if !defined(R_SO)
 					exit(4);
 #endif
 				}
-				strncpy(t->UU.sp, l_inbuf + begin - 1, j);
+//				strncpy(t->UU.sp, l_inbuf + begin - 1, j);
 				t->UU.sp[j] = '\0';
 /* p2c: basic.p, line 415:
  * Note: Modification of string length may translate incorrectly [146] */
@@ -735,16 +735,16 @@ parse(char * l_inbuf, tokenrec ** l_buf)
 							if (m < 256)
 								m = 256;
 							t->UU.sp = (char *) PhreeqcPtr->PHRQ_calloc(m, sizeof(char));
-							if (t->UU.sp == NULL)
+                            if (t->UU.sp.empty())
 							{
 								PhreeqcPtr->malloc_error();
 #if !defined(R_SO)
 								exit(4);
 #endif
 							}
-							sprintf(t->UU.sp, "%.*s",
-									(int) (strlen(l_inbuf) - i + 1),
-									l_inbuf + i - 1);
+//							sprintf(t->UU.sp, "%.*s",
+//									(int) (strlen(l_inbuf) - i + 1),
+//									l_inbuf + i - 1);
 							i = (int) strlen(l_inbuf) + 1;
 						}
 					}
@@ -772,8 +772,8 @@ parse(char * l_inbuf, tokenrec ** l_buf)
 							if (token[strlen(token) - 1] == '$')
 							{
 								v->stringvar = true;
-								v->UU.U1.sv = NULL;
-								v->UU.U1.sval = &v->UU.U1.sv;
+                                v->UU.U1.sv = "";
+                                v->UU.U1.sval = v->UU.U1.sv;
 							}
 							else
 							{
@@ -920,14 +920,14 @@ listtokens(FILE * f, tokenrec * l_buf)
 			break;
 
 		case tokstr:
-			if (strchr(l_buf->UU.sp, '\"'))
-			{
-				output_msg(PhreeqcPtr->sformatf("\'%s\'", l_buf->UU.sp));
-			}
-			else
-			{
-				output_msg(PhreeqcPtr->sformatf("\"%s\"", l_buf->UU.sp));
-			}
+//			if (strchr(l_buf->UU.sp, '\"'))
+//			{
+//				output_msg(PhreeqcPtr->sformatf("\'%s\'", l_buf->UU.sp));
+//			}
+//			else
+//			{
+//				output_msg(PhreeqcPtr->sformatf("\"%s\"", l_buf->UU.sp));
+//			}
 			break;
 
 		case toksnerr:
@@ -1686,7 +1686,7 @@ disposetokens(tokenrec ** tok)
 		}
 		if ((*tok)->kind == (long) tokrem || (*tok)->kind == (long) tokstr)
 		{
-			(*tok)->UU.sp = (char *) PhreeqcPtr->free_check_null((*tok)->UU.sp);
+//			(*tok)->UU.sp = PhreeqcPtr->free_check_null((*tok)->UU.sp);
 		}
 		*tok = (tokenrec *) PhreeqcPtr->free_check_null(*tok);
 		*tok = tok1;
@@ -1822,7 +1822,7 @@ realfactor(struct LOC_exec *LINK)
 	return (n.UU.val);
 }
 
-char * PBasic::
+std::string PBasic::
 strfactor(struct LOC_exec * LINK)
 {
 	valrec n;
@@ -1833,21 +1833,7 @@ strfactor(struct LOC_exec * LINK)
 	return (n.UU.sval);
 }
 
-char * PBasic::
-stringfactor(char * Result, struct LOC_exec * LINK)
-{
-	valrec n;
-
-	n = factor(LINK);
-	if (!n.stringval)
-		//tmerr(": chemical name is not enclosed in \"  \"" );
-		tmerr(": Expected quoted string or character variable." );
-	strcpy(Result, n.UU.sval);
-	PhreeqcPtr->PHRQ_free(n.UU.sval);
-	return Result;
-}
-
-const char * PBasic::
+std::string PBasic::
 stringfactor(std::string & Result, struct LOC_exec * LINK)
 {
 	valrec n;
@@ -1857,8 +1843,8 @@ stringfactor(std::string & Result, struct LOC_exec * LINK)
 		//tmerr(": chemical name is not enclosed in \"  \"" );
 		tmerr(": Expected quoted string or character variable." );
 	Result = n.UU.sval;
-	PhreeqcPtr->PHRQ_free(n.UU.sval);
-	return Result.c_str();
+//	PhreeqcPtr->PHRQ_free(n.UU.sval);
+    return Result;
 }
 
 long PBasic::
@@ -1878,7 +1864,7 @@ realexpr(struct LOC_exec *LINK)
 	return (n.UU.val);
 }
 
-char * PBasic::
+std::string PBasic::
 strexpr(struct LOC_exec * LINK)
 {
 	valrec n;
@@ -1890,8 +1876,8 @@ strexpr(struct LOC_exec * LINK)
 	return (n.UU.sval);
 }
 
-char * PBasic::
-stringexpr(char * Result, struct LOC_exec * LINK)
+std::string PBasic::
+stringexpr(std::string Result, struct LOC_exec * LINK)
 {
 	valrec n;
 
@@ -1899,8 +1885,8 @@ stringexpr(char * Result, struct LOC_exec * LINK)
 	if (!n.stringval)
 		//tmerr(": chemical name is not enclosed in \"  \"" );
 		tmerr(": Expected quoted string or character variable." );
-	strcpy(Result, n.UU.sval);
-	PhreeqcPtr->PHRQ_free(n.UU.sval);
+    Result = n.UU.sval;
+//	PhreeqcPtr->PHRQ_free(n.UU.sval);
 	return Result;
 }
 
@@ -2004,11 +1990,8 @@ findvar(struct LOC_exec *LINK)
 		v->numdims = (char) i;
 		if (v->stringvar)
 		{
-			v->UU.U1.sarr = (char **) PhreeqcPtr->PHRQ_malloc(j * sizeof(char *));
-			if (v->UU.U1.sarr == NULL)
-				PhreeqcPtr->malloc_error();
 			for (k = 0; k < j; k++)
-				v->UU.U1.sarr[k] = NULL;
+                v->UU.U1.sarr[k] = "";
 		}
 		else
 		{
@@ -2034,7 +2017,7 @@ findvar(struct LOC_exec *LINK)
 	}
 	require(tokrp, LINK);
 	if (v->stringvar)
-		v->UU.U1.sval = &v->UU.U1.sarr[k];
+        v->UU.U1.sval = v->UU.U1.sarr[k];
 	else
 		v->UU.U0.val = &v->UU.U0.arr[k];
 	return v;
@@ -2063,14 +2046,18 @@ factor(struct LOC_exec * LINK)
 	int k;
 	LDBLE TEMP;
 	std::string STR1, STR2;
-	const char *elt_name, *surface_name, *mytemplate, *name;
+    std::string elt_name;
+    std::string mytemplate;
+    std::string name;
+    std::string surface_name;
 	varrec *count_varrec = NULL, *names_varrec = NULL, *types_varrec =
-		NULL, *moles_varrec = NULL;
-	char **names_arg, **types_arg;
+        NULL, *moles_varrec = NULL;
+    std::vector<std::string> names_arg, types_arg;
 	LDBLE *moles_arg;
 	int arg_num;
 	LDBLE count_species;
-	const char *string1, *string2;
+    std::string string1;
+    std::string string2;
 
 	if (LINK->t == NULL)
 		snerr(": missing variable or command");
@@ -2089,13 +2076,13 @@ factor(struct LOC_exec * LINK)
 
 	case tokstr:
 		n.stringval = true;
-		m = (int) strlen(facttok->UU.sp) + 1;
+        m = facttok->UU.sp.size();
 		if (m < 256)
 			m = 256;
 		n.UU.sval = (char *) PhreeqcPtr->PHRQ_calloc(m, sizeof(char));
-		if (n.UU.sval == NULL)
+        if (n.UU.sval.empty())
 			PhreeqcPtr->malloc_error();
-		strcpy(n.UU.sval, facttok->UU.sp);
+        n.UU.sval = facttok->UU.sp;
 		break;
 
 	case tokvar:
@@ -2104,9 +2091,9 @@ factor(struct LOC_exec * LINK)
 		n.stringval = v->stringvar;
 		if (n.stringval)
 		{
-			if (*v->UU.U1.sval != NULL)
+            if (!v->UU.U1.sval.empty())
 			{
-				m = (int) strlen(*v->UU.U1.sval) + 1;
+                m = (int) v->UU.U1.sval.size();
 				if (m < 256)
 					m = 256;
 			}
@@ -2115,11 +2102,11 @@ factor(struct LOC_exec * LINK)
 				m = 256;
 			}
 			n.UU.sval = (char *) PhreeqcPtr->PHRQ_calloc(m, sizeof(char));
-			if (n.UU.sval == NULL)
+            if (n.UU.sval.empty())
 				PhreeqcPtr->malloc_error();
-			if (*v->UU.U1.sval != NULL)
+            if (!v->UU.U1.sval.empty())
 			{
-				strcpy(n.UU.sval, *v->UU.U1.sval);
+                n.UU.sval = v->UU.U1.sval;
 			}
 
 		}
@@ -2260,21 +2247,21 @@ factor(struct LOC_exec * LINK)
 
 	case tokact:
 		{
-			const char * str = stringfactor(STR1, LINK);
+            auto str = stringfactor(STR1, LINK);
 			n.UU.val = (parse_all) ? 1 : PhreeqcPtr->activity(str);
 		}
 		break;
 
 	case tokgamma:
 		{
-			const char * str = stringfactor(STR1, LINK);
+            auto str = stringfactor(STR1, LINK);
 			n.UU.val = (parse_all) ? 1 : PhreeqcPtr->activity_coefficient(str);
 		}
 		break;
 
 	case toklg:
 		{
-			const char * str = stringfactor(STR1, LINK);
+            auto str = stringfactor(STR1, LINK);
 			n.UU.val = (parse_all) ? 1 : PhreeqcPtr->log_activity_coefficient(str);
 		}
 		break;
@@ -2317,7 +2304,7 @@ factor(struct LOC_exec * LINK)
 		}
 		else
 		{
-			surface_name = NULL;
+            surface_name = "";
 		}
 		require(tokrp, LINK);
 		n.UU.val = (parse_all) ? 1 : PhreeqcPtr->diff_layer_total(elt_name, surface_name);
@@ -2333,7 +2320,7 @@ factor(struct LOC_exec * LINK)
 		}
 		else
 		{
-			surface_name = NULL;
+            surface_name = "";
 		}
 		require(tokrp, LINK);
 		n.UU.val = (parse_all) ? 1 : PhreeqcPtr->surf_total(elt_name, surface_name);
@@ -2341,28 +2328,28 @@ factor(struct LOC_exec * LINK)
 
 	case tokequi:
 		{
-			const char * str = stringfactor(STR1, LINK);
+            auto str = stringfactor(STR1, LINK);
 			n.UU.val = (parse_all) ? 1 : PhreeqcPtr->equi_phase(str);
 		}
 		break;
 
 	case tokequi_delta:
 		{
-			const char * str = stringfactor(STR1, LINK);
+            auto str = stringfactor(STR1, LINK);
 			n.UU.val = (parse_all) ? 1 : PhreeqcPtr->equi_phase_delta(str);
 		}
 		break;
 
 	case tokkin:
 		{
-			const char * str = stringfactor(STR1, LINK);
+            auto str = stringfactor(STR1, LINK);
 			n.UU.val = (parse_all) ? 1 : PhreeqcPtr->kinetics_moles(str);
 		}
 		break;
 
 	case tokkin_delta:
 		{
-			const char * str = stringfactor(STR1, LINK);
+            auto str = stringfactor(STR1, LINK);
 			n.UU.val = (parse_all) ? 1 : PhreeqcPtr->kinetics_moles_delta(str);
 		}
 		break;
@@ -2375,28 +2362,28 @@ factor(struct LOC_exec * LINK)
 
 	case tokgas:
 		{
-			const char * str = stringfactor(STR1, LINK);
+            auto str = stringfactor(STR1, LINK);
 			n.UU.val = (parse_all) ? 1 : PhreeqcPtr->find_gas_comp(str);
 		}
 		break;
 
 	case toks_s:
 		{
-			const char * str = stringfactor(STR1, LINK);
+            auto str = stringfactor(STR1, LINK);
 			n.UU.val = (parse_all) ? 1 : PhreeqcPtr->find_ss_comp(str);
 		}
 		break;
 
 	case tokmisc1:
 		{
-			const char * str = stringfactor(STR1, LINK);
+            auto str = stringfactor(STR1, LINK);
 			n.UU.val = (parse_all) ? 1 : PhreeqcPtr->find_misc1(str);
 		}
 		break;
 
 	case tokmisc2:
 		{
-			const char * str = stringfactor(STR1, LINK);
+            auto str = stringfactor(STR1, LINK);
 			n.UU.val = (parse_all) ? 1 : PhreeqcPtr->find_misc2(str);
 		}
 		break;
@@ -2422,21 +2409,21 @@ factor(struct LOC_exec * LINK)
 
 	case toklk_species:
 		{
-			const char * str = stringfactor(STR1, LINK);
+            auto str = stringfactor(STR1, LINK);
 			n.UU.val = (parse_all) ? 1 : PhreeqcPtr->calc_logk_s(str);
 		}
 		break;
 
 	case toklk_named:
 		{
-			const char * str = stringfactor(STR1, LINK);
+            auto str = stringfactor(STR1, LINK);
 			n.UU.val = (parse_all) ? 1 : PhreeqcPtr->calc_logk_n(str);
 		}
 		break;
 
 	case toklk_phase:
 		{
-			const char * str = stringfactor(STR1, LINK);
+            auto str = stringfactor(STR1, LINK);
 			n.UU.val = (parse_all) ? 1 : PhreeqcPtr->calc_logk_p(str);
 		}
 		break;
@@ -2451,7 +2438,7 @@ factor(struct LOC_exec * LINK)
 		}
 		else
 		{
-			elt_name = NULL;
+            elt_name = "";
 		}
 		require(tokrp, LINK);
 		n.UU.val = (parse_all) ? 1 : PhreeqcPtr->sum_match_species(mytemplate, elt_name);
@@ -2467,7 +2454,7 @@ factor(struct LOC_exec * LINK)
 		}
 		else
 		{
-			elt_name = NULL;
+            elt_name = "";
 		}
 		require(tokrp, LINK);
 		n.UU.val = (parse_all) ? 1 : PhreeqcPtr->sum_match_gases(mytemplate, elt_name);
@@ -2483,7 +2470,7 @@ factor(struct LOC_exec * LINK)
 		}
 		else
 		{
-			elt_name = NULL;
+            elt_name = "";
 		}
 		require(tokrp, LINK);
 		n.UU.val = (parse_all) ? 1 : PhreeqcPtr->sum_match_ss(mytemplate, elt_name);
@@ -2503,7 +2490,7 @@ factor(struct LOC_exec * LINK)
 			if (PhreeqcPtr->use.Get_mix_in())
 			{
 				sprintf(string, "Mix %d", PhreeqcPtr->use.Get_n_mix_user());
-				n.UU.sval = PhreeqcPtr->string_duplicate(string);
+                n.UU.sval = string;
 			}
 			else
 			{
@@ -2511,28 +2498,28 @@ factor(struct LOC_exec * LINK)
 					PhreeqcPtr->use.Get_n_solution_user());
 				if (soln_ptr != NULL)
 				{
-					n.UU.sval = PhreeqcPtr->string_duplicate(soln_ptr->Get_description().c_str());
+                    n.UU.sval = soln_ptr->Get_description();
 				}
 				else
 				{
-					n.UU.sval = PhreeqcPtr->string_duplicate("Unknown");
+                    n.UU.sval = "Unknown";
 				}
 			}
 		}
 		else if (PhreeqcPtr->state == ADVECTION || PhreeqcPtr->state == TRANSPORT || PhreeqcPtr->state == PHAST)
 		{
 			sprintf(string, "Cell %d", PhreeqcPtr->cell_no);
-			n.UU.sval = PhreeqcPtr->string_duplicate(string);
+            n.UU.sval = string;
 		}
 		else
 		{
 			if (PhreeqcPtr->use.Get_solution_ptr() != NULL)
 			{
-				n.UU.sval = PhreeqcPtr->string_duplicate(PhreeqcPtr->use.Get_solution_ptr()->Get_description().c_str());
+                n.UU.sval = PhreeqcPtr->use.Get_solution_ptr()->Get_description();
 			}
 			else
 			{
-				n.UU.sval = PhreeqcPtr->string_duplicate("Unknown");
+                n.UU.sval = "Unknown";
 			}
 		}
 		while (PhreeqcPtr->replace("\t", " ", n.UU.sval));
@@ -2544,7 +2531,7 @@ factor(struct LOC_exec * LINK)
 		{
 			PhreeqcPtr->last_title_x = " ";
 		}
-		n.UU.sval = PhreeqcPtr->string_duplicate(PhreeqcPtr->last_title_x.c_str());
+        n.UU.sval = PhreeqcPtr->last_title_x;
 		while (PhreeqcPtr->replace("\t", " ", n.UU.sval));
 		break;
 
@@ -2555,15 +2542,15 @@ factor(struct LOC_exec * LINK)
 		string2 = stringfactor(STR2, LINK);
 		require(tokrp, LINK);
 		{
-			const char * cptr = strstr(string1, string2);
-			if (cptr == NULL)
-			{
-				n.UU.val = 0;
-			}
-			else
-			{
-				n.UU.val = ((LDBLE) (cptr - string1)) + 1;
-			}
+//			const char * cptr = strstr(string1, string2);
+//			if (cptr == NULL)
+//			{
+//				n.UU.val = 0;
+//			}
+//			else
+//			{
+//				n.UU.val = ((LDBLE) (cptr - string1)) + 1;
+//			}
 		}
 		break;
 
@@ -2573,7 +2560,7 @@ factor(struct LOC_exec * LINK)
 		string1 = stringfactor(STR1, LINK);
 		require(tokrp, LINK);
 		trim_left(STR1);
-		n.UU.sval = PhreeqcPtr->string_duplicate(STR1.c_str());
+        n.UU.sval = STR1;
 		break;
 
 	case tokrtrim:
@@ -2582,7 +2569,7 @@ factor(struct LOC_exec * LINK)
 		string1 = stringfactor(STR1, LINK);
 		require(tokrp, LINK);
 		trim_right(STR1);
-		n.UU.sval = PhreeqcPtr->string_duplicate(STR1.c_str());
+        n.UU.sval = STR1;
 		break;
 
 	case toktrim:
@@ -2591,12 +2578,12 @@ factor(struct LOC_exec * LINK)
 		string1 = stringfactor(STR1, LINK);
 		require(tokrp, LINK);
 		STR1 = trim(STR1);
-		n.UU.sval = PhreeqcPtr->string_duplicate(STR1.c_str());
+        n.UU.sval = STR1;
 		break;
 
 	case tokiso:
 		{
-			const char * str = stringfactor(STR1, LINK);
+            auto str = stringfactor(STR1, LINK);
 			n.UU.val = (parse_all) ? 1 : PhreeqcPtr->iso_value(str);
 		}
 		break;
@@ -2607,7 +2594,7 @@ factor(struct LOC_exec * LINK)
 		string1 = stringfactor(STR1, LINK);
 		require(tokrp, LINK);
 		trim(STR1);
-		n.UU.sval = (parse_all) ? PhreeqcPtr->string_duplicate("unknown") : PhreeqcPtr->iso_unit(STR1.c_str());
+        n.UU.sval = (parse_all) ? "unknown" : PhreeqcPtr->iso_unit(STR1.c_str());
 		break;
 
 	case tokpad:
@@ -2691,22 +2678,6 @@ factor(struct LOC_exec * LINK)
 			PhreeqcPtr->sys_tot = 0;
 			PhreeqcPtr->count_sys = 1000;
 			int count_sys = PhreeqcPtr->count_sys;
-			names_arg = (char **) PhreeqcPtr->PHRQ_calloc((size_t) (count_sys + 1), sizeof(char *));
-			if (names_arg == NULL)
-			{
-				PhreeqcPtr->malloc_error();
-#if !defined(R_SO)
-				exit(4);
-#endif
-			}
-			types_arg = (char **)PhreeqcPtr->PHRQ_calloc((size_t) (count_sys + 1), sizeof(char *));
-			if (types_arg == NULL)
-			{
-				PhreeqcPtr->malloc_error();
-#if !defined(R_SO)
-				exit(4);
-#endif
-			}
 			moles_arg = (LDBLE *) PhreeqcPtr->PHRQ_calloc((size_t) (count_sys + 1), sizeof(LDBLE));
 			if (moles_arg == NULL)
 			{
@@ -2715,16 +2686,16 @@ factor(struct LOC_exec * LINK)
 				exit(4);
 #endif
 			}
-			names_arg[0] = NULL;
-			types_arg[0] = NULL;
+            names_arg[0] = "";
+            types_arg[0] = "";
 			moles_arg[0] = 0;
 			count_species = (LDBLE) count_sys;
 			n.UU.val = 0;
 		}
 		else
 		{
-			n.UU.val = PhreeqcPtr->system_total(elt_name, &count_species, &(names_arg),
-				&(types_arg), &(moles_arg));
+            n.UU.val = PhreeqcPtr->system_total(elt_name, &count_species, names_arg,
+                types_arg, &(moles_arg));
 		}
 
 		/*
@@ -2752,14 +2723,14 @@ factor(struct LOC_exec * LINK)
 		}
 		else
 		{
-			for (i = 0; i < count_species + 1; i++)
-			{
-				PhreeqcPtr->free_check_null(names_arg[i]);
-				PhreeqcPtr->free_check_null(types_arg[i]);
-			}
-			PhreeqcPtr->free_check_null(names_arg);
-			PhreeqcPtr->free_check_null(types_arg);
-			PhreeqcPtr->free_check_null(moles_arg);
+//			for (i = 0; i < count_species + 1; i++)
+//			{
+//				PhreeqcPtr->free_check_null(names_arg[i]);
+//				PhreeqcPtr->free_check_null(types_arg[i]);
+//			}
+//			PhreeqcPtr->free_check_null(names_arg);
+//			PhreeqcPtr->free_check_null(types_arg);
+//			PhreeqcPtr->free_check_null(moles_arg);
 		}
 		break;
 
@@ -2767,7 +2738,7 @@ factor(struct LOC_exec * LINK)
 		{
 			double area=0.0, thickness=0.0;
 			require(toklp, LINK);
-			const char *surf_name = stringfactor(STR1, LINK);
+            auto surf_name = stringfactor(STR1, LINK);
 			require(tokcomma, LINK);
 			// variable for number of species
 			count_varrec = LINK->t->UU.vp;
@@ -2820,14 +2791,6 @@ factor(struct LOC_exec * LINK)
 				PhreeqcPtr->sys_tot = 0;
 				PhreeqcPtr->count_sys = 1000;
 				int count_sys = PhreeqcPtr->count_sys;
-				names_arg = (char **) PhreeqcPtr->PHRQ_calloc((size_t) (count_sys + 1), sizeof(char *));
-				if (names_arg == NULL)
-				{
-					PhreeqcPtr->malloc_error();
-#if !defined(R_SO)
-					exit(4);
-#endif
-				}
 				moles_arg = (LDBLE *) PhreeqcPtr->PHRQ_calloc((size_t) (count_sys + 1), sizeof(LDBLE));
 				if (moles_arg == NULL)
 				{
@@ -2836,7 +2799,7 @@ factor(struct LOC_exec * LINK)
 					exit(4);
 #endif
 				}
-				names_arg[0] = NULL;
+                names_arg[0] = "";
 				moles_arg[0] = 0;
 				count_species = (LDBLE) count_sys;
 				n.UU.val = 0;
@@ -2975,7 +2938,7 @@ factor(struct LOC_exec * LINK)
 				size_t j;
 				for (j = 0; j != sort_comp.size(); j++)
 				{
-					names_varrec->UU.U1.sarr[i] = PhreeqcPtr->string_duplicate(sort_comp[j].first.c_str());
+                    names_varrec->UU.U1.sarr[i] = sort_comp[j].first;
 					moles_varrec->UU.U0.arr[i] = sort_comp[j].second;
 					i++;
 				}

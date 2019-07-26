@@ -474,7 +474,7 @@ struct inv_phases
 };
 struct name_coef
 {
-	const char *name;
+        std::string name;
 	LDBLE coef;
 };
 /*----------------------------------------------------------------------

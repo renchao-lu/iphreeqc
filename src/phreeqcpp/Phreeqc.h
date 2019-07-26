@@ -99,9 +99,9 @@ public:
 	void register_fortran_basic_callback(double ( *fcn)(double *x1, double *x2, const char *str, int l));
 #endif
 
-	LDBLE activity(const char *species_name);
-	LDBLE activity_coefficient(const char *species_name);
-	LDBLE log_activity_coefficient(const char *species_name);
+    LDBLE activity(std::string species_name);
+    LDBLE activity_coefficient(std::string species_name);
+    LDBLE log_activity_coefficient(std::string species_name);
 	LDBLE aqueous_vm(const char *species_name);
 	LDBLE phase_vm(const char *phase_name);
 	LDBLE diff_c(const char *species_name);
@@ -111,28 +111,28 @@ public:
 	/* VP: Density Start */
 	LDBLE calc_dens(void);
 	/* VP: Density End */
-	LDBLE calc_logk_n(const char *name);
-	LDBLE calc_logk_p(const char *name);
-	LDBLE calc_logk_s(const char *name);
-	LDBLE calc_surface_charge(const char *surface_name);
-	LDBLE calc_t_sc(const char *name);
-	LDBLE diff_layer_total(const char *total_name, const char *surface_name);
-	LDBLE edl_species(const char *surf_name, LDBLE * count, char ***names, LDBLE ** moles, LDBLE * area, LDBLE * thickness);
+    LDBLE calc_logk_n(std::string name);
+    LDBLE calc_logk_p(std::string name);
+    LDBLE calc_logk_s(std::string name);
+    LDBLE calc_surface_charge(std::string surface_name);
+    LDBLE calc_t_sc(std::string name);
+    LDBLE diff_layer_total(std::string total_name, std::string surface_name);
+    LDBLE edl_species(std::string surf_name, LDBLE * count, std::vector<std::string> names, LDBLE ** moles, LDBLE * area, LDBLE * thickness);
 	int get_edl_species(cxxSurfaceCharge & charge_ref);
     LDBLE equi_phase(std::string phase_name);
-	LDBLE equi_phase_delta(const char *phase_name);
+    LDBLE equi_phase_delta(std::string phase_name);
 	LDBLE equivalent_fraction(const char *name, LDBLE *eq, std::string &elt_name);
-	LDBLE find_gas_comp(const char *gas_comp_name);
-	LDBLE find_gas_p(void);
-	LDBLE find_gas_vm(void);
-	LDBLE find_misc1(const char *ss_name);
-	LDBLE find_misc2(const char *ss_name);
-	LDBLE find_ss_comp(const char *ss_comp_name);
-	LDBLE get_calculate_value(const char *name);
-    std::string iso_unit(const char *total_name);
-	LDBLE iso_value(const char *total_name);
-	LDBLE kinetics_moles(const char *kinetics_name);
-	LDBLE kinetics_moles_delta(const char *kinetics_name);
+    LDBLE find_gas_comp(std::string gas_comp_name);
+    LDBLE find_gas_p();
+    LDBLE find_gas_vm();
+    LDBLE find_misc1(std::string ss_name);
+    LDBLE find_misc2(std::string ss_name);
+    LDBLE find_ss_comp(std::string ss_comp_name);
+    LDBLE get_calculate_value(std::string name);
+    std::string iso_unit(std::string total_name);
+    LDBLE iso_value(std::string total_name);
+    LDBLE kinetics_moles(std::string kinetics_name);
+    LDBLE kinetics_moles_delta(std::string kinetics_name);
 	LDBLE log_activity(const char *species_name);
 	LDBLE log_molality(const char *species_name);
 	LDBLE molality(const char *species_name);
@@ -143,31 +143,31 @@ public:
 	int saturation_index(const char *phase_name, LDBLE * iap, LDBLE * si);
 	int solution_number(void);
 	LDBLE solution_sum_secondary(const char *total_name);
-	LDBLE sum_match_gases(const char *stemplate, const char *name);
-	LDBLE sum_match_species(const char *stemplate, const char *name);
-	LDBLE sum_match_ss(const char *stemplate, const char *name);
-	int match_elts_in_species(const char *name, const char *stemplate);
+    LDBLE sum_match_gases(std::string stemplate, std::string name);
+    LDBLE sum_match_species(std::string stemplate, std::string name);
+    LDBLE sum_match_ss(std::string stemplate, std::string name);
+    int match_elts_in_species(std::string name, std::string stemplate);
     int extract_bracket(std::string string, char *bracket_string);
-	LDBLE surf_total(const char *total_name, const char *surface_name);
-	LDBLE surf_total_no_redox(const char *total_name, const char *surface_name);
+    LDBLE surf_total(std::string total_name, std::string surface_name);
+    LDBLE surf_total_no_redox(std::string total_name, std::string surface_name);
 	static int system_species_compare(const void *ptr1, const void *ptr2);
-	LDBLE system_total(const char *total_name, LDBLE * count, char ***names,
-		char ***types, LDBLE ** moles);
+    LDBLE system_total(std::string total_name, LDBLE * count, std::vector<std::string> names,
+        std::vector<std::string> types, LDBLE ** moles);
 	std::string kinetics_formula(std::string kinetics_name, cxxNameDouble &stoichiometry);
 	std::string phase_formula(std::string phase_name, cxxNameDouble &stoichiometry);
 	std::string species_formula(std::string phase_name, cxxNameDouble &stoichiometry);
 	LDBLE list_ss(std::string ss_name, cxxNameDouble &composition);
-	int system_total_elements(void);
-	int system_total_si(void);
-	int system_total_aq(void);
-	int system_total_ex(void);
-	int system_total_surf(void);
-	int system_total_gas(void);
-	int system_total_equi(void);
-	int system_total_kin(void);
-	int system_total_ss(void);
-	int system_total_elt(const char *total_name);
-	int system_total_elt_secondary(const char *total_name);
+    int system_total_elements();
+    int system_total_si();
+    int system_total_aq();
+    int system_total_ex();
+    int system_total_surf();
+    int system_total_gas();
+    int system_total_equi();
+    int system_total_kin();
+    int system_total_ss();
+    int system_total_elt(std::string total_name);
+    int system_total_elt_secondary(std::string total_name);
 	LDBLE total(const char *total_name);
 	LDBLE total_mole(const char *total_name);
 	int system_total_solids(cxxExchange *exchange_ptr,
@@ -377,8 +377,8 @@ public:
 	int from_tu(struct master_isotope *master_isotope_ptr);
 	struct calculate_value *calculate_value_alloc(void);
 	int calculate_value_free(struct calculate_value *calculate_value_ptr);
-	struct calculate_value *calculate_value_search(const char *name);
-	struct calculate_value *calculate_value_store(const char *name,
+    struct calculate_value *calculate_value_search(std::string name);
+    struct calculate_value *calculate_value_store(std::string name,
 		int replace_if_found);
 	struct isotope_alpha *isotope_alpha_alloc(void);
 	struct isotope_alpha *isotope_alpha_search(const char *name);
@@ -888,7 +888,7 @@ protected:
 	struct logk *logk_alloc(void);
 	int logk_copy2orig(struct logk *logk_ptr);
     struct logk *logk_store(std::string name, int replace_if_found);
-	struct logk *logk_search(const char *name);
+    struct logk *logk_search(std::string name);
 	struct master *master_alloc(void);
 	static int master_compare(const void *ptr1, const void *ptr2);
 	int master_delete(char *ptr);
@@ -904,7 +904,7 @@ public:
 protected:
 	int pe_data_store(struct pe_data **pe, const char *token);
 public:
-	struct phase *phase_bsearch(const char *ptr, int *j, int print);
+    struct phase *phase_bsearch(std::string ptr, int *j, int print);
 protected:
 	static int phase_compare(const void *ptr1, const void *ptr2);
 	int phase_delete(int i);
@@ -922,7 +922,7 @@ public:
 	int rxn_print(struct reaction *rxn_ptr);
 	static int s_compare(const void *ptr1, const void *ptr2);
 	int s_delete(int i);
-	struct species *s_search(const char *name);
+    struct species *s_search(std::string name);
 	struct species *s_store(const char *name, LDBLE z, int replace_if_found);
 protected:
 	struct save_values *save_values_bsearch(struct save_values *k, int *n);
@@ -935,7 +935,7 @@ protected:
 	int species_list_sort(void);
 	struct Change_Surf *change_surf_alloc(int count);
 public:
-	struct master *surface_get_psi_master(const char *name, int plane);
+    struct master *surface_get_psi_master(std::string name, int plane);
 	int system_duplicate(int i, int save_old);
 	int trxn_add(struct reaction *r_ptr, LDBLE coef, int combine);
 	int trxn_add(cxxChemRxn &r_ptr, LDBLE coef, int combine);
@@ -1120,7 +1120,7 @@ public:
 	static int strcmp_nocase_arg1(const char *str1, const char *str2);
 protected:
 	void space(void **ptr, int i, int *max, int struct_size);
-	void squeeze_white(char *s_l);
+    void squeeze_white(std::string s_l);
 	int status(int count, const char *str, bool kinetics = false);
 	void str_tolower(char *str);
 	void str_toupper(char *str);
@@ -1134,7 +1134,7 @@ public:
 	void strings_hash_clear();
 #endif
 protected:
-	char *string_pad(const char *str, int i);
+    std::string string_pad(std::string str, int i);
 	int string_trim(char *str);
 	int string_trim_right(char *str);
 	int string_trim_left(char *str);

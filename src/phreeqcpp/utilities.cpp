@@ -1150,7 +1150,7 @@ space(void **ptr, int i, int *max, int struct_size)
 
 /* ---------------------------------------------------------------------- */
 void Phreeqc::
-squeeze_white(char *s_l)
+squeeze_white(std::string s_l)
 /* ---------------------------------------------------------------------- */
 /*
  *   Delete all white space from string s
@@ -1170,23 +1170,6 @@ squeeze_white(char *s_l)
 			s_l[j++] = s_l[i];
 	}
 	s_l[j] = '\0';
-}
-
-/* ---------------------------------------------------------------------- */
-void Phreeqc::
-str_tolower(char *str)
-/* ---------------------------------------------------------------------- */
-{
-/*
- *   Replaces string, str, with same string, lower case
- */
-	char *ptr;
-	ptr = str;
-	while (*ptr != '\0')
-	{
-		*ptr = (char) tolower(*ptr);
-		ptr++;
-	}
 }
 
 /* ---------------------------------------------------------------------- */
@@ -1951,8 +1934,8 @@ string_trim_left(char *str)
 }
 
 /* ---------------------------------------------------------------------- */
-char * Phreeqc::
-string_pad(const char *str, int i)
+std::string Phreeqc::
+string_pad(std::string str, int i)
 /* ---------------------------------------------------------------------- */
 {
 /*

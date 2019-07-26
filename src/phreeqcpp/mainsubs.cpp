@@ -1152,7 +1152,7 @@ saver(void)
 	{
 		sprintf(token, "Solution after simulation %d.", simulation);
 		description_x = (char *) free_check_null(description_x);
-		description_x = string_duplicate(token);
+        description_x = token;
 		n = save.n_solution_user;
 		xsolution_save(n);
 		for (i = save.n_solution_user + 1; i <= save.n_solution_user_end; i++)

@@ -1,3 +1,5 @@
+#include <boost/algorithm/string.hpp>
+
 #include "Phreeqc.h"
 #include "phqalloc.h"
 #include "Solution.h"
@@ -1610,7 +1612,7 @@ master_isotope_search(const char *name)
 
 /* ---------------------------------------------------------------------- */
 struct calculate_value * Phreeqc::
-calculate_value_store(const char *name, int replace_if_found)
+calculate_value_store(std::string name, int replace_if_found)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -1635,13 +1637,12 @@ calculate_value_store(const char *name, int replace_if_found)
  */
 	int n;
 	struct calculate_value *calculate_value_ptr;
-	char token[MAX_LENGTH];
 	ENTRY item, *found_item;
 /*
  *   Search list
  */
-	strcpy(token, name);
-	str_tolower(token);
+    auto token = name;
+    boost::algorithm::to_lower(token);
 	item.key = token;
 	item.data = NULL;
 	found_item = hsearch_multi(calculate_value_hash_table, item, FIND);
@@ -1740,7 +1741,7 @@ calculate_value_init(struct calculate_value *calculate_value_ptr)
 
 /* ---------------------------------------------------------------------- */
 struct calculate_value * Phreeqc::
-calculate_value_search(const char *name)
+calculate_value_search(std::string name)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -1754,13 +1755,12 @@ calculate_value_search(const char *name)
  *      or NULL if not found.
  */
 	struct calculate_value *calculate_value_ptr;
-	char token[MAX_LENGTH];
 	ENTRY item, *found_item;
 /*
  *   Search list
  */
-	strcpy(token, name);
-	str_tolower(token);
+    auto token = name;
+    boost::algorithm::to_lower(token);
 	item.key = token;
 	item.data = NULL;
 	found_item = hsearch_multi(calculate_value_hash_table, item, FIND);

@@ -54,13 +54,13 @@ typedef struct varrec
 	{
 		struct
 		{
-			LDBLE *arr;
-			LDBLE *val, rv;
+            double* arr;
+            double* val, rv;
 		} U0;
 		struct
 		{
-			char **sarr;
-			char **sval, *sv;
+            std::vector<std::string> sarr;
+            std::string sval, sv;
 		} U1;
 	} UU;
 } varrec;
@@ -73,7 +73,7 @@ typedef struct tokenrec
 	{
 		struct varrec *vp;
 		LDBLE num;
-		char *sp;
+        std::string sp;
 		char snch;
 	} UU;
 //#ifdef PHREEQCI_GUI
@@ -90,9 +90,8 @@ typedef struct linerec
 	struct linerec *next;
 } linerec;
 
-class valrec
+struct valrec
 {
-public:
 	valrec()
 	{
 		stringval = false;
@@ -100,10 +99,10 @@ public:
 	}
 	~valrec() {}
 	bool stringval;
-	union
+    struct
 	{
 		LDBLE val;
-		char *sval;
+        std::string sval;
 	} UU;
 };
 
@@ -398,13 +397,12 @@ public:
 	void tmerr(const char * s);
 	void badsubscr(void);
 	LDBLE realfactor(struct LOC_exec *LINK);
-	char * strfactor(struct LOC_exec * LINK);
-	char *stringfactor(char * Result, struct LOC_exec *LINK);
-	const char *stringfactor(std::string & Result, struct LOC_exec * LINK);
+    std::string strfactor(struct LOC_exec * LINK);
+    std::string stringfactor(std::string& Result, struct LOC_exec * LINK);
 	long intfactor(struct LOC_exec *LINK);
 	LDBLE realexpr(struct LOC_exec *LINK);
-	char * strexpr(struct LOC_exec * LINK);
-	char * stringexpr(char * Result, struct LOC_exec * LINK);
+    std::string strexpr(struct LOC_exec * LINK);
+    std::string stringexpr(std::string Result, struct LOC_exec * LINK);
 	long intexpr(struct LOC_exec *LINK);
 	void require(int k, struct LOC_exec *LINK);
 	void skipparen(struct LOC_exec *LINK);

@@ -121,7 +121,7 @@ cxxNameDouble::cxxNameDouble(struct name_coef *nc, int count)
 	int i;
 	for (i = 0; i < count; i++)
 	{
-		if (nc[i].name == NULL)
+        if (nc[i].name.empty())
 			continue;
 
 		if ((*this).find(nc[i].name) == (*this).end())

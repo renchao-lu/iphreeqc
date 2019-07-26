@@ -1353,7 +1353,7 @@ phase_free(struct phase *phase_ptr)
 
 /* ---------------------------------------------------------------------- */
 struct phase * Phreeqc::
-phase_bsearch(const char *ptr, int *j, int print)
+phase_bsearch(std::string ptr, int *j, int print)
 /* ---------------------------------------------------------------------- */
 {
 /*   Binary search the structure array "phases" for a name that is equal to
@@ -2087,7 +2087,7 @@ s_init(struct species *s_ptr)
 
 /* ---------------------------------------------------------------------- */
 struct species * Phreeqc::
-s_search(const char *name)
+s_search(std::string name)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -2563,7 +2563,7 @@ change_surf_alloc(int count)
 }
 /* ---------------------------------------------------------------------- */
 struct master * Phreeqc::
-surface_get_psi_master(const char *name, int plane)
+surface_get_psi_master(std::string name, int plane)
 /* ---------------------------------------------------------------------- */
 {
 	struct master *master_ptr;
@@ -3379,7 +3379,7 @@ logk_copy2orig(struct logk *logk_ptr)
 
 /* ---------------------------------------------------------------------- */
 struct logk * Phreeqc::
-logk_search(const char *name_in)
+logk_search(std::string name_in)
 /* ---------------------------------------------------------------------- */
 {
 /*

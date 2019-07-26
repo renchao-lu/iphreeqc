@@ -13,7 +13,7 @@
 #include "Parser.h"
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-activity(const char *species_name)
+activity(std::string species_name)
 /* ---------------------------------------------------------------------- */
 {
 	struct species *s_ptr;
@@ -41,7 +41,7 @@ activity(const char *species_name)
 
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-activity_coefficient(const char *species_name)
+activity_coefficient(std::string species_name)
 /* ---------------------------------------------------------------------- */
 {
 	struct species *s_ptr;
@@ -63,7 +63,7 @@ activity_coefficient(const char *species_name)
 
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-log_activity_coefficient(const char *species_name)
+log_activity_coefficient(std::string species_name)
 /* ---------------------------------------------------------------------- */
 {
 	struct species *s_ptr;
@@ -599,10 +599,9 @@ calc_solution_volume(void)
 
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-calc_logk_n(const char *name)
+calc_logk_n(std::string name)
 /* ---------------------------------------------------------------------- */
 {
-	char token[MAX_LENGTH];
 	int i;
 	LDBLE lk;
 	struct logk *logk_ptr;
@@ -613,7 +612,7 @@ calc_logk_n(const char *name)
 	{
 		l_logk[i] = 0.0;
 	}
-	strcpy(token, name);
+    auto token = name;
 	logk_ptr = logk_search(token);
 	if (logk_ptr != NULL)
 	{
@@ -628,16 +627,15 @@ calc_logk_n(const char *name)
 
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-calc_logk_p(const char *name)
+calc_logk_p(std::string name)
 /* ---------------------------------------------------------------------- */
 {
 	int i, j;
-	char token[MAX_LENGTH];
 	struct phase *phase_ptr;
 	LDBLE lk=-999.9;
 	LDBLE l_logk[MAX_LOG_K_INDICES];
 
-	strcpy(token, name);
+    auto token = name;
 	phase_ptr = phase_bsearch(token, &j, FALSE);
 
 	if (phase_ptr != NULL)
@@ -700,15 +698,14 @@ calc_logk_s(const char *name)
 #endif
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-calc_logk_s(const char *name)
+calc_logk_s(std::string name)
 /* ---------------------------------------------------------------------- */
 {
 	int i;
-	char token[MAX_LENGTH];
 	struct species *s_ptr;
 	LDBLE lk, l_logk[MAX_LOG_K_INDICES];
 
-	strcpy(token, name);
+    auto token = name;
 	s_ptr = s_search(token);
 	if (s_ptr != NULL)
 	{
@@ -729,7 +726,7 @@ calc_logk_s(const char *name)
 }
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-calc_surface_charge(const char *surface_name)
+calc_surface_charge(std::string surface_name)
 /* ---------------------------------------------------------------------- */
 {
     std::string token; std::string token1;
@@ -772,7 +769,7 @@ calc_surface_charge(const char *surface_name)
 }
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-diff_layer_total(const char *total_name, const char *surface_name)
+diff_layer_total(std::string total_name, std::string surface_name)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -832,9 +829,9 @@ diff_layer_total(const char *total_name, const char *surface_name)
 			std::string::iterator e = token.end();
 			CParser::copy_token(name, b, e);
 		}
-		if (surface_name != NULL)
+        if (!surface_name.empty())
 		{
-			if (strcmp(name.c_str(), surface_name) == 0)
+            if (name == surface_name)
 				break;
 		}
 		else
@@ -1065,13 +1062,12 @@ diff_layer_total(const char *total_name, const char *surface_name)
 }
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-calc_t_sc(const char *name)
+calc_t_sc(std::string name)
 /* ---------------------------------------------------------------------- */
 {
-	char token[MAX_LENGTH];
 	struct species *s_ptr;
 
-	strcpy(token, name);
+    auto token = name;
 	s_ptr = s_search(token);
 	if (s_ptr != NULL)
 	{
@@ -1133,7 +1129,7 @@ equi_phase(std::string phase_name)
 }
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-equi_phase_delta(const char *phase_name)
+equi_phase_delta(std::string phase_name)
 /* ---------------------------------------------------------------------- */
 {
 	int j;
@@ -1233,7 +1229,7 @@ equivalent_fraction(const char *name, LDBLE *eq, std::string &elt_name)
 }
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-find_gas_comp(const char *gas_comp_name)
+find_gas_comp(std::string gas_comp_name)
 /* ---------------------------------------------------------------------- */
 {
 	int i;
@@ -1256,7 +1252,7 @@ find_gas_comp(const char *gas_comp_name)
 }
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-find_gas_p(void)
+find_gas_p()
 /* ---------------------------------------------------------------------- */
 {
 	if (use.Get_gas_phase_in() == FALSE || use.Get_gas_phase_ptr() == NULL)
@@ -1273,7 +1269,7 @@ find_gas_p(void)
 }
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-find_gas_vm(void)
+find_gas_vm()
 /* ---------------------------------------------------------------------- */
 {
 	if (use.Get_gas_phase_in() == FALSE || use.Get_gas_phase_ptr() == NULL)
@@ -1296,7 +1292,7 @@ find_gas_vm(void)
 
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-find_misc1(const char *ss_name)
+find_misc1(std::string ss_name)
 /* ---------------------------------------------------------------------- */
 {
 	if (use.Get_ss_assemblage_in() == FALSE || use.Get_ss_assemblage_ptr() == NULL)
@@ -1322,7 +1318,7 @@ find_misc1(const char *ss_name)
 
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-find_misc2(const char *ss_name)
+find_misc2(std::string ss_name)
 /* ---------------------------------------------------------------------- */
 {
 	if (use.Get_ss_assemblage_in() == FALSE || use.Get_ss_assemblage_ptr() == NULL)
@@ -1348,7 +1344,7 @@ find_misc2(const char *ss_name)
 
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-find_ss_comp(const char *ss_comp_name)
+find_ss_comp(std::string ss_comp_name)
 /* ---------------------------------------------------------------------- */
 {
 	if (use.Get_ss_assemblage_in() == FALSE || use.Get_ss_assemblage_ptr() == NULL)
@@ -1378,7 +1374,7 @@ find_ss_comp(const char *ss_comp_name)
 }
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-get_calculate_value(const char *name)
+get_calculate_value(std::string name)
 /* ---------------------------------------------------------------------- */
 /*
  *   Gets value from a calclate_value structure
@@ -1397,7 +1393,7 @@ get_calculate_value(const char *name)
 		warning_msg(error_string);
 		return (MISSING);
 	}
-	if (name == NULL)
+    if (name.empty())
 	{
 		error_string = sformatf(
 				"Definition for calculated value not found, %s", name);
@@ -1452,7 +1448,7 @@ get_calculate_value(const char *name)
 }
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-kinetics_moles(const char *kinetics_name)
+kinetics_moles(std::string kinetics_name)
 /* ---------------------------------------------------------------------- */
 {
 
@@ -1475,7 +1471,7 @@ kinetics_moles(const char *kinetics_name)
 }
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-kinetics_moles_delta(const char *kinetics_name)
+kinetics_moles_delta(std::string kinetics_name)
 /* ---------------------------------------------------------------------- */
 {
 
@@ -1704,10 +1700,9 @@ saturation_index(const char *phase_name, LDBLE * iap, LDBLE * si)
 	}
 	return (OK);
 }
-/* ---------------------------------------------------------------------- */
+
 LDBLE Phreeqc::
-sum_match_gases(const char *mytemplate, const char *name)
-/* ---------------------------------------------------------------------- */
+sum_match_gases(std::string mytemplate, std::string name)
 {
 	int i;
 	LDBLE tot;
@@ -1723,7 +1718,7 @@ sum_match_gases(const char *mytemplate, const char *name)
 			&i, FALSE);
 		if (match_elts_in_species(phase_ptr->formula, mytemplate) == TRUE)
 		{
-			if (name == NULL)
+            if (name.empty())
 			{
 				tot += phase_ptr->moles_x;
 			}
@@ -1746,7 +1741,7 @@ sum_match_gases(const char *mytemplate, const char *name)
 
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-sum_match_species(const char *mytemplate, const char *name)
+sum_match_species(std::string mytemplate, std::string name)
 /* ---------------------------------------------------------------------- */
 {
 	int i;
@@ -1774,7 +1769,7 @@ sum_match_species(const char *mytemplate, const char *name)
 	{
 		struct species *s_ptr = s_search(species_list[i].c_str());
 		if (s_ptr->in == FALSE) continue;
-		if (name == NULL)
+        if (name.empty())
 		{
 			tot += s_ptr->moles;
 		}
@@ -1798,7 +1793,7 @@ sum_match_species(const char *mytemplate, const char *name)
 
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-sum_match_ss(const char *mytemplate, const char *name)
+sum_match_ss(std::string mytemplate, std::string name)
 /* ---------------------------------------------------------------------- */
 {
 	LDBLE tot;
@@ -1821,7 +1816,7 @@ sum_match_ss(const char *mytemplate, const char *name)
 			for (size_t i = 0; i < ss_ptr->Get_ss_comps().size(); i++)
 			{
 				cxxSScomp *comp_ptr = &(ss_ptr->Get_ss_comps()[i]);
-				if (name == NULL)
+                if (name.empty())
 				{
 					tot += comp_ptr->Get_moles();
 				}
@@ -1874,7 +1869,7 @@ list_ss(std::string ss_name, cxxNameDouble &composition)
 }
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-match_elts_in_species(const char *name, const char *mytemplate)
+match_elts_in_species(std::string name, std::string mytemplate)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -1893,11 +1888,12 @@ match_elts_in_species(const char *name, const char *mytemplate)
     std::string ptr; std::string ptr1;
 	LDBLE d;
 	char element[MAX_LENGTH];
-	char token[MAX_LENGTH], equal_list[MAX_LENGTH]; 
-	char token1[MAX_LENGTH], template1[MAX_LENGTH], equal_list1[MAX_LENGTH];
+    char equal_list[MAX_LENGTH];
+    char token1[MAX_LENGTH], equal_list1[MAX_LENGTH];
+    std::string template1;
 	char str[2];
 
-	strcpy(token, name);
+    auto token = name;
 	squeeze_white(token);
 	replace("(+", "(", token);
 	if (strstr("token", "++") != NULL)
@@ -1953,7 +1949,7 @@ match_elts_in_species(const char *name, const char *mytemplate)
 	/*
 	 *  Replace elements with first of equivalent elements
 	 */
-	strcpy(template1, mytemplate);
+    template1 = mytemplate;
 	squeeze_white(template1);
 	ptr = template1;
     while (extract_bracket(ptr, equal_list) == TRUE)
@@ -2014,17 +2010,17 @@ match_elts_in_species(const char *name, const char *mytemplate)
 	token[0] = '\0';
 	for (i = 0; i < count_match_tokens; i++)
 	{
-		strcat(token, match_vector[i].first.c_str());
+        token += match_vector[i].first;
 		if (match_vector[i].second != 1.0)
 		{
 			sprintf(token1, "%g", (double) match_vector[i].second);
-			strcat(token, token1);
+            token += token1;
 		}
 	}
 	/*
 	 *  Write a template name using first of equivalent elements
 	 */
-	strcpy(template1, mytemplate);
+    template1 = mytemplate;
 	squeeze_white(template1);
 	ptr = template1;
     while (extract_bracket(ptr, equal_list) == TRUE)
@@ -2061,7 +2057,7 @@ match_elts_in_species(const char *name, const char *mytemplate)
 	case_no = 0;
 	if (template1[0] == '*')
 		case_no = 1;
-	l = (int) strlen(template1);
+    l = (int) template1.size();
 	if (template1[l - 1] == '*')
 	{
 		if (case_no != 1)
@@ -2079,30 +2075,30 @@ match_elts_in_species(const char *name, const char *mytemplate)
 	{
 	case 0:
 		/* exact match */
-		if (strcmp(token, template1) == 0)
+        if (token == template1)
 			match = TRUE;
 		break;
 	case 1:
 		/* leading wild card */
-        if ((ptr = strstr(token, template1)) == "")
-		{
-			match = FALSE;
-		}
-		else
-		{
-            if (ptr == template1)
-				match = TRUE;
-		}
-		break;
+//        if ((ptr = strstr(token, template1)) == "")
+//		{
+//			match = FALSE;
+//		}
+//		else
+//		{
+//            if (ptr == template1)
+//				match = TRUE;
+//		}
+        break;
 	case 2:
 		/* trailing wild card */
-		if (strstr(token, template1) == token)
-			match = TRUE;
+//		if (strstr(token, template1) == token)
+//			match = TRUE;
 		break;
 	case 3:
 		/* trailing wild card */
-		if (strstr(token, template1) != NULL)
-			match = TRUE;
+//		if (strstr(token, template1) != NULL)
+//			match = TRUE;
 		break;
 	}
 	return (match);
@@ -2365,7 +2361,7 @@ extract_bracket(std::string string, char *bracket_string)
 }
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-surf_total(const char *total_name, const char *surface_name)
+surf_total(std::string total_name, std::string surface_name)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -2373,17 +2369,17 @@ surf_total(const char *total_name, const char *surface_name)
  */
 	int j;
 
-	if (use.Get_surface_ptr() == NULL || surface_name == NULL || total_name == NULL)
+    if (use.Get_surface_ptr() == NULL || surface_name == "" || total_name == "")
 		return (0);
 
 	bool redox = false;
-	if (strstr(total_name, "(") != NULL)
-	{
-		redox = true;
-	}
+//	if (strstr(total_name, "(") != NULL)
+//	{
+//		redox = true;
+//	}
 	if (!redox)
 	{
-		if (strcmp(total_name, "H") == 0 || strcmp(total_name, "O") == 0)
+        if (total_name == "H" || total_name == "O")
 		{
 			return surf_total_no_redox(total_name, surface_name);
 		}
@@ -2403,7 +2399,7 @@ surf_total(const char *total_name, const char *surface_name)
 		std::string::iterator e = token.end();
 		std::string name;
 		CParser::copy_token(name, b, e);
-		if (strcmp(name.c_str(), surface_name) == 0)
+        if (name == surface_name)
 				break;
 	}
 	if (j >= count_unknowns)
@@ -2465,7 +2461,7 @@ surf_total(const char *total_name, const char *surface_name)
 				{
 					continue;
 				}
-				if (strcmp(token.c_str(), total_name) == 0)
+                if (token == total_name)
 				{
 					t += rxn_ptr->coef * s_x[j]->moles;
 					break;
@@ -2479,7 +2475,7 @@ surf_total(const char *total_name, const char *surface_name)
 						{
 							token = token.substr(0, token.find("_"));
 						}
-						if (strcmp(token.c_str(), total_name) == 0)
+                        if (token == total_name)
 						{
 							t += rxn_ptr->coef * s_x[j]->moles;
 							break;
@@ -2625,7 +2621,7 @@ surf_total(const char *total_name, const char *surface_name)
 #endif
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-surf_total_no_redox(const char *total_name, const char *surface_name)
+surf_total_no_redox(std::string total_name, std::string surface_name)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -2650,7 +2646,7 @@ surf_total_no_redox(const char *total_name, const char *surface_name)
 		replace("_", " ", token);
 		ptr = token;
         copy_token(name, ptr, &k);
-        if (surface_name != NULL)
+        if (surface_name != "")
 		{
             if (name == surface_name)
 				break;
@@ -2919,7 +2915,7 @@ get_edl_species(cxxSurfaceCharge & charge_ref)
 }
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-edl_species(const char *surf_name, LDBLE * count, char ***names, LDBLE ** moles, LDBLE * area, LDBLE * thickness)
+edl_species(std::string surf_name, LDBLE * count, std::vector<std::string> names, LDBLE ** moles, LDBLE * area, LDBLE * thickness)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -2937,7 +2933,7 @@ edl_species(const char *surf_name, LDBLE * count, char ***names, LDBLE ** moles,
 		for (size_t i = 0; i < surface_ptr->Get_surface_charges().size(); i++)
 		{
 			cxxSurfaceCharge & charge_ref = surface_ptr->Get_surface_charges()[i];
-			if (strcmp(charge_ref.Get_name().c_str(), surf_name) == 0)
+            if (charge_ref.Get_name() == surf_name)
 			{	
 				get_edl_species(charge_ref);
 				*area = charge_ref.Get_specific_area() * charge_ref.Get_grams();
@@ -2957,18 +2953,15 @@ edl_species(const char *surf_name, LDBLE * count, char ***names, LDBLE ** moles,
 	/*
 	 * malloc space
 	 */
-	*names = (char **) PHRQ_malloc((size_t) (count_sys + 1) * sizeof(char *));
-	if (names == NULL)
-		malloc_error();
 	*moles = (LDBLE *) PHRQ_malloc((size_t) (count_sys + 1) * sizeof(LDBLE));
 	if (moles == NULL)
 		malloc_error();
 
-	(*names)[0] = NULL;
+    names[0] = "";
 	(*moles)[0] = 0;
 	for (i = 0; i < count_sys; i++)
 	{
-//		(*names)[i + 1] = sys[i].name;
+        names[i + 1] = sys[i].name;
 		(*moles)[i + 1] = sys[i].moles;
 	}
 	*count = (LDBLE) count_sys;
@@ -2978,8 +2971,8 @@ edl_species(const char *surf_name, LDBLE * count, char ***names, LDBLE ** moles,
 }				
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-system_total(const char *total_name, LDBLE * count, char ***names,
-			 char ***types, LDBLE ** moles)
+system_total(std::string total_name, LDBLE * count, std::vector<std::string> names,
+             std::vector<std::string> types, LDBLE ** moles)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -3030,14 +3023,14 @@ system_total(const char *total_name, LDBLE * count, char ***names,
 	}
 	else
 	{
-		if (strstr(total_name, "(") == NULL)
-		{
-			system_total_elt(total_name);
-		}
-		else
-		{
-			system_total_elt_secondary(total_name);
-		}
+//		if (strstr(total_name, "(") == NULL)
+//		{
+//			system_total_elt(total_name);
+//		}
+//		else
+//		{
+//			system_total_elt_secondary(total_name);
+//		}
 	}
 	/*
 	 *   Sort system species
@@ -3050,23 +3043,17 @@ system_total(const char *total_name, LDBLE * count, char ***names,
 	/*
 	 * malloc space
 	 */
-	*names = (char **) PHRQ_malloc((size_t) (count_sys + 1) * sizeof(char *));
-	if (names == NULL)
-		malloc_error();
-	*types = (char **) PHRQ_malloc((size_t) (count_sys + 1) * sizeof(char *));
-	if (types == NULL)
-		malloc_error();
 	*moles = (LDBLE *) PHRQ_malloc((size_t) (count_sys + 1) * sizeof(LDBLE));
 	if (moles == NULL)
 		malloc_error();
 
-	(*names)[0] = NULL;
-	(*types)[0] = NULL;
+    names[0] = "";
+    types[0] = "";
 	(*moles)[0] = 0;
 	for (i = 0; i < count_sys; i++)
 	{
-//		(*names)[i + 1] = sys[i].name;
-		(*types)[i + 1] = sys[i].type;
+        names[i + 1] = sys[i].name;
+        types[i + 1] = sys[i].type;
 		(*moles)[i + 1] = sys[i].moles;
 	}
 	*count = (LDBLE) count_sys;
@@ -3565,7 +3552,7 @@ system_total_ss(void)
 }
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-system_total_elt(const char *total_name)
+system_total_elt(std::string total_name)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -3835,7 +3822,7 @@ system_total_elt(const char *total_name)
 
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-system_total_elt_secondary(const char *total_name)
+system_total_elt_secondary(std::string total_name)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -4286,33 +4273,29 @@ system_total_solids(cxxExchange *exchange_ptr,
 }
 
 LDBLE Phreeqc::
-iso_value(const char *total_name)
+iso_value(std::string total_name)
 {
 	int j;
-	char token[MAX_LENGTH];
-	char my_total_name[MAX_LENGTH];
-	strcpy(token, "");
-	strcpy(my_total_name, total_name);
+    std::string token;
+    auto my_total_name = total_name;
 	while (replace(" ","_",my_total_name));
 	for (j = 0; j < count_isotope_ratio; j++)
 	{
 		if (isotope_ratio[j]->ratio == MISSING)
 			continue;
-		if (strcmp(my_total_name, isotope_ratio[j]->name) != 0)
+        if (my_total_name != isotope_ratio[j]->name)
 			continue;
 		return (isotope_ratio[j]->converted_ratio);
 	}
-	strcpy(my_total_name, total_name);
+    my_total_name = total_name;
 	while (replace("[","",my_total_name));
 	while (replace("]","",my_total_name));
-	strcat(token,"R(");
-	strcat(token,my_total_name);
-	strcat(token,")");
+    token += "R(" + my_total_name + ")";
 	for (j = 0; j < count_isotope_ratio; j++)
 	{
 		if (isotope_ratio[j]->ratio == MISSING)
 			continue;
-		if (strcmp(token, isotope_ratio[j]->name) != 0)
+        if (token != isotope_ratio[j]->name)
 			continue;
 		return (isotope_ratio[j]->converted_ratio);
 	}
@@ -4320,21 +4303,19 @@ iso_value(const char *total_name)
 }
 
 std::string Phreeqc::
-iso_unit(const char *total_name)
+iso_unit(std::string total_name)
 {
 	int j;
-    char token[MAX_LENGTH];
 	struct master_isotope *master_isotope_ptr;
-	char my_total_name[MAX_LENGTH];
-	strcpy(token, "");
-	strcpy(my_total_name, total_name);
+    std::string token;
+    auto my_total_name = total_name;
 	while (replace(" ","_",my_total_name));
     std::string unit = "unknown";
 	for (j = 0; j < count_isotope_ratio; j++)
 	{
 		if (isotope_ratio[j]->ratio == MISSING)
 			continue;
-		if (strcmp(my_total_name, isotope_ratio[j]->name) != 0)
+        if (my_total_name != isotope_ratio[j]->name)
 			continue;
 		master_isotope_ptr = master_isotope_search(isotope_ratio[j]->isotope_name);
 		if (master_isotope_ptr != NULL)
@@ -4343,17 +4324,15 @@ iso_unit(const char *total_name)
 		}
         return unit;
 	}
-	strcpy(my_total_name, total_name);
+    my_total_name = total_name;
 	while (replace("[","",my_total_name));
 	while (replace("]","",my_total_name));
-	strcat(token,"R(");
-	strcat(token,my_total_name);
-	strcat(token,")");
+    token += "R(" + my_total_name + ")";
 	for (j = 0; j < count_isotope_ratio; j++)
 	{
 		if (isotope_ratio[j]->ratio == MISSING)
 			continue;
-		if (strcmp(token, isotope_ratio[j]->name) != 0)
+        if (token != isotope_ratio[j]->name)
 			continue;
 		master_isotope_ptr = master_isotope_search(isotope_ratio[j]->isotope_name);
 		if (master_isotope_ptr != NULL)

@@ -115,7 +115,6 @@
 #define MAX_ADD_EQUATIONS 20	/* maximum number of equations added together to reduce eqn to
 								   master species */
 #define MAX_ELEMENTS 50			/* default estimate of the number of elements */
-#define MAX_LENGTH 256			/* maximum number of characters component name */
 #define MAX_LINE 4096			/* estimate of maximum line length */
 #define MAX_MASS_BALANCE 10		/* initial guess of number mass balance equations for a solution */
 #define MAX_MASTER 50			/* default estimate of the number of master species */
@@ -815,7 +814,7 @@ struct unknown
 	LDBLE delta;
 	LDBLE la;
 	int number;
-	const char *description;
+        std::string description;
 	struct master **master;
 	struct phase *phase;
 	LDBLE si;
@@ -931,7 +930,7 @@ struct spread_row
 {
 	int count;
 	int empty, string, number;
-	char **char_vector;
+        std::vector<std::string> char_vector;
 	LDBLE *d_vector;
 	int *type_vector;
 };
@@ -1006,7 +1005,7 @@ struct system_species
 /* tally.c ------------------------------- */
 struct tally_buffer
 {
-	const char *name;
+        std::string name;
 	struct master *master;
 	LDBLE moles;
 	LDBLE gfw;
@@ -1057,7 +1056,7 @@ struct J_ij
 };
 struct M_S
 {
-	const char *name;
+        std::string name;
 	LDBLE tot1, tot2;
 };
 // Pitzer definitions

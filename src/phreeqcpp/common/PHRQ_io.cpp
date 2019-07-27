@@ -417,37 +417,37 @@ getc(void)
 
 /* ---------------------------------------------------------------------- */
 void PHRQ_io::
-fpunchf(const char *name, const char *format, double d)
+fpunchf(std::string name, const char *format, double d)
 /* ---------------------------------------------------------------------- */
 {
-	if (punch_ostream != NULL && punch_on)
-	{
-		fpunchf_helper(punch_ostream, format, d);
-	}
+//	if (punch_ostream != NULL && punch_on)
+//	{
+//        fpunchf_helper(punch_ostream, format, d);
+//	}
 }
 /* ---------------------------------------------------------------------- */
 void PHRQ_io::
-fpunchf(const char *name, const char *format, char * s)
+fpunchf(std::string name, const char *format, std::string s)
 /* ---------------------------------------------------------------------- */
 {
-	if (punch_ostream != NULL && punch_on)
-	{
-		fpunchf_helper(punch_ostream, format, s);
-	}
+//    if (punch_ostream != NULL && punch_on)
+//    {
+//        fpunchf_helper(*punch_ostream, format, s);
+//    }
 }
 /* ---------------------------------------------------------------------- */
 void PHRQ_io::
-fpunchf(const char *name, const char *format, int d)
+fpunchf(std::string name, const char *format, int d)
 /* ---------------------------------------------------------------------- */
 {
-	if (punch_ostream != NULL && punch_on)
-	{
-		fpunchf_helper(punch_ostream, format, d);
-	}
+//	if (punch_ostream != NULL && punch_on)
+//	{
+//		fpunchf_helper(punch_ostream, format, d);
+//	}
 }
 /* ---------------------------------------------------------------------- */
 void PHRQ_io::
-fpunchf_helper(std::ostream *os, const char *format, ...)
+fpunchf_helper(std::ostream os, const char *format, ...)
 /* ---------------------------------------------------------------------- */
 {
 	if (os)
@@ -463,7 +463,7 @@ fpunchf_helper(std::ostream *os, const char *format, ...)
 
 		if (success)
 		{
-			(*os) << stack_buffer;
+            os << stack_buffer;
 		}
 		else
 		{
@@ -485,17 +485,17 @@ fpunchf_helper(std::ostream *os, const char *format, ...)
 			}
 			while (!success);
 
-			(*os) << alloc_buffer;
+            os << alloc_buffer;
 			delete[] alloc_buffer;
 		}
 	}
 }
 /* ---------------------------------------------------------------------- */
 void PHRQ_io::
-fpunchf_helper(std::string *str, const char *format, ...)
+fpunchf_helper(std::string str, const char *format, ...)
 /* ---------------------------------------------------------------------- */
 {
-	if (str)
+    if (!str.empty())
 	{
 		const size_t STACK_MAX = 2048;
 		char stack_buffer[STACK_MAX];
@@ -508,7 +508,7 @@ fpunchf_helper(std::string *str, const char *format, ...)
 
 		if (success)
 		{
-			(*str) += stack_buffer;
+            str += stack_buffer;
 		}
 		else
 		{
@@ -530,7 +530,7 @@ fpunchf_helper(std::string *str, const char *format, ...)
 			}
 			while (!success);
 
-			(*str) += alloc_buffer;
+            str += alloc_buffer;
 			delete[] alloc_buffer;
 		}
 	}

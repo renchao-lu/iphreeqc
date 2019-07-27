@@ -39,12 +39,12 @@ inline Keywords convertStringToKeywords(std::string const& inString)
 
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-read_input(void)
+read_input()
 /* ---------------------------------------------------------------------- */
 {
 	int i, j, l;
     std::string ptr;
-	char token[2 * MAX_LENGTH];
+    std::string token;
 #define LAST_C_KEYWORD 61
 
 	parse_error = 0;
@@ -369,7 +369,7 @@ read_input(void)
 }
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-read_exchange_species(void)
+read_exchange_species()
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -377,8 +377,7 @@ read_exchange_species(void)
  */
 	int i;
 	int association;
-	char token[MAX_LENGTH];
-	char *ptr;
+    std::string token, ptr;
 	struct phase *phase_ptr;
 
 	struct species *s_ptr;
@@ -875,8 +874,7 @@ read_exchange(void)
  */
 	int n_user, n_user_end;
 	LDBLE conc;
-    std::string ptr;
-	char *description;
+    std::string ptr, description;
 
 	int return_value, opt;
 	char *next_char;
@@ -900,7 +898,7 @@ read_exchange(void)
  */
 
 	ptr = line;
-    read_number_description(const_cast<char*>(ptr.c_str()), &n_user, &n_user_end, &description);
+    read_number_description(ptr, &n_user, &n_user_end, description);
 /*
  *   Default values + n_user, description
  */
@@ -910,7 +908,7 @@ read_exchange(void)
 	temp_exchange.Set_n_user(n_user);
 	temp_exchange.Set_n_user_end(n_user_end);
 	temp_exchange.Set_description(description);
-	free_check_null(description);
+//	free_check_null(description);
 /*
  *   Set use data
  */
@@ -1094,7 +1092,7 @@ read_exchange(void)
 			    */
 				count_elts = 0;
 				paren_count = 0;
-				char * formula = string_duplicate(token.c_str());
+                std::string formula = token;
 				ptr = formula;
                 get_elts_in_species(ptr, conc);
 				
@@ -1102,14 +1100,14 @@ read_exchange(void)
 				*   save formula for adjusting number of exchange sites
 			    */
 				ptr = formula;
-				char *name = string_duplicate(token.c_str());
+                std::string name =token;
 				name[0] = '\0';
 				LDBLE z;
 				int l;
                 get_token(ptr, name, &z, &l);
 				comp_ptr->Set_formula_z(z);
-				free_check_null(formula);
-				free_check_null(name);
+//				free_check_null(formula);
+//				free_check_null(name);
 				/*
 				*   Save elt_list
 			    */
@@ -1138,7 +1136,7 @@ read_exchange_master_species(void)
 	LDBLE l_z;
     struct element elts_ptr;
 	struct species *s_ptr;
-	char token[MAX_LENGTH], token1[MAX_LENGTH];
+    std::string token, token1;
 	for (;;)
 	{
 		j = check_line("Exchange species equation", FALSE, TRUE, TRUE, TRUE);
@@ -1215,7 +1213,7 @@ read_exchange_master_species(void)
  *   MAKE LISTS OF PRIMARY AND SECONDARY MASTER SPECIES
  */
         master[count_master].primary = TRUE;
-        if (strcmp(master[count_master].elt.name, "E") != 0)
+        if (master[count_master].elt.name != "E")
 		{
             elts_ptr = element_store(master[count_master].elt.name);
             elts_ptr.gfw = 0.0;
@@ -1252,7 +1250,7 @@ read_gas_phase(void)
 	int n_user, n_user_end;
     std::string ptr;
 	char *description;
-	char token[MAX_LENGTH];
+    std::string token;
 	cxxGasPhase temp_gas_phase;
 	int return_value, opt;
     std::string next_char;
@@ -1272,13 +1270,13 @@ read_gas_phase(void)
  *   Read gas_phase number
  */
 	ptr = line;
-    read_number_description(const_cast<char*>(ptr.c_str()), &n_user, &n_user_end, &description);
+    read_number_description(ptr, &n_user, &n_user_end, description);
 
 	temp_gas_phase.Set_n_user(n_user);
 	temp_gas_phase.Set_n_user_end(n_user_end);
 	temp_gas_phase.Set_description(description);
 	temp_gas_phase.Set_new_def(true);
-	free_check_null(description);
+//	free_check_null(description);
 /*
  *   Set use data to first read
  */
@@ -1340,7 +1338,7 @@ read_gas_phase(void)
                 i = copy_token(token, next_char, &l);
 				if (i == DIGIT)
 				{
-					sscanf(token, "%d", &l);
+//					sscanf(token, "%d", &l);
 					temp_gas_phase.Set_n_solution(l);
 					temp_gas_phase.Set_new_def(true);
 					temp_gas_phase.Set_solution_equilibria(true);
@@ -1376,7 +1374,7 @@ read_gas_phase(void)
 				*   Read initial partial pressure of gas
 				*/
 
-				j = sscanf(token, SCANFORMAT, &dummy);
+//				j = sscanf(token, SCANFORMAT, &dummy);
 				
 				if (j != 1)
 				{
@@ -1419,7 +1417,7 @@ read_gas_phase(void)
 }
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-read_inverse(void)
+read_inverse()
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -1478,7 +1476,7 @@ read_inverse(void)
 /*
  *   Read solution number and description
  */
-    read_number_description(const_cast<char*>(ptr.c_str()), &n_user, &n_user_end, &description);
+    read_number_description(ptr, &n_user, &n_user_end, description);
 /*
  *   Malloc space for solution data
  */
@@ -1695,7 +1693,7 @@ read_inv_balances(struct inverse *inverse_ptr, std::string ptr)
 /* ---------------------------------------------------------------------- */
 {
 	int j, l, count;
-	char token[MAX_LENGTH];
+    std::string token;
 /*
  *   Read element name
  */
@@ -1748,7 +1746,7 @@ read_inv_isotopes(struct inverse *inverse_ptr, std::string ptr)
 {
 	int i, j, l, l1, l2, count;
 	LDBLE isotope_number;
-	char token[MAX_LENGTH], token1[MAX_LENGTH];
+    std::string token, token1;
     std::string ptr1; std::string ptr2;
 	const char * redox_name, *element_name;
 /*
@@ -1855,8 +1853,7 @@ read_inv_phases(struct inverse *inverse_ptr, std::string ptr)
 /* ---------------------------------------------------------------------- */
 {
 	int j, l;
-	char token[MAX_LENGTH], token1[MAX_LENGTH];
-	char *ptr1;
+    std::string token, token1, ptr1;
 	std::vector <cxxSolutionIsotope> isotopes;
 /*
  *   Read phase name
@@ -1884,8 +1881,8 @@ read_inv_phases(struct inverse *inverse_ptr, std::string ptr)
         j = copy_token(token, ptr, &l);
 		if (j == EMPTY)
 			break;
-		strcpy(token1, token);
-		str_tolower(token1);
+        token1 = token;
+//		str_tolower(token1);
 		if (token1[0] == 'p')
 		{
 			inverse_ptr->phases[inverse_ptr->count_phases].constraint =
@@ -1931,7 +1928,7 @@ read_inv_phases(struct inverse *inverse_ptr, std::string ptr)
 				input_error++;
 				break;
 			}
-			sscanf(token, SCANFORMAT, &dummy);
+//			sscanf(token, SCANFORMAT, &dummy);
 			temp_isotope.Set_ratio(dummy);
 
 			/* read and store isotope ratio uncertainty */
@@ -1945,7 +1942,7 @@ read_inv_phases(struct inverse *inverse_ptr, std::string ptr)
 				error_msg(error_string, CONTINUE);
 				continue;
 			}
-			sscanf(token, SCANFORMAT, &dummy);
+//			sscanf(token, SCANFORMAT, &dummy);
 			temp_isotope.Set_ratio_uncertainty(dummy);
 			temp_isotope.Set_ratio_uncertainty_defined(true);
 			isotopes.push_back(temp_isotope);
@@ -2041,7 +2038,7 @@ read_kinetics(void)
  *   Read kinetics number
  */
 	ptr = line;
-    read_number_description(const_cast<char*>(ptr.c_str()), &n_user, &n_user_end, &description);
+    read_number_description(ptr.c_str(), &n_user, &n_user_end, description);
 	cxxKinetics temp_kinetics;
 	temp_kinetics.Set_n_user(n_user);
 	temp_kinetics.Set_n_user_end(n_user_end);
@@ -2567,7 +2564,7 @@ read_list_ints(std::string ptr, int *count_ints, int positive)
  *	 pointer to a list of count_ints ints.
  */
 	int *int_list;
-	char token[MAX_LENGTH];
+    std::string token;
 	int value;
 	int l;
 	char *ptr_save;
@@ -2629,7 +2626,7 @@ read_list_ints_range(std::string ptr, int *count_ints, int positive, int *int_li
  *      Returns:
  *	 pointer to a list of count_ints ints
  */
-	char token[MAX_LENGTH];
+    std::string token;
 	int value, value1, value2;
 	int i, l;
     std::string ptr_save;
@@ -2739,7 +2736,7 @@ read_list_t_f(std::string ptr, int *count_ints)
  *	 pointer to a list of count_ints ints.
  */
 	int *int_list;
-	char token[MAX_LENGTH];
+    std::string token;
 	int value;
 	int l;
 
@@ -2750,7 +2747,7 @@ read_list_t_f(std::string ptr, int *count_ints)
 
 	while (copy_token(token, ptr, &l) != EMPTY)
 	{
-		str_tolower(token);
+//		str_tolower(token);
 		if (token[0] == 't')
 		{
 			value = TRUE;
@@ -2779,7 +2776,7 @@ read_list_t_f(std::string ptr, int *count_ints)
 
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-read_log_k_only(char *ptr, LDBLE * log_k)
+read_log_k_only(std::string ptr, LDBLE * log_k)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -2787,12 +2784,12 @@ read_log_k_only(char *ptr, LDBLE * log_k)
  */
 	*log_k = 0.0;
 	replace("=", " ", ptr);
-	if (sscanf(ptr, SCANFORMAT, log_k) < 1)
-	{
-		input_error++;
-		error_msg("Expecting log k.", CONTINUE);
-		return (ERROR);
-	}
+//	if (sscanf(ptr, SCANFORMAT, log_k) < 1)
+//	{
+//		input_error++;
+//		error_msg("Expecting log k.", CONTINUE);
+//		return (ERROR);
+//	}
 	return (OK);
 }
 /* ---------------------------------------------------------------------- */
@@ -2801,7 +2798,7 @@ read_t_c_only(char *ptr, LDBLE *t_c)
 /* ---------------------------------------------------------------------- */
 {
 	*t_c = 0.0;
-	replace("=", " ", ptr);
+//	replace("=", " ", ptr);
 	if (sscanf(ptr, SCANFORMAT, t_c) < 1)
 	{
 		input_error++;
@@ -2816,7 +2813,7 @@ read_p_c_only(char *ptr, LDBLE * p_c)
 /* ---------------------------------------------------------------------- */
 {
 	*p_c = 0.0;
-	replace("=", " ", ptr);
+//	replace("=", " ", ptr);
 	if (sscanf(ptr, SCANFORMAT, p_c) < 1)
 	{
 		input_error++;
@@ -2831,7 +2828,7 @@ read_omega_only(char *ptr, LDBLE *omega)
 /* ---------------------------------------------------------------------- */
 {
 	*omega = 0.0;
-	replace("=", " ", ptr);
+//	replace("=", " ", ptr);
 	if (sscanf(ptr, SCANFORMAT, omega) < 1)
 	{
 		input_error++;
@@ -2892,7 +2889,7 @@ read_vm_only(char *ptr, LDBLE * delta_v, DELTA_V_UNIT * units)
 /* ---------------------------------------------------------------------- */
 {
 	int j, l;
-	char token[MAX_LENGTH];
+    std::string token;
 	/*
 	*   Read analytical expression
 	*/
@@ -2927,22 +2924,22 @@ read_vm_only(char *ptr, LDBLE * delta_v, DELTA_V_UNIT * units)
 	LDBLE factor = 1.0;
 	if (j == UPPER || j == LOWER)
 	{
-		str_tolower(token);
-		if (strstr(token, "cm3") != NULL)
-		{
-			/* cm3/mol */
-			;
-		}
-		else if (strstr(token, "dm3") != NULL)
-		{
-			/* Convert dm3/mol to cm3/mol */
-			factor = 1e3;
-		}
-		else if (strstr(token, "m3") != NULL)
-		{
-			/* Convert m3/mol to cm3/mol */
-			factor = 1e6;
-		}
+//		str_tolower(token);
+//		if (strstr(token, "cm3") != NULL)
+//		{
+//			/* cm3/mol */
+//			;
+//		}
+//		else if (strstr(token, "dm3") != NULL)
+//		{
+//			/* Convert dm3/mol to cm3/mol */
+//			factor = 1e3;
+//		}
+//		else if (strstr(token, "m3") != NULL)
+//		{
+//			/* Convert m3/mol to cm3/mol */
+//			factor = 1e6;
+//		}
 
 		for (int i = 0; i < 8; i++)
 		{
@@ -2958,7 +2955,7 @@ read_phase_vm(char *ptr, LDBLE * delta_v, DELTA_V_UNIT * units)
 /* ---------------------------------------------------------------------- */
 {
 	int j, l;
-	char token[MAX_LENGTH];
+    std::string token;
 	/*
 	*   Read analytical expression
 	*/
@@ -2993,24 +2990,24 @@ read_phase_vm(char *ptr, LDBLE * delta_v, DELTA_V_UNIT * units)
 	LDBLE factor = 1.0;
 	if (j == UPPER || j == LOWER)
 	{
-		str_tolower(token);
-		if (strstr(token, "cm3") != NULL)
-		{
-			/* cm3/mol */
-			;
-		}
-		else if (strstr(token, "dm3") != NULL)
-		{
-			/* Convert dm3/mol to cm3/mol */
-			factor = 1e3;
-			*units = dm3_per_mol;
-		}
-		else if (strstr(token, "m3") != NULL)
-		{
-			/* Convert m3/mol to cm3/mol */
-			factor = 1e6;
-			*units = m3_per_mol;
-		}
+//		str_tolower(token);
+//		if (strstr(token, "cm3") != NULL)
+//		{
+//			/* cm3/mol */
+//			;
+//		}
+//		else if (strstr(token, "dm3") != NULL)
+//		{
+//			/* Convert dm3/mol to cm3/mol */
+//			factor = 1e3;
+//			*units = dm3_per_mol;
+//		}
+//		else if (strstr(token, "m3") != NULL)
+//		{
+//			/* Convert m3/mol to cm3/mol */
+//			factor = 1e6;
+//			*units = m3_per_mol;
+//		}
 
 		for (int i = 0; i < 1; i++)
 		{
@@ -3026,12 +3023,12 @@ read_delta_h_only(char *ptr, LDBLE * delta_h, DELTA_H_UNIT * units)
 /* ---------------------------------------------------------------------- */
 {
 	int j, l, kilo, joul;
-	char token[MAX_LENGTH];
+    std::string token;
 /*
  *   Read delta H
  */
 	*delta_h = 0.0;
-	replace("=", " ", ptr);
+//	replace("=", " ", ptr);
     j = copy_token(token, ptr, &l);
 	if (j == EMPTY)
 	{
@@ -3039,12 +3036,12 @@ read_delta_h_only(char *ptr, LDBLE * delta_h, DELTA_H_UNIT * units)
 		error_msg("Expecting numeric value for delta H.", CONTINUE);
 		return (ERROR);
 	}
-	if (sscanf(token, SCANFORMAT, delta_h) < 1)
-	{
-		input_error++;
-		error_msg("Expecting numeric value for delta H.", CONTINUE);
-		return (ERROR);
-	}
+//	if (sscanf(token, SCANFORMAT, delta_h) < 1)
+//	{
+//		input_error++;
+//		error_msg("Expecting numeric value for delta H.", CONTINUE);
+//		return (ERROR);
+//	}
 /*
  *   Read delta H units
  */
@@ -3058,19 +3055,19 @@ read_delta_h_only(char *ptr, LDBLE * delta_h, DELTA_H_UNIT * units)
 	}
 	if (j == UPPER || j == LOWER)
 	{
-		str_tolower(token);
-		if (strstr(token, "k") != token)
-		{
-			/* convert to kilo */
-			kilo = FALSE;
-			*delta_h /= 1000.;
-		}
-		if (strstr(token, "c") != NULL)
-		{
-			/* convert to joules */
-			*delta_h *= JOULES_PER_CALORIE;
-			joul = FALSE;
-		}
+//		str_tolower(token);
+//		if (strstr(token, "k") != token)
+//		{
+//			/* convert to kilo */
+//			kilo = FALSE;
+//			*delta_h /= 1000.;
+//		}
+//		if (strstr(token, "c") != NULL)
+//		{
+//			/* convert to joules */
+//			*delta_h *= JOULES_PER_CALORIE;
+//			joul = FALSE;
+//		}
 	}
 	if (kilo == TRUE && joul == TRUE)
 	{
@@ -3191,7 +3188,7 @@ read_incremental_reactions(void)
  */
 	int j, l;
     std::string ptr;
-	char token[MAX_LENGTH];
+    std::string token;
 
 	ptr = line;
 	/* read keyword */
@@ -3229,7 +3226,7 @@ read_master_species()
 	LDBLE l_z;
 	struct element *elts_ptr;
 	struct species *s_ptr;
-	char token[MAX_LENGTH], token1[MAX_LENGTH];
+    std::string token, token1;
 
 	elts_ptr = NULL;
     auto in = phrq_io->get_istream();
@@ -3313,7 +3310,7 @@ read_master_species()
  *   Read alkalinity for species
  */
         copy_token(token, ptr, &l);
-        i = sscanf(token, SCANFORMAT, &master[count_master-1].alk);
+//        i = sscanf(token, SCANFORMAT, &master[count_master-1].alk);
 		if (i != 1)
 		{
 			input_error++;
@@ -3337,7 +3334,7 @@ read_master_species()
         i = copy_token(token, ptr, &l);
 		if (i == DIGIT)
 		{
-            sscanf(token, SCANFORMAT, &master[count_master-1].gfw);
+//            sscanf(token, SCANFORMAT, &master[count_master-1].gfw);
 		}
 		else if (i == UPPER)
 		{
@@ -3363,42 +3360,42 @@ read_master_species()
 /*
  *   MAKE LISTS OF PRIMARY AND SECONDARY MASTER SPECIES
  */
-        if (strchr(master[count_master-1].elt.name, '(') == NULL)
-		{
-            master[count_master-1].primary = TRUE;
-			/* Read gram formula weight for primary */
-            if (strcmp(master[count_master-1].elt.name, "E") != 0)
-			{
-//                elts_ptr = master[count_master-1].elt;
-                i = copy_token(token, ptr, &l);
-				if (i == DIGIT)
-				{
-                    sscanf(token, SCANFORMAT, &elts_ptr->gfw);
-				}
-				else
-				{
-					input_error++;
-					if (elts_ptr != NULL)
-					{
-						error_string = sformatf(
-								"Expected gram formula weight for element, %s.",
-								elts_ptr->name);
-					}
-					else
-					{
-						error_string = sformatf(
-								"Expected gram formula weight for element.");
-					}
+//        if (strchr(master[count_master-1].elt.name, '(') == NULL)
+//		{
+//            master[count_master-1].primary = TRUE;
+//			/* Read gram formula weight for primary */
+//            if (master[count_master-1].elt.name != "E")
+//			{
+////                elts_ptr = master[count_master-1].elt;
+//                i = copy_token(token, ptr, &l);
+//				if (i == DIGIT)
+//				{
+//                    sscanf(token, SCANFORMAT, &elts_ptr->gfw);
+//				}
+//				else
+//				{
+//					input_error++;
+//					if (elts_ptr != NULL)
+//					{
+//						error_string = sformatf(
+//								"Expected gram formula weight for element, %s.",
+//								elts_ptr->name);
+//					}
+//					else
+//					{
+//						error_string = sformatf(
+//								"Expected gram formula weight for element.");
+//					}
 
-					error_msg(error_string, CONTINUE);
-					continue;
-				}
-			}
-		}
-		else
-		{
-            master[count_master-1].primary = FALSE;
-		}
+//					error_msg(error_string, CONTINUE);
+//					continue;
+//				}
+//			}
+//		}
+//		else
+//		{
+//            master[count_master-1].primary = FALSE;
+//		}
 		if (count_master >= max_master)
 		{
 			space((void **) ((void *) &master), count_master, &max_master,
@@ -3422,20 +3419,20 @@ read_mix(void)
 	LDBLE fraction;
 	int j, i, l;
     std::string ptr;
-	char token[MAX_LENGTH];
-	char *description;
+    std::string token;
+    std::string description;
 	cxxMix temp_mix;
 
 /*
  *   Read mix number
  */
 	ptr = line;
-    read_number_description(const_cast<char*>(ptr.c_str()), &n_user, &n_user_end, &description);
+    read_number_description(ptr, &n_user, &n_user_end, description);
 
 	temp_mix.Set_n_user(n_user);
 	temp_mix.Set_n_user_end(n_user);
 	temp_mix.Set_description(description);
-	free_check_null(description);
+//	free_check_null(description);
 
 /*
  *   Set use data to first read
@@ -3463,7 +3460,7 @@ read_mix(void)
         i = copy_token(token, ptr, &l);
 		if (i == DIGIT)
 		{
-			sscanf(token, "%d ", &n_solution);
+//			sscanf(token, "%d ", &n_solution);
 		}
 		else
 		{
@@ -3476,7 +3473,7 @@ read_mix(void)
  *   Read fraction for solution
  */
         copy_token(token, ptr, &l);
-		j = sscanf(token, SCANFORMAT, &fraction);
+//		j = sscanf(token, SCANFORMAT, &fraction);
 		if (j != 1)
 		{
 			input_error++;
@@ -3524,7 +3521,7 @@ read_entity_mix(std::map<int, cxxMix> &mix_map)
 	LDBLE fraction;
 	int j, i, l;
     std::string ptr;
-	char token[MAX_LENGTH];
+    std::string token;
 	cxxMix temp_mix;
 
 /*
@@ -3550,7 +3547,7 @@ read_entity_mix(std::map<int, cxxMix> &mix_map)
         i = copy_token(token, ptr, &l);
 		if (i == DIGIT)
 		{
-			sscanf(token, "%d ", &n_solution);
+//			sscanf(token, "%d ", &n_solution);
 		}
 		else
 		{
@@ -3563,7 +3560,7 @@ read_entity_mix(std::map<int, cxxMix> &mix_map)
  *   Read fraction for entity
  */
         copy_token(token, ptr, &l);
-		j = sscanf(token, SCANFORMAT, &fraction);
+//		j = sscanf(token, SCANFORMAT, &fraction);
 		if (j != 1)
 		{
 			input_error++;
@@ -3694,18 +3691,17 @@ read_solution_mix(void)
 #endif
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-read_number_description(char *ptr, int *n_user,
-						int *n_user_end, char **description, int allow_negative)
+read_number_description(std::string ptr, int *n_user,
+                        int *n_user_end, std::string description, int allow_negative)
 /* ---------------------------------------------------------------------- */
 {
 	int l, n;
-	char token[MAX_LENGTH];
-	char *ptr1;
+    std::string token;
 /*
  *   Read user number, allow negative numbers Oct 3, 2011
  */
     copy_token(token, ptr, &l);  // keyword
-	ptr1 = ptr;
+    std::string ptr1 = ptr;
     copy_token(token, ptr, &l);
 
 	if (!isdigit(token[0]) && token[0] != '-')
@@ -3715,35 +3711,35 @@ read_number_description(char *ptr, int *n_user,
 	}
 	else
 	{
-		if (replace("-", " ", &token[1]))
-		{
-			n = sscanf(token, "%d%d", n_user, n_user_end);
-			if (n != 2)
-			{
-				if (n == 0)
-				{
-					*n_user_end = *n_user = 1;
-				}
-				else
-				{
-					*n_user_end = *n_user;
-				}
-				error_msg(error_string, CONTINUE);
-				input_error++;
-			}
-			ptr1 = ptr;
-		}
-		else
-		{
-			n = sscanf(token, "%d", n_user);
-			if (n != 1)
-			{
-				error_msg(error_string, CONTINUE);
-				input_error++;
-			}
-			*n_user_end = *n_user;
-			ptr1 = ptr;
-		};
+//		if (replace("-", " ", &token[1]))
+//		{
+//			n = sscanf(token, "%d%d", n_user, n_user_end);
+//			if (n != 2)
+//			{
+//				if (n == 0)
+//				{
+//					*n_user_end = *n_user = 1;
+//				}
+//				else
+//				{
+//					*n_user_end = *n_user;
+//				}
+//				error_msg(error_string, CONTINUE);
+//				input_error++;
+//			}
+//			ptr1 = ptr;
+//		}
+//		else
+//		{
+//			n = sscanf(token, "%d", n_user);
+//			if (n != 1)
+//			{
+//				error_msg(error_string, CONTINUE);
+//				input_error++;
+//			}
+//			*n_user_end = *n_user;
+//			ptr1 = ptr;
+//		};
 	}
 	if (*n_user < 0 && allow_negative == FALSE)
 	{
@@ -3754,8 +3750,8 @@ read_number_description(char *ptr, int *n_user,
 /*
  *   Read description
  */
-	for (; isspace((int) ptr1[0]); ptr1++);
-	*description = string_duplicate(ptr1);
+//	for (; isspace((int) ptr1[0]); ptr1++);
+    description = ptr1;
 	return (OK);
 }
 
@@ -3770,8 +3766,8 @@ read_phases(void)
 	int j, i, l;
 	int association;
     std::string ptr;
-	char token[MAX_LENGTH];
-	char token1[MAX_LENGTH];
+    std::string token;
+    std::string token1;
 	struct phase *phase_ptr;
 	struct elt_list *next_elt;
 	struct rxn_token *token_ptr;
@@ -4009,7 +4005,7 @@ read_phases(void)
 /*
  *   Get pointer to each species in the reaction, store new species if necessary
  */
-			strcpy(token1, trxn.token[0].name);
+            token1 = trxn.token[0].name;
 			replace("(g)", "", token1);
 			replace("(s)", "", token1);
 			replace("(G)", "", token1);
@@ -4022,7 +4018,7 @@ read_phases(void)
 					(strstr(trxn.token[i].name, "(S)") == NULL) &&
 					(strstr(trxn.token[i].name, "(G)") == NULL))
 				{
-					strcpy(token1, trxn.token[i].name);
+                    token1 = trxn.token[i].name;
 					replace("(aq)", "", token1);
 					replace("(AQ)", "", token1);
 					replace("H2O(l)", "H2O", token1);
@@ -4114,7 +4110,7 @@ read_pp_assemblage(void)
 	/*
 	 *   Read pp_assemblage number
 	 */
-    read_number_description(const_cast<char*>(ptr.c_str()), &n_user, &n_user_end, &description);
+    read_number_description(ptr, &n_user, &n_user_end, description);
 	/*
 	 *   Find pp_assemblage or realloc space for pp_assemblage
 	 */
@@ -4125,7 +4121,7 @@ read_pp_assemblage(void)
 	temp_pp_assemblage.Set_n_user(n_user);
 	temp_pp_assemblage.Set_n_user_end(n_user_end);
 	temp_pp_assemblage.Set_description(description);
-	free_check_null(description);
+//	free_check_null(description);
 	/*
 	 *   Set use data to first read
 	 */
@@ -4294,9 +4290,8 @@ read_reaction(void)
  *   Read reaction
  */
 	int l;
-    std::string ptr;
-	char *description;
-	char token[MAX_LENGTH];
+    std::string ptr, description;
+    std::string token;
 	int return_value;
 	int n_user, n_user_end;
 	
@@ -4304,7 +4299,7 @@ read_reaction(void)
  *   Read reaction number
  */
 	ptr = line;
-    read_number_description(const_cast<char*>(ptr.c_str()), &n_user, &n_user_end, &description);
+    read_number_description(ptr, &n_user, &n_user_end, description);
 
 /*
  *   Set use data to first read
@@ -4321,7 +4316,7 @@ read_reaction(void)
 	temp_reaction.Set_n_user(n_user);
 	temp_reaction.Set_n_user_end(n_user_end);
 	temp_reaction.Set_description(description);
-	free_check_null(description);
+//	free_check_null(description);
 /*
  *   Read reaction data
  */
@@ -4562,8 +4557,7 @@ read_save(void)
  *   in reaction calculation
  */
 	int i, l, n, n_user, n_user_end;
-    std::string ptr;
-	char token[MAX_LENGTH];
+    std::string ptr, token;
 /*
  *   Read "save"
  */
@@ -4583,7 +4577,7 @@ read_save(void)
 		if (i == DIGIT)
 		{
 			replace("-", " ", token);
-			n = sscanf(token, "%d%d", &n_user, &n_user_end);
+//			n = sscanf(token, "%d%d", &n_user, &n_user_end);
 			if (n == 1)
 			{
 				n_user_end = n_user;
@@ -4720,13 +4714,13 @@ read_selected_output(void)
 	int count_opt_list = 51;
 
 	int i, l;
-	char file_name[MAX_LENGTH], token[MAX_LENGTH];
+    std::string file_name, token;
 
     std::string ptr;
 	ptr = line;
 	int n_user, n_user_end;
-	char *description;
-    read_number_description(const_cast<char*>(ptr.c_str()), &n_user, &n_user_end, &description);
+    std::string description;
+    read_number_description(ptr, &n_user, &n_user_end, description);
 
 	SelectedOutput temp_selected_output;
 	temp_selected_output.Set_new_def(false);
@@ -4734,7 +4728,7 @@ read_selected_output(void)
 	temp_selected_output.Set_n_user(n_user);
 	temp_selected_output.Set_n_user_end(n_user_end);
 	temp_selected_output.Set_description(description);
-	free_check_null(description);
+//	free_check_null(description);
 
 	// find if it exists
 	std::map< int, SelectedOutput >::iterator so = SelectedOutput_map.find(n_user);
@@ -4816,7 +4810,7 @@ read_selected_output(void)
 			temp_selected_output.Set_new_def(true);
 			if (string_trim(next_char) != EMPTY)
 			{
-				strcpy(file_name, next_char);
+                file_name = next_char;
 				temp_selected_output.Set_file_name(file_name);
 				temp_selected_output.Set_have_punch_name(true);
 			}
@@ -5651,7 +5645,7 @@ read_solution(void)
  */
     std::string ptr;
 	ptr = line;
-    read_number_description(const_cast<char*>(ptr.c_str()), &n_user, &n_user_end, &description);
+    read_number_description(ptr, &n_user, &n_user_end, description);
 
 	cxxSolution temp_solution;
 	temp_solution.Set_new_def(true);
@@ -5826,7 +5820,7 @@ read_solution(void)
 				temp_isotope.Set_isotope_name(token.c_str());
 				/* read and save element name */
 				{
-					char *temp_iso_name = string_duplicate(token.c_str());
+                    std::string temp_iso_name = token;
                     std::string ptr1 = temp_iso_name;
                     get_num(ptr1, &dummy);
 					temp_isotope.Set_isotope_number(dummy);
@@ -5835,11 +5829,11 @@ read_solution(void)
 						error_msg("Expecting element name.", PHRQ_io::OT_CONTINUE);
                         error_msg(line_save.c_str(), PHRQ_io::OT_CONTINUE);
 						input_error++;
-						temp_iso_name = (char*)free_check_null(temp_iso_name);
+//						temp_iso_name = (char*)free_check_null(temp_iso_name);
 						return (CParser::PARSER_ERROR);
 					}
                     temp_isotope.Set_elt_name(ptr1.c_str());
-					temp_iso_name = (char*)free_check_null(temp_iso_name);
+//					temp_iso_name = (char*)free_check_null(temp_iso_name);
 				}
 				/* read and store isotope ratio */
                 if (copy_token(token, next_char) != CParser::TT_DIGIT)
@@ -6533,7 +6527,7 @@ read_use(void)
  */
 	int i, l, n_user, return_value;
     std::string ptr;
-	char token[MAX_LENGTH], token1[MAX_LENGTH];;
+    std::string token, token1;
 /*
  *   Read "use"
  */
@@ -6566,33 +6560,33 @@ read_use(void)
 /*
  *   Read number
  */
-	strcpy(token1, token);
+    token1 = token;
 	for (;;)
 	{
         i = copy_token(token, ptr, &l);
 		if (i == DIGIT)
 		{
-			sscanf(token, "%d", &n_user);
+//			sscanf(token, "%d", &n_user);
 			if (n_user < 0)
 			{
 				error_msg("Number must be a positive integer.", CONTINUE);
                 error_msg(line_save.c_str(), CONTINUE);
 				input_error++;
 			}
-			if (strstr(token, "-") != NULL)
-			{
-				error_string = sformatf(
-						"USE does not accept a range of numbers, %s.", token);
-				warning_msg(error_string);
-				error_string = sformatf(
-						"Only %s %d will be used in the batch-reaction calculation.",
-						token1, n_user);
-				warning_msg(error_string);
-				error_string = sformatf(
-						"NOTE--USE is not needed for ADVECTION and TRANSPORT calculations.");
-				warning_msg(error_string);
+//			if (strstr(token, "-") != NULL)
+//			{
+//				error_string = sformatf(
+//						"USE does not accept a range of numbers, %s.", token);
+//				warning_msg(error_string);
+//				error_string = sformatf(
+//						"Only %s %d will be used in the batch-reaction calculation.",
+//						token1, n_user);
+//				warning_msg(error_string);
+//				error_string = sformatf(
+//						"NOTE--USE is not needed for ADVECTION and TRANSPORT calculations.");
+//				warning_msg(error_string);
 
-			}
+//			}
 			break;
 		}
 		else if (i == EMPTY)
@@ -6752,8 +6746,7 @@ read_surface_species(void)
 	 */
 	int i, j;
 	int association;
-	char token[MAX_LENGTH];
-	char *ptr;
+    std::string token, ptr;
 	LDBLE offset;
 
 	struct species *s_ptr;
@@ -7049,8 +7042,8 @@ read_surface_species(void)
 			{
                 if (copy_token(token, next_char, &i) == EMPTY)
 					break;
-				if (sscanf(token, SCANFORMAT, &s_ptr->cd_music[j]) != 1)
-					break;
+//				if (sscanf(token, SCANFORMAT, &s_ptr->cd_music[j]) != 1)
+//					break;
 			}
 			s_ptr->dz[0] = s_ptr->cd_music[0] + s_ptr->cd_music[3] * s_ptr->cd_music[4];
 			s_ptr->dz[1] = s_ptr->cd_music[1] + (1 - s_ptr->cd_music[3]) *	s_ptr->cd_music[4];
@@ -7221,7 +7214,7 @@ read_surface(void)
 	 *   Read surface number and description
 	 */
 	ptr = line;
-    read_number_description(const_cast<char*>(ptr.c_str()), &n_user, &n_user_end, &description);
+    read_number_description(ptr, &n_user, &n_user_end, description);
 	cxxSurface temp_surface;
 	cxxSurfaceComp *comp_ptr = NULL;
 	cxxSurfaceCharge *charge_ptr = NULL;
@@ -7578,7 +7571,7 @@ read_surface(void)
 				*/
 				count_elts = 0;
 				paren_count = 0;
-				char * formula = string_duplicate(token.c_str());
+                std::string  formula = token;
 				ptr1 = formula;
                 get_elts_in_species(ptr1, conc);
 				/*
@@ -7587,7 +7580,7 @@ read_surface(void)
 				ptr1 = formula;
 				int l;
 				// name is work space
-				char * name = string_duplicate(formula);
+                std::string name = formula;
 				name[0] = '\0';
                 get_token(ptr1, name, &dummy, &l);
 				comp_ptr->Set_formula_z(dummy);
@@ -7598,11 +7591,11 @@ read_surface(void)
 				*/
 				ptr1 = formula;
                 get_elt(ptr1, name, &l);
-				ptr1 = strchr(name, '_');
+//				ptr1 = strchr(name, '_');
                 if (!ptr1.empty())
 					ptr1[0] = '\0';
 				charge_ptr = temp_surface.Find_charge(name);
-				formula = (char*)free_check_null(formula);
+//				formula = (char*)free_check_null(formula);
 				if (charge_ptr == NULL)
 				{
 					cxxSurfaceCharge temp_charge;
@@ -7622,7 +7615,7 @@ read_surface(void)
 					charge_ptr = temp_surface.Find_charge(name);
 				}
 				comp_ptr->Set_charge_name(name);
-				name = (char*)free_check_null(name);
+//				name = (char*)free_check_null(name);
 				/*
 				*   Read surface area (m2/g)
 				*/
@@ -7798,7 +7791,7 @@ read_surface_master_species(void)
     std::string ptr; std::string ptr1;
 	LDBLE l_z;
 	struct species *s_ptr;
-	char token[MAX_LENGTH], token1[MAX_LENGTH];
+    std::string token, token1;
 	int opt, opt_save;
 	char *next_char;
 	const char *opt_list[] = {
@@ -7882,16 +7875,16 @@ read_surface_master_species(void)
                 master[count_master].s = s_store(token1, l_z, FALSE);
 			}
             master[count_master].primary = TRUE;
-            strcpy(token, master[count_master].elt.name);
+            token = master[count_master].elt.name;
 			count_master++;
 			/*
 			 *   Save values in master and species structure for surface psi
 			 */
-			strcpy(token1, token);
+            token1 = token;
 			replace("_", " ", token1);
 			ptr1 = token1;
             copy_token(token, ptr1, &l);
-			strcat(token, "_psi");
+            token += "_psi";
 			add_psi_master_species(token);
 			opt_save = OPTION_DEFAULT;
 			break;
@@ -7904,28 +7897,27 @@ read_surface_master_species(void)
 
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-add_psi_master_species(char *token)
+add_psi_master_species(std::string token)
 /* ---------------------------------------------------------------------- */
 {
 	struct species *s_ptr;
 	struct master *master_ptr;
     std::string ptr;
-	char token1[MAX_LENGTH];
 	int i, n, plane;
 
-	strcpy(token1, token);
+    std::string token1 = token;
 	for (plane = SURF_PSI; plane <= SURF_PSI2; plane++)
 	{
-		strcpy(token, token1);
+        token = token1;
 		switch (plane)
 		{
 		case SURF_PSI:
 			break;
 		case SURF_PSI1:
-			strcat(token, "b");
+            token += "b";
 			break;
 		case SURF_PSI2:
-			strcat(token, "d");
+            token += "d";
 			break;
 		}
 		master_ptr = master_search(token, &n);
@@ -7992,7 +7984,7 @@ read_title(void)
     std::string ptr; std::string ptr1;
 	int l, title_x_length, line_length;
 	int return_value;
-	char token[MAX_LENGTH];
+    std::string token;
 /*
  *   Read anything after keyword
  */
@@ -8226,7 +8218,7 @@ read_print(void)
  */
 	int return_value, opt, l;
 	char *next_char;
-	char token[MAX_LENGTH];
+    std::string token;
 	LDBLE num;
 	const char *opt_list[] = {
 		"reset",				/* 0 */
@@ -8374,7 +8366,7 @@ read_print(void)
 				}
 				if (j == DIGIT)
 				{
-					char * tptr = token;
+                    std::string tptr = token;
                     get_num(tptr, &num);
 					num = floor(num);
 					if (num < 0.0) num = 0.0;
@@ -8432,14 +8424,14 @@ read_print(void)
 			pr.isotope_alphas = get_true_false(next_char, TRUE);
 			break;
 		case 37:				/* censor_species */
-            if (copy_token(token, next_char, &l) != EMPTY)
-			{
-				sscanf(token, SCANFORMAT, &censor);
-			}
-			else
-			{
-				censor = 0;
-			}
+//            if (copy_token(token, next_char, &l) != EMPTY)
+//			{
+//				sscanf(token, SCANFORMAT, &censor);
+//			}
+//			else
+//			{
+//				censor = 0;
+//			}
 			break;
 		case 38:				/* alkalinity */
 			pr.alkalinity = get_true_false(next_char, TRUE);
@@ -8463,7 +8455,7 @@ read_print(void)
 
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-check_key(const char *str)
+check_key(std::string str)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -8477,8 +8469,7 @@ check_key(const char *str)
  */
     std::string ptr;
 	std::string stdtoken;
-	char * token1;
-	token1 = string_duplicate(str);
+    std::string token1 = str;
 
 	ptr = token1;
     int j = copy_token(stdtoken, ptr);
@@ -8494,7 +8485,7 @@ check_key(const char *str)
 //		next_keyword = Keywords::Keyword_search(key);
 //	}
 
-	free_check_null(token1);
+//	free_check_null(token1);
 //	if (next_keyword > 0)
 //	{
 //		return TRUE;
@@ -8874,7 +8865,7 @@ get_true_false(std::string string, int default_value)
  *   Returns true unless string starts with "F" or "f"
  */
 	int l;
-	char token[MAX_LENGTH];
+    std::string token;
     std::string ptr;
 
 	ptr = string;
@@ -8990,7 +8981,7 @@ read_rates(void)
     std::string ptr;
 	int l, length, line_length, n;
 	int return_value, opt, opt_save;
-	char token[MAX_LENGTH];
+    std::string token;
     struct Rate *rate_ptr;
 	char *description;
 	int n_user, n_user_end;
@@ -9005,8 +8996,8 @@ read_rates(void)
  */
 	n = -1;
 	ptr = line;
-    read_number_description(const_cast<char*>(ptr.c_str()), &n_user, &n_user_end, &description);
-	description = (char *) free_check_null(description);
+    read_number_description(ptr, &n_user, &n_user_end, description);
+//	description = (char *) free_check_null(description);
 	opt_save = OPTION_DEFAULT;
 /*
  *   Read lines
@@ -9238,7 +9229,7 @@ read_user_punch(void)
 	char *description;
     std::string ptr;
 	ptr = line;
-    read_number_description(const_cast<char*>(ptr.c_str()), &n_user, &n_user_end, &description);
+    read_number_description(ptr, &n_user, &n_user_end, description);
 
 	UserPunch temp_user_punch;
 	temp_user_punch.Set_PhreeqcPtr(this);
@@ -9772,7 +9763,7 @@ read_solid_solutions(void)
  *   Read ss_assemblage number
  */
 	ptr = line;
-    read_number_description(const_cast<char*>(ptr.c_str()), &n_user, &n_user_end, &description);
+    read_number_description(ptr, &n_user, &n_user_end, description);
 	cxxSSassemblage temp_ss_assemblage;
 	temp_ss_assemblage.Set_n_user(n_user);
 	temp_ss_assemblage.Set_n_user_end(n_user_end);
@@ -10536,7 +10527,7 @@ read_line_doubles(char *next_char, LDBLE ** d, int *count_d, int *count_alloc)
 {
 	int i, j, l, n;
 	LDBLE value;
-	char token[MAX_LENGTH];
+    std::string token;
 
 	for (;;)
 	{
@@ -10551,14 +10542,14 @@ read_line_doubles(char *next_char, LDBLE ** d, int *count_d, int *count_alloc)
 		}
 		if (replace("*", " ", token) == TRUE)
 		{
-			if (sscanf(token, "%d" SCANFORMAT, &n, &value) != 2)
-			{
-				return (ERROR);
-			}
+//			if (sscanf(token, "%d" SCANFORMAT, &n, &value) != 2)
+//			{
+//				return (ERROR);
+//			}
 		}
 		else
 		{
-			sscanf(token, SCANFORMAT, &value);
+//			sscanf(token, SCANFORMAT, &value);
 			n = 1;
 		}
 		for (;;)
@@ -10881,8 +10872,7 @@ read_copy(void)
  *
  */
 	int i, l, n, n_user, n_user_start, n_user_end, return_value;
-    std::string ptr;
-	char token[MAX_LENGTH], token1[MAX_LENGTH], nonkeyword[MAX_LENGTH];
+    std::string ptr, token, token1, nonkeyword;
 /*
  *   Read "copy"
  */
@@ -10924,11 +10914,11 @@ read_copy(void)
 /*
  *   Read source index
  */
-	strcpy(token1, token);
+    token1 = token;
     i = copy_token(token, ptr, &l);
 	if (i == DIGIT)
 	{
-		sscanf(token, "%d", &n_user);
+//		sscanf(token, "%d", &n_user);
 		//if (n_user < 0)
 		//{
 		//	error_msg("Source index number must be a positive integer.",
@@ -10961,8 +10951,8 @@ read_copy(void)
     i = copy_token(token, ptr, &l);
 	if (i == DIGIT)
 	{
-		replace("-", " ", &token[1]);
-		n = sscanf(token, "%d%d", &n_user_start, &n_user_end);
+//		replace("-", " ", &token[1]);
+//		n = sscanf(token, "%d%d", &n_user_start, &n_user_end);
 		if (n == 1)
 		{
 			n_user_end = n_user_start;
@@ -11067,7 +11057,7 @@ read_reaction_pressure(void)
     std::string ptr = line;
 	char *description;
 	int n_user, n_user_end;
-    read_number_description(const_cast<char*>(ptr.c_str()), &n_user, &n_user_end, &description);
+    read_number_description(ptr, &n_user, &n_user_end, description);
 	atm.Set_n_user(n_user);
 	atm.Set_n_user_end(n_user);
 	atm.Set_description(description);
@@ -11201,11 +11191,11 @@ read_temperature(void)
     std::string ptr = line;
 	char *description;
 	int n_user, n_user_end;
-    read_number_description(const_cast<char*>(ptr.c_str()), &n_user, &n_user_end, &description);
+    read_number_description(ptr, &n_user, &n_user_end, description);
 	t_react.Set_n_user(n_user);
 	t_react.Set_n_user_end(n_user);
 	t_react.Set_description(description);
-	free_check_null(description);
+//	free_check_null(description);
 
 	/*
 	 *  Make parser

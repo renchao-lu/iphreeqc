@@ -880,7 +880,7 @@ int Phreeqc::gammas_a_f(int i1)
 {
 	int i, j;
 	LDBLE d2, d3, coef = 0, sum = 0;
-	char name[MAX_LENGTH];
+    std::string name;
 	//struct master *m_ptr;
 
 	i = i1;
@@ -888,7 +888,7 @@ int Phreeqc::gammas_a_f(int i1)
 	{
 		if (s_x[i]->rxn_x->token[j].s->type == EX)
 		{
-			strcpy(name, s_x[i]->rxn_x->token[j].s->name);
+            name = s_x[i]->rxn_x->token[j].s->name;
 			//m_ptr = s_x[i]->rxn_x->token[j].s->primary->elt->master; // appt debug
 			break;
 		}
@@ -902,7 +902,7 @@ int Phreeqc::gammas_a_f(int i1)
 		{
 			if (s_x[i]->rxn_x->token[j].s->type == EX)
 			{
-				if (!strcmp(name, s_x[i]->rxn_x->token[j].s->name))
+                if (name != s_x[i]->rxn_x->token[j].s->name)
 					sum += s_x[i]->moles * s_x[i]->equiv;
 				break;
 			}

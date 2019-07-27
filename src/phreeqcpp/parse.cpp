@@ -27,7 +27,7 @@ parse_eq(char *eqn, struct elt_list **elt_ptr, int association)
 	LDBLE coef, l_z;
 	char c;
     std::string ptr;
-	char token[MAX_LENGTH];
+    std::string token;
 
 	paren_count = 0;
 /*
@@ -126,7 +126,7 @@ parse_eq(char *eqn, struct elt_list **elt_ptr, int association)
  *   Get elements in species or mineral formula
  */
 	count_elts = 0;
-	strcpy(token, trxn.token[0].name);
+    token = trxn.token[0].name;
 	replace("(s)", "", token);
 	replace("(S)", "", token);
 	replace("(g)", "", token);
@@ -410,7 +410,7 @@ get_coef(LDBLE * coef, std::string eqnaddr)
 	int i;
 	char c, c1;
 	char *ptr, *ptr1, *rest;
-	char token[MAX_LENGTH];;
+    std::string token;
 
 //	rest = *eqnaddr;
 //	ptr = *eqnaddr;				/* address of a position in eqn */
@@ -457,19 +457,19 @@ get_coef(LDBLE * coef, std::string eqnaddr)
 		while (isdigit((int) c) || c == '+' || c == '-' || c == '.')
 		{
 			token[i++] = c;
-			if (i >= MAX_LENGTH)
-			{
-				error_string = sformatf(
-						"Coefficient has more than MAX_LENGTH characters.");
-				error_msg(error_string, CONTINUE);
-				return (ERROR);
-			}
+//			if (i >= MAX_LENGTH)
+//			{
+//				error_string = sformatf(
+//						"Coefficient has more than MAX_LENGTH characters.");
+//				error_msg(error_string, CONTINUE);
+//				return (ERROR);
+//			}
 			c = *(++ptr);
 		}
 		token[i] = '\0';
 //		*eqnaddr = ptr;
 		errno = 0;
-		*coef = strtod(token, &ptr1);
+        *coef = std::stod(token);
 		if ((errno == ERANGE) || (*ptr1 != '\0'))
 		{
 			error_string = sformatf(
@@ -490,7 +490,7 @@ get_coef(LDBLE * coef, std::string eqnaddr)
 
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-get_elt(std::string t_ptr, char *element, int *i)
+get_elt(std::string t_ptr, std::string element, int *i)
 /* ---------------------------------------------------------------------- */
 /*
  *      Function reads an element name out of the equation string.
@@ -579,7 +579,7 @@ get_elts_in_species(std::string t_ptr, LDBLE coef)
 	int i, count, l;
 	char c, c1;
 	LDBLE d;
-	char element[MAX_LENGTH];
+    std::string element;
 
 //	while (((c = **t_ptr) != '+') && (c != '-') && (c != '\0'))
 //	{
@@ -836,7 +836,7 @@ get_secondary_in_species(std::string t_ptr, LDBLE coef)
 	int i, count, l;
 	char c, c1;
 	LDBLE d;
-	char element[MAX_LENGTH];
+    std::string element;
 
 //	while (((c = **t_ptr) != '+') && (c != '-') && (c != '\0'))
 //	{
@@ -971,7 +971,7 @@ get_num(std::string t_ptr, LDBLE * num)
 	int i, decimal;
 	char c;
 	char *ptr1;
-	char token[MAX_LENGTH];
+    std::string token;
 
 	*num = 1.0;
 	i = 0;
@@ -987,19 +987,19 @@ get_num(std::string t_ptr, LDBLE * num)
 				break;
 			token[i++] = c;
 			/* check number length */
-			if (i >= MAX_LENGTH)
-			{
-				error_string = sformatf(
-						"Number was greater than MAX_LENGTH characters.");
-				error_msg(error_string, CONTINUE);
-				input_error++;
-				return (ERROR);
-			}
+//			if (i >= MAX_LENGTH)
+//			{
+//				error_string = sformatf(
+//						"Number was greater than MAX_LENGTH characters.");
+//				error_msg(error_string, CONTINUE);
+//				input_error++;
+//				return (ERROR);
+//			}
 //			c = *(++(*t_ptr));
 		}
 		token[i] = '\0';
 		errno = 0;
-		*num = strtod(token, &ptr1);
+        *num = std::stod(token);
 		if (errno == ERANGE)
 		{
 			error_string = sformatf( "Converting number in get_num, %s.", token);
@@ -1025,7 +1025,7 @@ get_species(std::string ptr)
  *                output, points to the next character after the species charge.
  *
  */
-	char string[MAX_LENGTH];
+    std::string string;
 	int l;
 
 	if (count_trxn + 1 >= max_trxn)

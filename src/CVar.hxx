@@ -31,7 +31,7 @@ public:
 		this->type = TT_DOUBLE;
 		this->dVal = dblSrc;
 	}
-	CVar(const char* pszSrc)
+        CVar(std::string pszSrc)
 	{
 		this->type = TT_EMPTY;
 		*this = pszSrc;

@@ -519,7 +519,7 @@ add_other_logk(LDBLE * source_k, int count_add_logk,
 {
 	int i, j, analytic;
 	struct logk *logk_ptr;
-	char token[MAX_LENGTH];
+    std::string token;
 	LDBLE coef;
 	ENTRY item, *found_item;
 
@@ -528,8 +528,8 @@ add_other_logk(LDBLE * source_k, int count_add_logk,
 	for (i = 0; i < count_add_logk; i++)
 	{
 		coef = add_logk[i].coef;
-		strcpy(token, add_logk[i].name);
-		str_tolower(token);
+        token = add_logk[i].name;
+//		str_tolower(token);
 		item.key = token;
 		item.data = NULL;
 		found_item = hsearch_multi(logk_hash_table, item, FIND);
@@ -579,7 +579,7 @@ add_logks(struct logk *logk_ptr, int repeats)
 {
 	int i, j;
 	struct logk *next_logk_ptr;
-	char token[MAX_LENGTH];
+    std::string token;
 	LDBLE coef;
 	ENTRY item, *found_item;
 	/*
@@ -597,8 +597,8 @@ add_logks(struct logk *logk_ptr, int repeats)
 	for (i = 0; i < logk_ptr->count_add_logk; i++)
 	{
 		coef = logk_ptr->add_logk[i].coef;
-		strcpy(token, logk_ptr->add_logk[i].name);
-		str_tolower(token);
+        token = logk_ptr->add_logk[i].name;
+//		str_tolower(token);
 		item.key = token;
 		item.data = NULL;
 		found_item = hsearch_multi(logk_hash_table, item, FIND);
@@ -636,15 +636,15 @@ coef_in_master(struct master * master_ptr)
 {
 	int l;
 	LDBLE coef;
-	char *ptr;
+    std::string ptr;
 	char elt_name[MAX_LENGTH];
 	struct elt_list *next_elt;
 
 	coef = 0.0;
-    char * temp_name = string_duplicate(master_ptr->elt.name);
+    auto temp_name = master_ptr->elt.name;
 	ptr = temp_name;
     get_elt(ptr, elt_name, &l);
-	free_check_null(temp_name);
+//	free_check_null(temp_name);
 //	for (next_elt = master_ptr->s->next_elt; next_elt->elt != NULL;
 //		 next_elt++)
 //	{
@@ -1676,7 +1676,7 @@ tidy_pp_assemblage(void)
 /* ---------------------------------------------------------------------- */
 {
 	LDBLE coef;
-	char *ptr;
+    std::string ptr;
 /*
  *   Find pointers for pure phases
  */
@@ -1728,10 +1728,10 @@ tidy_pp_assemblage(void)
 					it->second.Set_add_formula(phase_ptr->formula);
 				}
 				{
-					char * temp_add = string_duplicate(it->second.Get_add_formula().c_str());
+                    auto temp_add = it->second.Get_add_formula();
 					ptr = temp_add;
                     get_elts_in_species(ptr, coef);
-					free_check_null(temp_add);
+//					free_check_null(temp_add);
 				}
 				/* check that all elements are in the database */
 				for (int l = first; l < count_elts; l++)
@@ -2718,7 +2718,7 @@ tidy_species(void)
 {
 	int i, j;
 	struct master *master_ptr;
-	char c, *ptr;
+    std::string c, ptr;
 /*
  *   Make sure species pointers are ok
  */
@@ -2749,27 +2749,27 @@ tidy_species(void)
 	}
 	for (i = 0; i < count_master; i++)
 	{
-        char * temp_name = string_duplicate(master[i].elt.name);
+        auto temp_name = master[i].elt.name;
 		ptr = temp_name;
 		if (ptr[0] != '[')
 		{
-			while ((c = (int) *(++ptr)) != '\0')
-			{
-				if (isupper((int) c))
-				{
-					input_error++;
-					error_string = sformatf(
-							"Element or valence name in SOLUTION_MASTER_SPECIES should include only one element, %s.",
-                            master[i].elt.name);
-					error_msg(error_string, CONTINUE);
-					break;
-				}
-			}
+//			while ((c = (int) *(++ptr)) != '\0')
+//			{
+//				if (isupper((int) c))
+//				{
+//					input_error++;
+//					error_string = sformatf(
+//							"Element or valence name in SOLUTION_MASTER_SPECIES should include only one element, %s.",
+//                            master[i].elt.name);
+//					error_msg(error_string, CONTINUE);
+//					break;
+//				}
+//			}
 		}
-		free_check_null(temp_name);
+//		free_check_null(temp_name);
 		/* store sequence number in master structure */
         master[i].number = i;
-        if (strcmp(master[i].elt.name, "Alkalinity") != 0)
+        if (master[i].elt.name != "Alkalinity")
 		{
 //            if (master[i].primary == TRUE)
 //			{
@@ -2780,7 +2780,7 @@ tidy_species(void)
 //				master[i]->s->secondary = master[i];
 //			}
 		}
-        if (strcmp(master[i].elt.name, "C") == 0)
+        if (master[i].elt.name == "C")
 		{
             s_co3 = master[i].s;
 		}
@@ -3025,10 +3025,10 @@ tidy_species(void)
         if (master[i].gfw <= 0.0)
 		{
             if (master[i].type >= EMINUS) continue;
-            if ((strcmp(master[i].elt.name, "E") != 0) &&
-                (strcmp(master[i].elt.name, "e") != 0) &&
-                (strcmp(master[i].elt.name, "H(1)") != 0) &&
-                (strcmp(master[i].elt.name, "O(-2)") != 0)
+            if (master[i].elt.name != "E" &&
+                master[i].elt.name != "e" &&
+                master[i].elt.name != "H(1)" &&
+                master[i].elt.name !="O(-2)"
 			    )
 			{
 				input_error++;
@@ -3049,7 +3049,7 @@ tidy_surface(void)
  *   After all of data are read, fill in master species for surface comps
  *   Sort surface
  */
-	char *ptr1;
+    std::string ptr1;
 	cxxSurface *surface_ptr;
 	//std::map<int, cxxSurface>::iterator kit;
 	//for (kit = Rxn_surface_map.begin(); kit != Rxn_surface_map.end(); kit++)
@@ -3133,10 +3133,10 @@ tidy_surface(void)
 					count_elts = 0;
 					paren_count = 0;
 					{
-						char * temp_formula = string_duplicate(comp_ptr->Get_formula().c_str());
+                        auto temp_formula = comp_ptr->Get_formula();
 						ptr1 = temp_formula;
                         get_elts_in_species(ptr1, comp_ptr->Get_moles());
-						free_check_null(temp_formula);
+//						free_check_null(temp_formula);
 					}
 					{
 						cxxNameDouble nd = elt_list_NameDouble();
@@ -3333,16 +3333,16 @@ phase_rxn_to_trxn(struct phase *phase_ptr, struct reaction *rxn_ptr)
  *   temp reaction structure.
  */
 	int i, l;
-	char *ptr;
+    std::string ptr;
 	char token[MAX_LENGTH];
 	LDBLE l_z;
 
 	trxn.token[0].name = phase_ptr->formula;
 	/* charge */
-	char * temp_formula = string_duplicate(phase_ptr->formula);
+    auto temp_formula = phase_ptr->formula;
 	ptr = temp_formula;
     get_token(ptr, token, &l_z, &l);
-	free_check_null(temp_formula);
+//	free_check_null(temp_formula);
 	trxn.token[0].z = l_z;
 	trxn.token[0].s = NULL;
 	trxn.token[0].unknown = NULL;
@@ -3549,7 +3549,7 @@ tidy_kin_exchange(void)
  */
 {
 	cxxKinetics *kinetics_ptr;
-	char *ptr;
+    std::string ptr;
 	LDBLE conc;
 
 	//std::map<int, cxxExchange>::iterator it = Rxn_exchange_map.begin();
@@ -3644,10 +3644,10 @@ tidy_kin_exchange(void)
 			count_elts = 0;
 			paren_count = 0;
 			{
-				char * temp_formula = string_duplicate(comp_ref.Get_formula().c_str());
+                auto temp_formula = comp_ref.Get_formula();
 				ptr = temp_formula;
                 get_elts_in_species(ptr, conc);
-				free_check_null(temp_formula);
+//				free_check_null(temp_formula);
 			}
 			comp_ref.Set_totals(elt_list_NameDouble());
 /*
@@ -3667,7 +3667,7 @@ tidy_min_exchange(void)
  */
 {
 	int n, jj;
-	char *ptr;
+    std::string ptr;
 	LDBLE conc;
 
 	//std::map<int, cxxExchange>::iterator it = Rxn_exchange_map.begin();
@@ -3762,10 +3762,10 @@ tidy_min_exchange(void)
 			count_elts = 0;
 			paren_count = 0;
 			{
-				char * temp_formula = string_duplicate(comp_ref.Get_formula().c_str());
+                auto temp_formula = comp_ref.Get_formula();
 				ptr = temp_formula;
                 get_elts_in_species(ptr, conc);
-				free_check_null(temp_formula);
+//				free_check_null(temp_formula);
 			}
 			comp_ref.Set_totals(elt_list_NameDouble());
 /*
@@ -3774,19 +3774,19 @@ tidy_min_exchange(void)
 			count_elts = 0;
 			paren_count = 0;
 			{
-				char * temp_formula = string_duplicate(comp_ref.Get_formula().c_str());
+                auto temp_formula = comp_ref.Get_formula();
 				ptr = temp_formula;
                 get_elts_in_species(ptr, -comp_ref.Get_phase_proportion());
-				free_check_null(temp_formula);
+//				free_check_null(temp_formula);
 			}
 			int l;
 			struct phase *phase_ptr = phase_bsearch(jit->first.c_str(), &l, FALSE);
 			if (phase_ptr != NULL)
 			{
-				char * temp_formula = string_duplicate(phase_ptr->formula);
+                auto temp_formula = phase_ptr->formula;
 				ptr = temp_formula;
                 get_elts_in_species(ptr, 1.0);
-				free_check_null(temp_formula);
+//				free_check_null(temp_formula);
 			}
 			else
 			{
@@ -3938,12 +3938,12 @@ tidy_min_surface(void)
 #endif
 /*			if (conc < MIN_RELATED_SURFACE) conc = 0.0; */
 			{
-				char * temp_formula = string_duplicate(surface_comp_ptr->Get_formula().c_str());
-				char *ptr = temp_formula;
+                auto temp_formula = surface_comp_ptr->Get_formula();
+                auto ptr = temp_formula;
 				count_elts = 0;
 				paren_count = 0;
                 get_elts_in_species(ptr, conc);
-				free_check_null(temp_formula);
+//				free_check_null(temp_formula);
 			}
 			{
 				if (surface_ptr->Get_new_def())
@@ -3969,10 +3969,10 @@ tidy_min_surface(void)
 			count_elts = 0;
 			paren_count = 0;
 			{
-				char * temp_formula = string_duplicate(phase_ptr->formula);
-				char * ptr = temp_formula;
+                auto temp_formula = phase_ptr->formula;
+                auto ptr = temp_formula;
                 get_elts_in_species(ptr, 1.0);
-				free_check_null(temp_formula);
+//				free_check_null(temp_formula);
 			}
 			// Revise logic for surface related to mineral
 			for (size_t jj = 0; jj < surface_ptr->Get_surface_comps().size(); jj++)
@@ -3980,8 +3980,8 @@ tidy_min_surface(void)
 				cxxSurfaceComp *comp_jj_ptr = &(surface_ptr->Get_surface_comps()[jj]);
 				// Use formula for all types of surfaces
 				{
-					char * temp_formula = string_duplicate(comp_jj_ptr->Get_formula().c_str());
-					char *ptr = temp_formula;
+                    auto temp_formula = comp_jj_ptr->Get_formula();
+                    auto ptr = temp_formula;
                     get_elts_in_species(ptr,
 										-comp_jj_ptr->Get_phase_proportion());
 
@@ -3996,7 +3996,7 @@ tidy_min_surface(void)
 							error_string = sformatf("Unknown element definition in SURFACE \n\t for surface related to equilibrium_phase: SURFACE %d.", 
 								surface_ptr->Get_n_user());
 							error_msg(error_string);
-							free_check_null(temp_formula);
+//							free_check_null(temp_formula);
 							continue;
 						}
                         if (elt_ptr.master->s == NULL || elt_ptr.master->s->name == NULL)
@@ -4005,7 +4005,7 @@ tidy_min_surface(void)
 							error_string = sformatf("Unknown master species definition in SURFACE \n\t for surface related to equilibrium_phase: SURFACE %d.", 
 								surface_ptr->Get_n_user());
 							error_msg(error_string);
-							free_check_null(temp_formula);
+//							free_check_null(temp_formula);
 							continue;
 						}
 						//if (strcmp(elt_ptr->master->s->name, temp_formula) != 0)
@@ -4022,7 +4022,7 @@ tidy_min_surface(void)
 							warning_msg(error_string);
 						}	
 					}
-					free_check_null(temp_formula);
+//					free_check_null(temp_formula);
 				}
 			}
 			qsort(elt_list, (size_t) count_elts,
@@ -4182,12 +4182,12 @@ tidy_kin_surface(void)
 
 /*			if (conc < MIN_RELATED_SURFACE) conc = 0.0; */
 			{
-				char * temp_formula = string_duplicate(comp_ptr->Get_formula().c_str());
-				char *ptr = temp_formula;
+                auto temp_formula = comp_ptr->Get_formula();
+                auto ptr = temp_formula;
 				count_elts = 0;
 				paren_count = 0;
                 get_elts_in_species(ptr, conc);
-				free_check_null(temp_formula);
+//				free_check_null(temp_formula);
 			}
 			{
 				if (surface_ptr->Get_new_def())
@@ -4244,10 +4244,10 @@ tidy_kin_surface(void)
 				}
 				else
 				{
-					char * temp_name = string_duplicate(name.c_str());
-					char * ptr = temp_name;
+                    auto temp_name = name;
+                    auto ptr = temp_name;
                     get_elts_in_species(ptr, coef);
-					free_check_null(temp_name);
+//					free_check_null(temp_name);
 				}
 			}
 			/* save kinetics formula */
@@ -4274,10 +4274,10 @@ tidy_kin_surface(void)
 					(comp_ptr->Get_rate_name().c_str(),
 					 kin_comp_ptr->Get_rate_name().c_str()) == 0)
 				{
-					char * temp_formula = string_duplicate( comp_ptr->Get_formula().c_str());
-					char *ptr = temp_formula;
+                    auto temp_formula = comp_ptr->Get_formula();
+                    auto ptr = temp_formula;
                     get_elts_in_species(ptr, -1 * comp_ptr->Get_phase_proportion());
-					free_check_null(temp_formula);
+//					free_check_null(temp_formula);
 				}
 			}
 			if (count_elts > 0)

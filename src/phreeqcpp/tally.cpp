@@ -308,13 +308,13 @@ get_tally_table_rows_columns(int *rows, int *columns)
 
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-get_tally_table_row_heading(int row, char *string)
+get_tally_table_row_heading(int row, std::string string)
 /* ---------------------------------------------------------------------- */
 {
 	/*
 	 *  row is C row number
 	 */
-	strcpy(string, "");
+    string = "";
 	if (tally_table == NULL)
 	{
 		input_error++;
@@ -330,7 +330,7 @@ get_tally_table_row_heading(int row, char *string)
 			 CONTINUE);
 		return (ERROR);
 	}
-	strcpy(string, t_buffer[row].name);
+    string = t_buffer[row].name;
 	return (OK);
 }
 
@@ -903,7 +903,7 @@ build_tally_table(void)
 	int count_tt_pure_phase, count_tt_ss_phase, count_tt_kinetics;
 	struct phase *phase_ptr;
 	char token[MAX_LENGTH];
-	char *ptr;
+    std::string ptr;
 /*
  *  make list of all elements in all entitites
  *  defines the number of rows in the table
@@ -1139,10 +1139,10 @@ build_tally_table(void)
 					{
 						std::string name = it->first;
 						LDBLE coef = it->second;
-						char * temp_name = string_duplicate(name.c_str());
+                        auto temp_name = name;
 						ptr = temp_name;
                         get_elts_in_species(ptr, 1.0 * coef);
-						free_check_null(temp_name);
+//						free_check_null(temp_name);
 					}
 				}
 				qsort(elt_list, (size_t) count_elts,
@@ -1299,7 +1299,7 @@ calc_dummy_kinetic_reaction_tally(cxxKinetics *kinetics_ptr)
  *    Go through kinetic components and add positive amount of each reactant
  */
 	LDBLE coef;
-	char *ptr;
+    std::string ptr;
 	struct phase *phase_ptr;
 /*
  *   Go through list and generate list of elements and
@@ -1332,10 +1332,10 @@ calc_dummy_kinetic_reaction_tally(cxxKinetics *kinetics_ptr)
 			for ( ; it != kinetics_comp_ptr->Get_namecoef().end(); it++)
 			{
 				std::string name = it->first;
-				char * temp_name = string_duplicate(name.c_str());
+                auto temp_name = name;
 				ptr = temp_name;
                 get_elts_in_species(ptr, coef);
-				free_check_null(temp_name);
+//				free_check_null(temp_name);
 			}
 		}
 	}

@@ -393,8 +393,8 @@ public:
 	void disposetokens(tokenrec ** tok);
 	void parseinput(tokenrec ** buf);
     void errormsg(std::string s);
-	void snerr(const char * s);
-	void tmerr(const char * s);
+    void snerr(std::string s);
+    void tmerr(std::string s);
 	void badsubscr(void);
 	LDBLE realfactor(struct LOC_exec *LINK);
     std::string strfactor(struct LOC_exec * LINK);
@@ -422,7 +422,7 @@ public:
 	void cmdend(struct LOC_exec *LINK);
 	void cmdnew(struct LOC_exec *LINK);
 	void cmdlist(struct LOC_exec *LINK);
-	void cmdload(bool merging, char * name, struct LOC_exec *LINK);
+    void cmdload(bool merging, std::string name, struct LOC_exec *LINK);
 	void cmdrun(struct LOC_exec *LINK);
 	void cmdsave(struct LOC_exec *LINK);
 	void cmdput(struct LOC_exec *LINK);
@@ -467,7 +467,7 @@ public:
 #ifdef PHREEQ98
 	void GridChar(char *s, char *a);
 #endif
-	int sget_logical_line(char **ptr, int *l, char *return_line);
+    int sget_logical_line(std::string ptr, int *l, std::string return_line);
 	long my_labs(long x);
 	void * my_memmove(void * d, Const void * s, size_t n);
 	void * my_memcpy(void * d, Const void * s, size_t n);
@@ -516,7 +516,7 @@ public:
 	// data members
 protected:
 	Phreeqc * PhreeqcPtr;
-	char *inbuf;
+    std::string inbuf;
 	linerec *linebase;
 	varrec *varbase;
 	looprec *loopbase;

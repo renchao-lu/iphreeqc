@@ -31,9 +31,9 @@ class cxxSolutionIsotope: public PHRQ_base
 		this->isotope_number = d;
 	}
 	const std::string &Get_elt_name() const	{return this->elt_name;}
-	void Set_elt_name(const char *cstring)
+    void Set_elt_name(std::string cstring)
 	{
-		if (cstring != NULL)
+        if (!cstring.empty())
 			this->elt_name = std::string(cstring);
 		else
 			this->elt_name.clear();

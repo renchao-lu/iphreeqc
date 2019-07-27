@@ -491,13 +491,12 @@ cxxNameDouble::Get_total_element(const char *string) const
 	return (d);
 }
 void
-cxxNameDouble::add(const char *token, LDBLE total)
+cxxNameDouble::add(std::string token, LDBLE total)
 //
 // add to total for a specified element
 //
 {
-	char key[MAX_LENGTH];
-	strcpy(key, token);
+    std::string key = token;
 
 	cxxNameDouble::iterator current = (*this).find(key);
 	if (current != (*this).end())

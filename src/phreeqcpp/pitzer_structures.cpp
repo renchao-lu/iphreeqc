@@ -69,7 +69,7 @@ pitz_param_read(char *string, int n)
  */
 	int l, i, j, k;
 	char *ptr;
-	char token[2 * MAX_LENGTH];
+    std::string token;
 	struct pitz_param pzp, *pzp_ptr;
 
 	if (n != 2 && n != 3 && n != 0)
@@ -101,7 +101,7 @@ pitz_param_read(char *string, int n)
 	{
         if (copy_token(token, ptr, &l) == EMPTY)
 			break;
-		j = sscanf(token, SCANFORMAT, &pzp.a[i]);
+//		j = sscanf(token, SCANFORMAT, &pzp.a[i]);
 		if (j <= 0)
 			break;
 		k++;

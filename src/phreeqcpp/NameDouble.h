@@ -50,14 +50,14 @@ class IPQ_DLL_EXPORT cxxNameDouble:public
 	void add_extensive(const cxxNameDouble & old, LDBLE factor);
 	void add_intensive(const cxxNameDouble & addee, LDBLE fthis, LDBLE f2);
 	void add_log_activities(const cxxNameDouble & addee, LDBLE fthis, LDBLE f2);
-	void add(const char *key, LDBLE total);
+    void add(std::string key, LDBLE total);
 	void multiply(LDBLE factor);
 	void merge_redox(const cxxNameDouble & source);
 
 	std::vector< std::pair<std::string, LDBLE> > sort_second(void);
 
 	void
-	insert(const char *str, LDBLE d)
+    insert(std::string str, LDBLE d)
 	{
 		(*this)[str] = d;
 	}

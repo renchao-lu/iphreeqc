@@ -30,12 +30,12 @@ public:
 	CVar Get(int nRow, int nCol)const;
 	VRESULT Get(int nRow, int nCol, VAR* pVAR)const;
 
-	int PushBack(const char* key, const CVar& var);
+    int PushBack(std::string key, const CVar& var);
 
-	int PushBackDouble(const char* key, double dVal);
-	int PushBackLong(const char* key, long lVal);
-	int PushBackString(const char* key, const char* sVal);
-	int PushBackEmpty(const char* key);
+    int PushBackDouble(std::string key, double dVal);
+    int PushBackLong(std::string key, long lVal);
+    int PushBackString(std::string key, const char* sVal);
+    int PushBackEmpty(std::string key);
 
 	// Serialize
 	void Serialize(

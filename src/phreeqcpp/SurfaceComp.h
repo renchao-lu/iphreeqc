@@ -24,20 +24,20 @@ public:
 
 	const std::string &Get_formula() const {return this->formula;}
 	void Set_formula(const char * f) {this->formula = f ? f : "";}
-	LDBLE Get_formula_z(void) const {return formula_z;};
+    LDBLE Get_formula_z(void) const {return formula_z;}
 	void Set_formula_z(LDBLE t) {this->formula_z = t;}
 	LDBLE Get_moles(void) const {return moles;}
 	void Set_moles(LDBLE t) {this->moles = t;}
 	cxxNameDouble & Get_totals() {return (this->totals);}
 	void Set_totals(cxxNameDouble & nd) {this->totals = nd;}
-	LDBLE Get_la(void) const {return la;};
+    LDBLE Get_la(void) const {return la;}
 	void Set_la(LDBLE t) {this->la = t;}
 	LDBLE Get_charge_balance() const {return this->charge_balance;}
 	void Set_charge_balance(LDBLE d) {this->charge_balance = d;}
 	const std::string &Get_charge_name() const {return this->charge_name;}
-	void Set_charge_name(const char * f) {this->charge_name = f ? f : "";}
+    void Set_charge_name(std::string f) {this->charge_name = f;}
 	const std::string &Get_phase_name() const {return this->phase_name;}
-	void Set_phase_name(const char * f) {this->phase_name = f ? f : "";}
+    void Set_phase_name(std::string f) {this->phase_name = f;}
 	LDBLE Get_phase_proportion(void) const {return phase_proportion;}
 	void Set_phase_proportion(LDBLE d) {this->phase_proportion = d;}
 	const std::string &Get_rate_name() const {return this->rate_name;}
@@ -45,7 +45,7 @@ public:
 	LDBLE Get_Dw(void) const {return Dw;}
 	void Set_Dw(LDBLE d) {this->Dw = d;}
 	const std::string &Get_master_element() const {return this->master_element;}
-	void Set_master_element(const char * f) {this->master_element = f ? f : "";}
+    void Set_master_element(std::string f) {this->master_element = f;}
 	void Serialize(Dictionary & dictionary, std::vector < int >&ints, std::vector < double >&doubles);
 	void Deserialize(Dictionary & dictionary, std::vector < int >&ints, std::vector < double >&doubles, int &ii, int &dd);
 	

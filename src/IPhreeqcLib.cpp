@@ -3,8 +3,9 @@
 #include <map>
 
 #include "IPhreeqc.h"
-#include "IPhreeqc.hpp"
+//#include "IPhreeqc.hpp"
 #include "thread.h"
+#include "ThirdParty/iphreeqc/src/src/IPhreeqc.hpp"
 
 class IPhreeqcLib
 {
@@ -786,15 +787,15 @@ IPQ_RESULT
 SetCurrentSelectedOutputUserNumber(int id, int n)
 {
 	IPhreeqc* IPhreeqcPtr = IPhreeqcLib::GetInstance(id);
-	if (IPhreeqcPtr)
-	{
-		switch (IPhreeqcPtr->SetCurrentSelectedOutputUserNumber(n))
-		{
-		case VR_INVALIDARG: return IPQ_INVALIDARG;
-		case VR_OK:         return IPQ_OK;
-		default:            assert(false);
-		}
-	}
+    if (IPhreeqcPtr)
+    {
+//        switch (IPhreeqcPtr->SetCurrentSelectedOutputUserNumber(n))
+//        {
+//        case VR_INVALIDARG: return IPQ_INVALIDARG;
+//        case VR_OK:         return IPQ_OK;
+//        default:            assert(false);
+//        }
+    }
 	return IPQ_BADINSTANCE;
 }
 

@@ -40,7 +40,6 @@ PBasic::PBasic(Phreeqc * ptr, PHRQ_io *phrq_io)
 		error_msg("No Phreeqc instance in PBasic constructor\n", 1);
 	}
 	PhreeqcPtr = ptr;
-	inbuf = NULL;
 	linebase = NULL;
 	varbase = NULL;
 	loopbase = NULL;
@@ -75,28 +74,28 @@ int PBasic::
 basic_compile(std::string commands, void **lnbase, void **vbase, void **lpbase)
 {								/*main */
 	int l;
-    const char *ptr;
+    std::string ptr;
 
 	P_escapecode = 0;
 	P_ioresult = 0;
 	inbuf = (char *) PhreeqcPtr->PHRQ_calloc(PhreeqcPtr->max_line, sizeof(char));
-	if (inbuf == NULL)
+    if (inbuf.empty())
 		PhreeqcPtr->malloc_error();
 	linebase = NULL;
 	varbase = NULL;
 	loopbase = NULL;
 	exitflag = false;
-    ptr = commands.c_str();
+    ptr = commands;
 	do
 	{
 		try
 		{
-            ptr = commands.c_str();
+            ptr = commands;
 			do
 			{
-                if (sget_logical_line(const_cast<char**>(&ptr), &l, inbuf) == EOF)
+                if (sget_logical_line(ptr, &l, inbuf) == EOF)
 				{
-					strcpy(inbuf, "bye");
+                    inbuf = "bye";
 				}
 				parseinput(&buf);
 				if (curline == 0)
@@ -142,7 +141,7 @@ basic_compile(std::string commands, void **lnbase, void **vbase, void **lpbase)
 		{
 			// clean up memory
 			disposetokens(&buf);
-			PhreeqcPtr->PHRQ_free(inbuf);
+            PhreeqcPtr->PHRQ_free(&inbuf);
 			*lnbase = (void *) linebase;
 			*vbase = (void *) varbase;
 			*lpbase = (void *) loopbase;
@@ -151,7 +150,7 @@ basic_compile(std::string commands, void **lnbase, void **vbase, void **lpbase)
 	}
 	while (!(exitflag || P_eof()));
 	/*  exit(EXIT_SUCCESS); */
-	PhreeqcPtr->PHRQ_free(inbuf);
+    PhreeqcPtr->PHRQ_free(&inbuf);
 	*lnbase = (void *) linebase;
 	*vbase = (void *) varbase;
 	*lpbase = (void *) loopbase;
@@ -162,12 +161,12 @@ int PBasic::
 basic_renumber(char *commands, void **lnbase, void **vbase, void **lpbase)
 {								/*main */
 	int l, i;
-	char *ptr;
+    std::string ptr;
 
 	P_escapecode = 0;
 	P_ioresult = 0;
 	inbuf = (char *) PhreeqcPtr->PHRQ_calloc(PhreeqcPtr->max_line, sizeof(char));
-	if (inbuf == NULL)
+    if (inbuf.empty())
 		PhreeqcPtr->malloc_error();
 	linebase = NULL;
 	varbase = NULL;
@@ -182,24 +181,24 @@ basic_renumber(char *commands, void **lnbase, void **vbase, void **lpbase)
 			ptr = commands;
 			do
 			{
-				if (sget_logical_line(&ptr, &l, inbuf) == EOF)
+                if (sget_logical_line(ptr, &l, inbuf) == EOF)
 				{
 					i++;
 					if (i == 1)
 					{
-						strcpy(inbuf, "renum");
+                        inbuf = "renum";
 					}
 					else if (i == 2)
 					{
-						strcpy(inbuf, "list");
+                        inbuf = "list";
 					}
 					else if (i == 3)
 					{
-						strcpy(inbuf, "new");
+                        inbuf = "new";
 					}
 					else if (i == 4)
 					{
-						strcpy(inbuf, "bye");
+                        inbuf = "bye";
 					}
 				}
 				parseinput(&buf);
@@ -231,7 +230,7 @@ basic_renumber(char *commands, void **lnbase, void **vbase, void **lpbase)
 	}
 	while (!(exitflag || P_eof()));
 	/*  exit(EXIT_SUCCESS); */
-	PhreeqcPtr->PHRQ_free(inbuf);
+    PhreeqcPtr->PHRQ_free(&inbuf);
 	*lnbase = (void *) linebase;
 	*vbase = (void *) varbase;
 	*lpbase = (void *) loopbase;
@@ -243,11 +242,11 @@ int PBasic::
 basic_run(char *commands, void *lnbase, void *vbase, void *lpbase)
 {								/*main */
 	int l;
-	char *ptr;
+    std::string ptr;
 	P_escapecode = 0;
 	P_ioresult = 0;
 	inbuf = (char *) PhreeqcPtr->PHRQ_calloc(PhreeqcPtr->max_line, sizeof(char));
-	if (inbuf == NULL)
+    if (inbuf.empty())
 		PhreeqcPtr->malloc_error();
 	linebase = NULL;
 	varbase = NULL;
@@ -263,9 +262,9 @@ basic_run(char *commands, void *lnbase, void *vbase, void *lpbase)
 		{
 			do
 			{
-				if (sget_logical_line(&ptr, &l, inbuf) == EOF)
+                if (sget_logical_line(ptr, &l, inbuf) == EOF)
 				{
-					strcpy(inbuf, "bye");
+                    inbuf = "bye";
 				}
 				parseinput(&buf);
 				if (curline == 0)
@@ -304,7 +303,7 @@ basic_run(char *commands, void *lnbase, void *vbase, void *lpbase)
 	while (!(exitflag || P_eof()));
 
 	/*  exit(EXIT_SUCCESS); */
-	PhreeqcPtr->PHRQ_free(inbuf);
+    PhreeqcPtr->PHRQ_free(&inbuf);
 
 	// Cleanup after run
 	clearvars();
@@ -318,12 +317,12 @@ int PBasic::
 basic_main(char *commands)
 {								/*main */
 	int l;
-	char *ptr;
+    std::string ptr;
 
 	P_escapecode = 0;
 	P_ioresult = 0;
 	inbuf = (char *) PhreeqcPtr->PHRQ_calloc(PhreeqcPtr->max_line, sizeof(char));
-	if (inbuf == NULL)
+    if (inbuf.empty())
 		PhreeqcPtr->malloc_error();
 	linebase = NULL;
 	varbase = NULL;
@@ -339,9 +338,9 @@ basic_main(char *commands)
 		{
 			do
 			{
-				if (sget_logical_line(&ptr, &l, inbuf) == EOF)
+                if (sget_logical_line(ptr, &l, inbuf) == EOF)
 				{
-					strcpy(inbuf, "bye");
+                    inbuf = "bye";
 				}
 				parseinput(&buf);
 				if (curline == 0)
@@ -377,7 +376,7 @@ basic_main(char *commands)
 
 /* ---------------------------------------------------------------------- */
 int PBasic::
-sget_logical_line(char **ptr, int *l, char *return_line)
+sget_logical_line(std::string ptr, int *l, std::string return_line)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -393,18 +392,18 @@ sget_logical_line(char **ptr, int *l, char *return_line)
 	int i;
 	char c;
 	i = 0;
-	if (**ptr == '\0')
-		return (EOF);
-	for (;;)
-	{
-		c = **ptr;
-		if (c == '\0')
-			break;
-		(*ptr)++;
-		if (c == ';' || c == '\n')
-			break;
-		return_line[i++] = c;
-	}
+//    if (ptr.data() == '\0')
+//		return (EOF);
+//	for (;;)
+//	{
+//		c = **ptr;
+//		if (c == '\0')
+//			break;
+//		(*ptr)++;
+//		if (c == ';' || c == '\n')
+//			break;
+//		return_line[i++] = c;
+//	}
 	return_line[i] = '\0';
 	*l = i;
 	return (1);
@@ -723,7 +722,7 @@ parse(std::string l_inbuf, tokenrec ** l_buf)
 /*
  *   Search hash list
  */
-					PhreeqcPtr->str_tolower(token);
+//					PhreeqcPtr->str_tolower(token);
 					std::map<const std::string, BASIC_TOKEN>::const_iterator item;
 					item = command_tokens.find(token);
 					if (item != command_tokens.end())
@@ -1702,11 +1701,11 @@ parseinput(tokenrec ** l_buf)
 	while (PhreeqcPtr->replace("\r", " ", inbuf));
 	PhreeqcPtr->string_trim(inbuf);
 	curline = 0;
-	while (*inbuf != '\0' && isdigit((int) inbuf[0]))
-	{
-		curline = curline * 10 + inbuf[0] - 48;
-		memmove(inbuf, inbuf + 1, strlen(inbuf));
-	}
+//	while (*inbuf != '\0' && isdigit((int) inbuf[0]))
+//	{
+//		curline = curline * 10 + inbuf[0] - 48;
+//		memmove(inbuf, inbuf + 1, strlen(inbuf));
+//	}
 	parse(inbuf, l_buf);
 	if (curline == 0)
 		return;
@@ -1745,7 +1744,7 @@ parseinput(tokenrec ** l_buf)
 			l0->next = l1;
 		l1->num = curline;
 		l1->txt = *l_buf;
-		strncpy(l1->inbuf, inbuf, MAX_LINE);
+//		strncpy(l1->inbuf, inbuf, MAX_LINE);
 		l1->inbuf[MAX_LINE-1] = '\0';
 	}
 	clearloops();
@@ -1768,36 +1767,32 @@ errormsg(std::string l_s)
 }
 
 void PBasic::
-	snerr(const char * l_s)
+    snerr(std::string l_s)
 {
-	char str[MAX_LENGTH] = {0};
-	strcpy(str, "Syntax_error ");
+    std::string str = "Syntax_error ";
 	if (phreeqci_gui)
 	{
 		_ASSERTE(nIDErrPrompt == 0);
 		nIDErrPrompt = IDS_ERR_SYNTAX;
 	}
-	strcat(str, l_s);
-	strcat(str, " in line: ");
-	if (strcmp(inbuf, "run"))
-		strcat(str, inbuf);
+    str += l_s + " in line: ";
+    if (inbuf == "run")
+        str += inbuf;
 	errormsg(str);
 }
 
 void PBasic::
-	tmerr(const char * l_s)
+    tmerr(std::string l_s)
 {
-	char str[MAX_LENGTH] = {0};
-	strcpy(str, "Type mismatch error");
+    std::string str = "Type mismatch error";
 	if (phreeqci_gui)
 	{
 		_ASSERTE(nIDErrPrompt == 0);
 		nIDErrPrompt = IDS_ERR_MISMATCH;
 	}
-	strcat(str, l_s);
-	strcat(str, " in line: ");
-	if (strcmp(inbuf, "run"))
-		strcat(str, inbuf);
+    str += l_s + " in line: ";
+    if (inbuf == "run")
+        str += inbuf;
 	errormsg(str);
 }
 
@@ -1861,7 +1856,7 @@ realexpr(struct LOC_exec *LINK)
 	n = expr(LINK);
 	if (n.stringval)
 		tmerr(": found characters, not a number");
-	return (n.UU.val);
+    return n.UU.val;
 }
 
 std::string PBasic::
@@ -1899,7 +1894,7 @@ intexpr(struct LOC_exec *LINK)
 void PBasic::
 require(int k, struct LOC_exec *LINK)
 {
-	char str[MAX_LENGTH] = {0};
+    std::string str = "0";
 	if (LINK->t == NULL || LINK->t->kind != k)
 	{
 		std::map<const std::string, BASIC_TOKEN>::const_iterator item;
@@ -1912,8 +1907,8 @@ require(int k, struct LOC_exec *LINK)
 		if (item == command_tokens.end())
 			snerr(": missing unknown command");
 		else {
-			strcpy(str, ": missing ");
-			snerr(strcat(str, item->first.c_str()));
+            str = ": missing ";
+            snerr(str += item->first);
 		}
 #if !defined(R_SO)
 		exit(4);
@@ -2026,7 +2021,7 @@ findvar(struct LOC_exec *LINK)
 valrec PBasic::
 factor(struct LOC_exec * LINK)
 {
-	char string[MAX_LENGTH] = {0};
+    std::string string= "0";
 	cxxSolution *soln_ptr;
 	varrec *v;
 	tokenrec *facttok;
@@ -2489,7 +2484,7 @@ factor(struct LOC_exec * LINK)
 		{
 			if (PhreeqcPtr->use.Get_mix_in())
 			{
-				sprintf(string, "Mix %d", PhreeqcPtr->use.Get_n_mix_user());
+//				sprintf(string, "Mix %d", PhreeqcPtr->use.Get_n_mix_user());
                 n.UU.sval = string;
 			}
 			else
@@ -2508,7 +2503,7 @@ factor(struct LOC_exec * LINK)
 		}
 		else if (PhreeqcPtr->state == ADVECTION || PhreeqcPtr->state == TRANSPORT || PhreeqcPtr->state == PHAST)
 		{
-			sprintf(string, "Cell %d", PhreeqcPtr->cell_no);
+//			sprintf(string, "Cell %d", PhreeqcPtr->cell_no);
             n.UU.sval = string;
 		}
 		else
@@ -4472,7 +4467,7 @@ cmdlist(struct LOC_exec *LINK)
 }
 
 void PBasic::
-cmdload(bool merging, char * name, struct LOC_exec *LINK)
+cmdload(bool merging, std::string name, struct LOC_exec *LINK)
 {
 	FILE *f;
 	tokenrec *l_buf;
@@ -4497,19 +4492,19 @@ cmdload(bool merging, char * name, struct LOC_exec *LINK)
 		_EscIO(FileNotFound);
 		return;
 	}
-	while (fgets(inbuf, 256, f) != NULL)
-	{
-		TEMP = strchr(inbuf, '\n');
-		if (TEMP != NULL)
-			*TEMP = 0;
-		parseinput(&l_buf);
-		if (curline == 0)
-		{
-			/*      printf("Bad line in file\n"); */
-			output_msg("Bad line in file\n");
-			disposetokens(&l_buf);
-		}
-	}
+//	while (fgets(inbuf, 256, f) != NULL)
+//	{
+//		TEMP = strchr(inbuf, '\n');
+//		if (TEMP != NULL)
+//			*TEMP = 0;
+//		parseinput(&l_buf);
+//		if (curline == 0)
+//		{
+//			/*      printf("Bad line in file\n"); */
+//			output_msg("Bad line in file\n");
+//			disposetokens(&l_buf);
+//		}
+//	}
 	if (f != NULL)
 		fclose(f);
 	f = NULL;
@@ -4667,7 +4662,7 @@ cmdchange_surf(struct LOC_exec *LINK)
 	/* get surface component name (change affects all comps of the same charge structure) */
 	c1 = strexpr(LINK);
 	PhreeqcPtr->change_surf[count - 1].comp_name = PhreeqcPtr->string_hsave(c1);
-	PhreeqcPtr->PHRQ_free(c1);
+    PhreeqcPtr->PHRQ_free(&c1);
 	require(tokcomma, LINK);
 	/* get fraction of comp to change */
 	PhreeqcPtr->change_surf[count - 1].fraction = realexpr(LINK);
@@ -4675,7 +4670,7 @@ cmdchange_surf(struct LOC_exec *LINK)
 	/* get new surface component name */
 	c1 = strexpr(LINK);
 	PhreeqcPtr->change_surf[count - 1].new_comp_name = PhreeqcPtr->string_hsave(c1);
-	PhreeqcPtr->PHRQ_free(c1);
+    PhreeqcPtr->PHRQ_free(&c1);
 	require(tokcomma, LINK);
 	/* get new Dw (no transport if 0) */
 	PhreeqcPtr->change_surf[count - 1].new_Dw = realexpr(LINK);
@@ -4859,7 +4854,7 @@ cmdprint(struct LOC_exec *LINK)
 		{
 /*      fputs(n.UU.sval, stdout); */
 			output_msg(PhreeqcPtr->sformatf("%s ", n.UU.sval));
-			PhreeqcPtr->PHRQ_free(n.UU.sval);
+            PhreeqcPtr->PHRQ_free(&n.UU.sval);
 		}
 		else
 /*      printf("%s ", numtostr(STR1, n.UU.val)); */
@@ -4896,7 +4891,7 @@ cmdpunch(struct LOC_exec *LINK)
 
 			if (!temp_high_precision)
 			{
-				if (strlen(n.UU.sval) <= 12)
+                if (n.UU.sval.size() <= 12)
 				{
 					PhreeqcPtr->fpunchf_user(PhreeqcPtr->n_user_punch_index, "%12.12s\t", n.UU.sval);
 				}
@@ -4907,7 +4902,7 @@ cmdpunch(struct LOC_exec *LINK)
 			}
 			else
 			{
-				if (strlen(n.UU.sval) <= 20)
+                if (n.UU.sval.size() <= 20)
 				{
 					PhreeqcPtr->fpunchf_user(PhreeqcPtr->n_user_punch_index, "%20.20s\t", n.UU.sval);
 				}
@@ -4916,7 +4911,7 @@ cmdpunch(struct LOC_exec *LINK)
 					PhreeqcPtr->fpunchf_user(PhreeqcPtr->n_user_punch_index, "%s\t", n.UU.sval);
 				}
 			}
-			PhreeqcPtr->PHRQ_free(n.UU.sval);
+            PhreeqcPtr->PHRQ_free(&n.UU.sval);
 		}
 		else if (!temp_high_precision)
 		{
@@ -5044,12 +5039,10 @@ void PBasic::
 cmdlet(bool implied, struct LOC_exec *LINK)
 {
 	varrec *v;
-	char *old, *mynew;
+    std::string old, mynew;
 	LDBLE d_value;
 	LDBLE *target;
-	char **starget;
-	target = NULL;
-	starget = NULL;
+    std::string starget;
 	if (implied)
 		LINK->t = stmttok;
 	v = findvar(LINK);
@@ -5073,10 +5066,10 @@ cmdlet(bool implied, struct LOC_exec *LINK)
 	}
 	mynew = strexpr(LINK);
 	v->UU.U1.sval = starget;
-	old = *v->UU.U1.sval;
-	*v->UU.U1.sval = mynew;
-	if (old != NULL)
-		PhreeqcPtr->PHRQ_free(old);
+    old = v->UU.U1.sval;
+    v->UU.U1.sval = mynew;
+    if (!old.empty())
+        PhreeqcPtr->PHRQ_free(&old);
 }
 
 void PBasic::
@@ -5496,9 +5489,9 @@ cmdread(struct LOC_exec *LINK)
 					LINK->t = LINK->t->next;
 				if (v->stringvar)
 				{
-					if (*v->UU.U1.sval != NULL)
-						*v->UU.U1.sval = (char *) PhreeqcPtr->free_check_null(*v->UU.U1.sval);
-					*v->UU.U1.sval = strexpr(LINK);
+//                    if (!v->UU.U1.sval.empty())
+//						*v->UU.U1.sval = (char *) PhreeqcPtr->free_check_null(*v->UU.U1.sval);
+                    v->UU.U1.sval = strexpr(LINK);
 				}
 				else
 					*v->UU.U0.val = realexpr(LINK);
@@ -5531,12 +5524,12 @@ cmdread(struct LOC_exec *LINK)
 				LINK->t = LINK->t->next;
 			if (v->stringvar)
 			{
-				if (*v->UU.U1.sval != NULL)
-					*v->UU.U1.sval = (char *) PhreeqcPtr->free_check_null(*v->UU.U1.sval);
-				*v->UU.U1.sval = strexpr(LINK);
+//                if (!v->UU.U1.sval.empty())
+//					*v->UU.U1.sval = (char *) PhreeqcPtr->free_check_null(*v->UU.U1.sval);
+                v->UU.U1.sval = strexpr(LINK);
 			}
 			else
-				*v->UU.U0.val = realexpr(LINK);
+                *v->UU.U0.val = realexpr(LINK);
 		}
 		datatok = LINK->t;
 		LINK->t = tok;
@@ -5668,18 +5661,8 @@ cmddim(struct LOC_exec *LINK)
 		v->numdims = (char) i;
 		if (v->stringvar)
 		{
-			v->UU.U1.sarr = (char **) PhreeqcPtr->PHRQ_malloc(j * sizeof(char *));
-			if (!v->UU.U1.sarr)
-			{
-				PhreeqcPtr->malloc_error();
-#if !defined(R_SO)
-				exit(4);
-#endif
-			}
-			if (v->UU.U1.sarr == NULL)
-				PhreeqcPtr->malloc_error();
 			for (i = 0; i < j; i++)
-				v->UU.U1.sarr[i] = NULL;
+                v->UU.U1.sarr[i] = "";
 		}
 		else
 		{
@@ -5745,7 +5728,7 @@ exec(void)
 	V.gotoflag = false;
 	V.elseflag = false;
 	V.t = NULL;
-	char STR1[256] = {0};
+    std::string STR1 = "0";
 
 	try
 	{
@@ -5958,9 +5941,9 @@ exec(void)
 							_ASSERTE(nIDErrPrompt == 0);
 							nIDErrPrompt = IDS_ERR_ILLEGAL;
 						}
-						strcat(STR1, "Illegal command in line: ");
-						if (strcmp(inbuf, "run"))
-							strcat(STR1, inbuf);
+                        STR1 += "Illegal command in line: ";
+                        if (inbuf == "run")
+                            STR1 += inbuf;
 						errormsg(STR1);
 						break;
 					}
@@ -6075,11 +6058,11 @@ free_dim_stringvar(varrec *l_varbase)
 		{
 			k = k * (l_varbase->dims[i]);
 		}
-		for (i = 0; i < k; i++)
-		{
-			PhreeqcPtr->free_check_null(l_varbase->UU.U1.sarr[i]);
-		}
-		l_varbase->UU.U1.sarr = (char **) PhreeqcPtr->free_check_null(l_varbase->UU.U1.sarr);
+//		for (i = 0; i < k; i++)
+//		{
+//			PhreeqcPtr->free_check_null(l_varbase->UU.U1.sarr[i]);
+//		}
+//		l_varbase->UU.U1.sarr = (char **) PhreeqcPtr->free_check_null(l_varbase->UU.U1.sarr);
 	}
 	return (OK);
 }

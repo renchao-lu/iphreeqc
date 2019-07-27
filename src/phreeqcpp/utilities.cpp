@@ -585,7 +585,7 @@ copy_title(char *token_ptr, char **ptr, int *length)
 #endif
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-dup_print(const char *ptr, int emphasis)
+dup_print(std::string ptr, int emphasis)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -660,7 +660,7 @@ free_check_null(void *ptr)
 
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-get_token(std::string eqnaddr, char *string, LDBLE * l_z, int *l)
+get_token(std::string eqnaddr, std::string string, LDBLE * l_z, int *l)
 /* ---------------------------------------------------------------------- */
 /*
  *   Function finds next species in equation, coefficient has already
@@ -793,11 +793,11 @@ get_token(std::string eqnaddr, char *string, LDBLE * l_z, int *l)
  */
 		if (get_charge(charge, l_z) == OK)
 		{
-			strcat(string, charge);
+            string += charge;
 		}
 		else
 		{
-			return (ERROR);
+            return (ERROR);
 		}
 	}
 	*l = ltoken + lcharge;
@@ -881,7 +881,7 @@ parse_couple(char *token)
 
 	if (strcmp_nocase_arg1(token, "pe") == 0)
 	{
-		str_tolower(token);
+//		str_tolower(token);
 		return (OK);
 	}
 	while (replace("+", "", token) == TRUE);
@@ -995,7 +995,7 @@ parse_couple(char *token)
 
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-print_centered(const char *string)
+print_centered(std::string string)
 /* ---------------------------------------------------------------------- */
 {
 	int i, l, l1, l2;
@@ -1019,7 +1019,7 @@ print_centered(const char *string)
 	return (OK);
 }
 bool Phreeqc::
-replace(const char *str1, const char *str2, std::string & str)
+replace(std::string str1, std::string str2, std::string & str)
 {
 	size_t pos = str.find(str1);
 	if (pos != std::string::npos)
@@ -1029,49 +1029,6 @@ replace(const char *str1, const char *str2, std::string & str)
 		return true;
 	}
 	return false;
-}
-/* ---------------------------------------------------------------------- */
-int Phreeqc::
-replace(const char *str1, const char *str2, char *str)
-/* ---------------------------------------------------------------------- */
-{
-/*
- *   Function replaces str1 with str2 in str
- *
- *   Arguments:
- *      str1     search str for str1
- *      str2     replace str1 if str1 found in str
- *      str      string to be searched
- *
- *   Returns
- *      TRUE     if string was replaced
- *      FALSE    if string was not replaced
- */
-	int l, l1, l2;
-	char *ptr_start;
-
-	ptr_start = strstr(str, str1);
-/*
- *   Str1 not found, return
- */
-	if (ptr_start == NULL)
-		return (FALSE);
-/*
- *   Str1 found, replace Str1 with Str2
- */
-	l = (int) strlen(str);
-	l1 = (int) strlen(str1);
-	l2 = (int) strlen(str2);
-/*
- *   Make gap in str long enough for str2
- */
-	/* The plus one includes the terminating NULL */
-	memmove(ptr_start + l2, ptr_start + l1, l - (ptr_start - str + l1) + 1);
-/*
- *   Copy str2 into str
- */
-	memcpy(ptr_start, str2, l2);
-	return (TRUE);
 }
 
 /* ---------------------------------------------------------------------- */
@@ -1210,7 +1167,7 @@ strcmp_nocase(std::string str1, std::string str2)
 
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-strcmp_nocase_arg1(const char *str1, const char *str2)
+strcmp_nocase_arg1(std::string str1, const char *str2)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -1227,17 +1184,8 @@ strcmp_nocase_arg1(const char *str1, const char *str2)
 	return (1);
 }
 
-/* ---------------------------------------------------------------------- */
-char * Phreeqc::
-#if !defined(NDEBUG) && defined(WIN32_MEMORY_DEBUG)
-_string_duplicate(const char *token, const char *szFileName, int nLine)
-#else
-string_duplicate(const char *token)
-#endif
-#ifdef HASH
-/* ---------------------------------------------------------------------- */
 const char * Phreeqc::
-string_hsave(const char *str)
+string_hsave(std::string str)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -1249,43 +1197,41 @@ string_hsave(const char *str)
  *      Returns:
  *         starting address of saved string (str)
  */
-	std::hash_map<std::string, std::string *>::const_iterator it;
-	it = strings_hash.find(str);
-	if (it != strings_hash.end())
-	{
-		return (it->second->c_str());
-	}
+//	std::hash_map<std::string, std::string *>::const_iterator it;
+//	it = strings_hash.find(str);
+//	if (it != strings_hash.end())
+//	{
+//		return (it->second->c_str());
+//	}
 
 	std::string *stdstr = new std::string(str);
 	strings_map[*stdstr] = stdstr;
 	return(stdstr->c_str());
 }
 /* ---------------------------------------------------------------------- */
-void Phreeqc::
-strings_hash_clear()
-/* ---------------------------------------------------------------------- */
-{
-/*
- *      Save character string str
- *
- *      Arguments:
- *         str   input string to save.
- *
- *      Returns:
- *         starting address of saved string (str)
- */
-	std::hash_map<std::string, std::string *>::iterator it;
-	for (it = strings_hash.begin(); it != strings_hash.end(); it++)
-	{
-		delete it->second;
-	}
-	strings_hash.clear();
-}
-#endif
-/* ---------------------------------------------------------------------- */
+//void Phreeqc::
+//strings_hash_clear()
+///* ---------------------------------------------------------------------- */
+//{
+///*
+// *      Save character string str
+// *
+// *      Arguments:
+// *         str   input string to save.
+// *
+// *      Returns:
+// *         starting address of saved string (str)
+// */
+//	std::hash_map<std::string, std::string *>::iterator it;
+//	for (it = strings_hash.begin(); it != strings_hash.end(); it++)
+//	{
+//		delete it->second;
+//	}
+//	strings_hash.clear();
+//}
+
 void Phreeqc::
 strings_map_clear()
-/* ---------------------------------------------------------------------- */
 {
 /*
  *      Save character string str
@@ -1327,7 +1273,7 @@ under(LDBLE xval)
 #ifndef PHREEQCI_GUI
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-status(int count, const char *str, bool rk_string)
+status(int count, std::string str, bool rk_string)
 /* ---------------------------------------------------------------------- */
 {
 	char sim_str[20];
@@ -1822,7 +1768,7 @@ string_trim(std::string str)
 	int i, l, start, end, length;
 	char *ptr_start;
 
-	l = (int) strlen(str);
+    l = (int) str.size();
 	/*
 	 *   leading whitespace
 	 */
@@ -1849,7 +1795,7 @@ string_trim(std::string str)
 	if (start == 0 && end == l)
 		return (FALSE);
 	length = end - start + 1;
-	memmove((void *) str, (void *) ptr_start, (size_t) length);
+//	memmove((void *) str, (void *) ptr_start, (size_t) length);
 	str[length] = '\0';
 
 	return (TRUE);
@@ -1873,7 +1819,7 @@ string_trim_right(std::string str)
  */
 	int i, l, end, length;
 
-	l = (int) strlen(str);
+    l = (int) str.size();
 	for (i = l - 1; i >= 0; i--)
 	{
 		if (isspace((int) str[i]))
@@ -1892,7 +1838,7 @@ string_trim_right(std::string str)
 
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-string_trim_left(char *str)
+string_trim_left(std::string str)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -1909,7 +1855,7 @@ string_trim_left(char *str)
 	int i, l, start, end, length;
 	char *ptr_start;
 
-	l = (int) strlen(str);
+    l = (int) str.size();
 	/*
 	 *   leading whitespace
 	 */
@@ -1927,7 +1873,7 @@ string_trim_left(char *str)
 	if (start == 0 && end == l)
 		return (FALSE);
 	length = end - start + 1;
-	memmove((void *) str, (void *) ptr_start, (size_t) length);
+//	memmove((void *) str, (void *) ptr_start, (size_t) length);
 	str[length] = '\0';
 
 	return (TRUE);
@@ -1948,16 +1894,16 @@ string_pad(std::string str, int i)
  *      new string of with i
  */
 	int j, l, max;
-	char *str_ptr;
+    std::string str_ptr;
 
-	l = (int) strlen(str);
+    l = (int) str.size();
 	max = l;
 	if (l < i)
 		max = i;
 	str_ptr = (char *) PHRQ_malloc((size_t) ((max + 1) * sizeof(char)));
-	if (str_ptr == NULL)
+    if (str_ptr.empty())
 		malloc_error();
-	strcpy(str_ptr, str);
+    str_ptr = str;
 	if (i > l)
 	{
 		for (j = l; j < i; j++)

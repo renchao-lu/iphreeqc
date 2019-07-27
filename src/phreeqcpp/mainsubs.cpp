@@ -26,7 +26,7 @@ initialize(void)
  *   Initialize global variables
  */
 	struct logk *logk_ptr;
-	char token[MAX_LENGTH];
+    std::string token;
 
     moles_per_kilogram_string = "Mol/kgw";
     pe_string = "pe";
@@ -267,7 +267,7 @@ initialize(void)
 	 * define constant named log_k
 	 */
     logk_ptr = logk_store("XconstantX", TRUE);
-	strcpy(token, "1.0");
+    token = "1.0";
 	read_log_k_only(token, &logk_ptr->log_k[0]);
 
 	// allocate space for copier
@@ -553,7 +553,7 @@ initial_solutions(int print)
  */
 	int converge, converge1;
 	int last, n_user, print1;
-	char token[2 * MAX_LENGTH];
+    std::string token;
 
 	state = INITIAL_SOLUTION;
 	set_use();
@@ -582,8 +582,8 @@ initial_solutions(int print)
 			}
 			if (print == TRUE)
 			{
-				sprintf(token, "Initial solution %d.\t%.350s",
-						solution_ref.Get_n_user(), solution_ref.Get_description().c_str());
+//				sprintf(token, "Initial solution %d.\t%.350s",
+//						solution_ref.Get_n_user(), solution_ref.Get_description().c_str());
 				dup_print(token, FALSE);
 			}
 			use.Set_solution_ptr(&solution_ref);
@@ -700,7 +700,7 @@ initial_exchangers(int print)
  */
 	int i, converge, converge1;
 	int last, n_user, print1;
-	char token[2 * MAX_LENGTH];
+    std::string token;
 
 	state = INITIAL_EXCHANGE;
 	set_use();
@@ -736,8 +736,8 @@ initial_exchangers(int print)
 			}
 			if (print == TRUE)
 			{
-				sprintf(token, "Exchange %d.\t%.350s",
-						exchange_ptr->Get_n_user(), exchange_ptr->Get_description().c_str());
+//				sprintf(token, "Exchange %d.\t%.350s",
+//						exchange_ptr->Get_n_user(), exchange_ptr->Get_description().c_str());
 				dup_print(token, FALSE);
 			}
 			use.Set_exchange_ptr(exchange_ptr);
@@ -787,7 +787,7 @@ initial_gas_phases(int print)
  */
 	int converge, converge1;
 	int last, n_user, print1;
-	char token[2 * MAX_LENGTH];
+    std::string token;
 	struct phase *phase_ptr;
 	struct rxn_token *rxn_ptr;
 	LDBLE lp;
@@ -827,8 +827,8 @@ initial_gas_phases(int print)
 			}
 			if (print == TRUE)
 			{
-				sprintf(token, "Gas_Phase %d.\t%.350s",
-						gas_phase_ptr->Get_n_user(), gas_phase_ptr->Get_description().c_str());
+//				sprintf(token, "Gas_Phase %d.\t%.350s",
+//						gas_phase_ptr->Get_n_user(), gas_phase_ptr->Get_description().c_str());
 				dup_print(token, FALSE);
 			}
 
@@ -878,13 +878,13 @@ initial_gas_phases(int print)
 			}
 			if (fabs(gas_phase_ptr->Get_total_p() - use.Get_solution_ptr()->Get_patm()) > 5)
 			{
-				sprintf(token,
-					"WARNING: While initializing gas phase composition by equilibrating:\n%s (%.2f atm) %s (%.2f atm).\n%s.",
-					"         Gas phase pressure",
-					(double) gas_phase_ptr->Get_total_p(),
-					"is not equal to solution-pressure",
-					(double) use.Get_solution_ptr()->Get_patm(),
-					"         Pressure effects on solubility may be incorrect");
+//				sprintf(token,
+//					"WARNING: While initializing gas phase composition by equilibrating:\n%s (%.2f atm) %s (%.2f atm).\n%s.",
+//					"         Gas phase pressure",
+//					(double) gas_phase_ptr->Get_total_p(),
+//					"is not equal to solution-pressure",
+//					(double) use.Get_solution_ptr()->Get_patm(),
+//					"         Pressure effects on solubility may be incorrect");
 					dup_print(token, FALSE);
 			}
 
@@ -990,7 +990,7 @@ reactions(void)
  *      or irreversible reaction.
  */
 	int count_steps, use_mix;
-	char token[2 * MAX_LENGTH];
+    std::string token;
 	struct save save_data;
 	LDBLE kin_time;
 	cxxKinetics *kinetics_ptr;
@@ -1045,7 +1045,7 @@ reactions(void)
 	for (reaction_step = 1; reaction_step <= count_steps; reaction_step++)
 	{
 		overall_iterations = 0;
-		sprintf(token, "Reaction step %d.", reaction_step);
+//		sprintf(token, "Reaction step %d.", reaction_step);
 		if (reaction_step > 1 && incremental_reactions == FALSE)
 		{
 			copy_use(-2);
@@ -1146,12 +1146,12 @@ saver(void)
  *   slots.
  */
 	int i, n;
-	char token[MAX_LENGTH];
+    std::string token;
 
 	if (save.solution == TRUE)
 	{
-		sprintf(token, "Solution after simulation %d.", simulation);
-		description_x = (char *) free_check_null(description_x);
+//		sprintf(token, "Solution after simulation %d.", simulation);
+//		description_x = free_check_null(&description_x);
         description_x = token;
 		n = save.n_solution_user;
 		xsolution_save(n);
@@ -1229,7 +1229,7 @@ xexchange_save(int n_user)
  *   number n_user.
  */
 	int i, j;
-	char token[MAX_LENGTH];
+    std::string token;
 
 	LDBLE charge;
 	if (use.Get_exchange_ptr() == NULL)
@@ -1242,7 +1242,7 @@ xexchange_save(int n_user)
 	temp_exchange.Set_n_user(n_user);
 	temp_exchange.Set_n_user_end(n_user);
 	temp_exchange.Set_new_def(false);
-	sprintf(token, "Exchange assemblage after simulation %d.", simulation);
+//	sprintf(token, "Exchange assemblage after simulation %d.", simulation);
 	temp_exchange.Set_description(token);
 	temp_exchange.Set_solution_equilibria(false);
 	temp_exchange.Set_n_solution(-999);
@@ -1314,7 +1314,7 @@ xgas_save(int n_user)
  *   Save gas composition into structure gas_phase with user
  *   number n_user.
  */
-	char token[MAX_LENGTH];
+    std::string token;
 
 	if (use.Get_gas_phase_ptr() == NULL)
 		return (OK);
@@ -1325,7 +1325,7 @@ xgas_save(int n_user)
  */
 	temp_gas_phase.Set_n_user(n_user);
 	temp_gas_phase.Set_n_user_end(n_user);
-	sprintf(token, "Gas phase after simulation %d.", simulation);
+//	sprintf(token, "Gas phase after simulation %d.", simulation);
 	temp_gas_phase.Set_description(token);
 	temp_gas_phase.Set_new_def(false);
 	temp_gas_phase.Set_solution_equilibria(false);
@@ -2387,7 +2387,7 @@ int Phreeqc::
 run_simulations(void)
 /* ---------------------------------------------------------------------- */
 {
-	char token[MAX_LENGTH];
+    std::string token;
 //#ifdef SKIP_KEEP
 #if defined(_MSC_VER) && (_MSC_VER < 1900)  // removed in vs2015
 	unsigned int old_exponent_format;
@@ -2444,7 +2444,7 @@ run_simulations(void)
 			sprintf(token, "\nSimulation %d\n", simulation);
 			screen_msg(token);
 #endif
-			sprintf(token, "Reading input data for simulation %d.", simulation);
+//			sprintf(token, "Reading input data for simulation %d.", simulation);
 
 			dup_print(token, TRUE);
 			if (read_input() == EOF)
@@ -2452,7 +2452,7 @@ run_simulations(void)
 
             if (!title_x.empty())
 			{
-				sprintf(token, "TITLE");
+//				sprintf(token, "TITLE");
 				dup_print(token, TRUE);
 				if (pr.headings == TRUE)
 					output_msg(sformatf( "%s\n\n", title_x));

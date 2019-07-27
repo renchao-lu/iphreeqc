@@ -123,7 +123,7 @@ int CSelectedOutput::EndRow(void)
 	return 0;
 }
 
-int CSelectedOutput::PushBack(const char* key, const CVar& var)
+int CSelectedOutput::PushBack(std::string key, const CVar& var)
 {
 	try
 	{
@@ -174,25 +174,25 @@ int CSelectedOutput::PushBack(const char* key, const CVar& var)
 }
 
 
-int CSelectedOutput::PushBackDouble(const char* key, double value)
+int CSelectedOutput::PushBackDouble(std::string key, double value)
 {
 	CVar v(value);
 	return this->PushBack(key, v);
 }
 
-int CSelectedOutput::PushBackLong(const char* key, long value)
+int CSelectedOutput::PushBackLong(std::string key, long value)
 {
 	CVar v(value);
 	return this->PushBack(key, v);
 }
 
-int CSelectedOutput::PushBackString(const char* key, const char* value)
+int CSelectedOutput::PushBackString(std::string key, const char* value)
 {
 	CVar v(value);
 	return this->PushBack(key, v);
 }
 
-int CSelectedOutput::PushBackEmpty(const char* key)
+int CSelectedOutput::PushBackEmpty(std::string key)
 {
 	CVar v;
 	return this->PushBack(key, v);

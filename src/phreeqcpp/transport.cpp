@@ -33,7 +33,7 @@ struct CT /* summed parts of V_M and mcd transfer in a timestep for all cells, f
 } *ct = NULL;
 struct MOLES_ADDED /* total moles added to balance negative conc's */
 {
-	char *name;
+    std::string name;
 	LDBLE moles;
 } *moles_added;
 /* ---------------------------------------------------------------------- */
@@ -128,7 +128,7 @@ transport(void)
 		}
 		for (i = 0; i < count_elements; i++)
 		{
-			moles_added[i].name = NULL;
+            moles_added[i].name = "";
 			moles_added[i].moles = 0;
 		}
 	}
@@ -961,10 +961,10 @@ transport_cleanup(void)
 			ct[i].J_ij_il = (struct J_ij *) free_check_null(ct[i].J_ij_il);
 		}
 		ct = (struct CT *) free_check_null(ct);
-		for (int i = 0; i < count_elements; i++)
-		{
-			moles_added[i].name = (char *)free_check_null(moles_added[i].name);
-		}
+//		for (int i = 0; i < count_elements; i++)
+//		{
+//			moles_added[i].name = (char *)free_check_null(moles_added[i].name);
+//		}
 		moles_added = (struct MOLES_ADDED *) free_check_null(moles_added);
 	}
 	current_cells = (struct CURRENT_CELLS *) free_check_null(current_cells);
@@ -1696,7 +1696,7 @@ fill_spec(int l_cell_no)
 
 	int i, i2, count_spec, count_exch_spec;
 	char token[MAX_LENGTH];
-	const char * name;
+    std::string name;
 	struct species *s_ptr, *s_ptr2;
 	struct master *master_ptr;
 	LDBLE dum, dum2;
@@ -1809,7 +1809,7 @@ fill_spec(int l_cell_no)
 						dum = 1;
 				}
                 name = master_ptr->elt.name;
-				if (strcmp(name, "X") != 0)
+                if (name != "X")
 				{
 					if (!warn_MCD_X)
 					{
@@ -2114,7 +2114,7 @@ multi_D(LDBLE DDt, int mobile_cell, int stagnant)
 						malloc_error();
 					for (i1 = 0; i1 < count_m_s; i1++)
 					{
-						m_s[i1].name = NULL;
+                        m_s[i1].name = "";
 						m_s[i1].tot1 = 0;
 						m_s[i1].tot2 = 0;
 					}
@@ -2136,18 +2136,18 @@ multi_D(LDBLE DDt, int mobile_cell, int stagnant)
 					}
 					for (l = 0; l < count_m_s; l++)
 					{
-						length = (int) strlen(m_s[l].name);
+                        length = (int) m_s[l].name.size();
 						cxxNameDouble::iterator it;
 						for (it = use.Get_solution_ptr()->Get_totals().begin();
 							it != use.Get_solution_ptr()->Get_totals().end(); it++)
 						{
 							length2 =
 								(int) (size_t) strcspn(it->first.c_str(), "(");
-							if (strncmp(m_s[l].name, it->first.c_str(), length) == 0 && length == length2)
-							{
-								it->second -= m_s[l].tot1;
-								break;
-							}
+//							if (strncmp(m_s[l].name, it->first.c_str(), length) == 0 && length == length2)
+//							{
+//								it->second -= m_s[l].tot1;
+//								break;
+//							}
 						}
 						if (it == use.Get_solution_ptr()->Get_totals().end())
 						{
@@ -2168,17 +2168,17 @@ multi_D(LDBLE DDt, int mobile_cell, int stagnant)
 					}
 					for (l = 0; l < count_m_s; l++)
 					{
-						length = (int) strlen(m_s[l].name);
+                        length = (int) m_s[l].name.size();
 						cxxNameDouble::iterator it;
 						for (it = use.Get_solution_ptr()->Get_totals().begin();
 							it != use.Get_solution_ptr()->Get_totals().end(); it++)
 						{
 							length2 = (int) (size_t) strcspn(it->first.c_str(), "(");
-							if (strncmp(m_s[l].name, it->first.c_str(), length) == 0 && length == length2)
-							{
-								it->second += m_s[l].tot2;
-								break;
-							}
+//							if (strncmp(m_s[l].name, it->first.c_str(), length) == 0 && length == length2)
+//							{
+//								it->second += m_s[l].tot2;
+//								break;
+//							}
 						}
 						if (it == use.Get_solution_ptr()->Get_totals().end())
 						{
@@ -2267,14 +2267,14 @@ multi_D(LDBLE DDt, int mobile_cell, int stagnant)
 					warning_msg(token);
 					for (i1 = 0; i1 < count_elements; i1++)
 					{
-						if (moles_added[i1].name && !strcmp(moles_added[i1].name, it->first.c_str()))
+                        if (!moles_added[i1].name.empty() && moles_added[i1].name != it->first)
 						{
 							moles_added[i1].moles -= temp;
 							break;
 						}
 						else if (!moles_added[i1].moles)
 						{
-							moles_added[i1].name = string_duplicate(it->first.c_str());
+                            moles_added[i1].name = it->first;
 							moles_added[i1].moles -= temp;
 							break;
 						}
@@ -2312,27 +2312,27 @@ fill_m_s(struct J_ij *l_J_ij, int l_J_ij_count_spec)
 	*      H and O go in tot1&2_h and tot1&2_o
 	*/
 	int j, k, l;
-	char *ptr;
+    std::string ptr;
 
 	for (j = 0; j < l_J_ij_count_spec; j++)
 	{
 		{
-			char * temp_name = string_duplicate(l_J_ij[j].name);
+            auto temp_name = l_J_ij[j].name;
 			ptr = temp_name;
 			count_elts = 0;
             get_elts_in_species(ptr, 1);
-			free_check_null(temp_name);
-		}
+//			free_check_null(temp_name);
+        }
 		for (k = 0; k < count_elts; k++)
 		{
-            if (strcmp(elt_list[k].elt.name, "X") == 0)
+            if (elt_list[k].elt.name == "X")
 				continue;
-            if (strcmp(elt_list[k].elt.name, "H") == 0)
+            if (elt_list[k].elt.name == "H")
 			{
 				tot1_h += elt_list[k].coef * l_J_ij[j].tot1;
 				tot2_h += elt_list[k].coef * l_J_ij[j].tot2;
 			}
-            else if (strcmp(elt_list[k].elt.name, "O") == 0)
+            else if (elt_list[k].elt.name == "O")
 			{
 				tot1_o += elt_list[k].coef * l_J_ij[j].tot1;
 				tot2_o += elt_list[k].coef * l_J_ij[j].tot2;
@@ -2341,7 +2341,7 @@ fill_m_s(struct J_ij *l_J_ij, int l_J_ij_count_spec)
 			{
 				for (l = 0; l < count_m_s; l++)
 				{
-                    if (strcmp(m_s[l].name, elt_list[k].elt.name) == 0)
+                    if (m_s[l].name == elt_list[k].elt.name)
 					{
 						m_s[l].tot1 += elt_list[k].coef * l_J_ij[j].tot1;
 						m_s[l].tot2 += elt_list[k].coef * l_J_ij[j].tot2;
@@ -3202,7 +3202,7 @@ dV_dcell2:
 			malloc_error();
 		for (i1 = 0; i1 < count_elements; i1++)
 		{
-			m_s[i1].name = NULL;
+            m_s[i1].name = "";
 			m_s[i1].tot1 = 0;
 			m_s[i1].tot2 = 0;
 		}
@@ -3237,7 +3237,7 @@ dV_dcell2:
 				{
                     struct element elt_ptr = element_store(it->first.c_str());
 					LDBLE coef = it->second;
-                    if (strcmp("H", elt_ptr.name) == 0)
+                    if (elt_ptr.name == "H")
 					{
 						if (coef < rc1 * tot1_h)
 						{
@@ -3250,7 +3250,7 @@ dV_dcell2:
 							tot1_h *= (1 - rc1);
 						}
 					}
-                    else if (strcmp("O", elt_ptr.name) == 0)
+                    else if (elt_ptr.name == "O")
 					{
 						if (coef < rc1 * tot1_o)
 						{
@@ -3277,7 +3277,7 @@ dV_dcell2:
 					{
                         struct element elt_ptr = element_store(it->first.c_str());
 						LDBLE coef = it->second;
-                        if (strcmp(m_s[j].name, elt_ptr.name) != 0)
+                        if (m_s[j].name != elt_ptr.name)
 							continue;
 
 						/* rc1 part goes to exchange species... */
@@ -3323,7 +3323,7 @@ dV_dcell2:
                     struct element elt_ptr = element_store(it->first.c_str());
 					LDBLE coef = it->second;
 
-                    if (strcmp("H", elt_ptr.name) == 0)
+                    if (elt_ptr.name == "H")
 					{
 						if (coef < -rc2 * tot2_h)
 						{
@@ -3336,7 +3336,7 @@ dV_dcell2:
 							tot2_h *= (1 - rc2);
 						}
 					}
-                    else if (strcmp("O", elt_ptr.name) == 0)
+                    else if (elt_ptr.name == "O")
 					{
 						if (coef < -rc2 * tot2_o)
 						{
@@ -3362,7 +3362,7 @@ dV_dcell2:
 					{
                         struct element elt_ptr = element_store(it->first.c_str());
 						LDBLE coef = it->second;
-                        if (strcmp(m_s[j].name, elt_ptr.name) != 0)
+                        if (m_s[j].name != elt_ptr.name)
 							continue;
 
 						/* rc2 part goes to exchange species... */

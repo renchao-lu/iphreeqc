@@ -749,7 +749,7 @@ calc_surface_charge(std::string surface_name)
 				continue;
 			master_ptr = trxn.token[i].s->primary;
             token =  master_ptr->elt.name;
-			replace("_", " ", token);
+//			replace("_", " ", token);
 			ptr = token;
             copy_token(token1, ptr, &j);
             if (surface_name == token1)
@@ -1879,9 +1879,9 @@ match_elts_in_species(std::string name, std::string mytemplate)
 	char c, c1;
     std::string ptr; std::string ptr1;
 	LDBLE d;
-	char element[MAX_LENGTH];
-    char equal_list[MAX_LENGTH];
-    char token1[MAX_LENGTH], equal_list1[MAX_LENGTH];
+    std::string element;
+    std::string equal_list;
+    std::string token1, equal_list1;
     std::string template1;
 	char str[2];
 
@@ -2005,7 +2005,7 @@ match_elts_in_species(std::string name, std::string mytemplate)
         token += match_vector[i].first;
 		if (match_vector[i].second != 1.0)
 		{
-			sprintf(token1, "%g", (double) match_vector[i].second);
+            sprintf(const_cast<char*>(token1.c_str()), "%g", (double) match_vector[i].second);
             token += token1;
 		}
 	}
@@ -2017,7 +2017,7 @@ match_elts_in_species(std::string name, std::string mytemplate)
 	ptr = template1;
     while (extract_bracket(ptr, equal_list) == TRUE)
 	{
-		strcpy(equal_list1, equal_list);
+        equal_list1 = equal_list;
 		replace("{", "", equal_list);
 		replace("}", "", equal_list);
 		while (replace(",", " ", equal_list) == TRUE);
@@ -2329,7 +2329,7 @@ match_elts_in_species(const char *name, const char *mytemplate)
 #endif
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-extract_bracket(std::string string, char *bracket_string)
+extract_bracket(std::string string, std::string bracket_string)
 /* ---------------------------------------------------------------------- */
 {
 //	char *ptr, *ptr1;
@@ -3312,7 +3312,7 @@ system_total_si(void)
 	int i;
 	LDBLE si, iap;
 	struct rxn_token *rxn_ptr;
-	char name[MAX_LENGTH];
+    std::string name;
 
 	sys_tot = -999.9;
 	for (i = 0; i < count_phases; i++)
@@ -3329,7 +3329,7 @@ system_total_si(void)
 			iap += rxn_ptr->s->la * rxn_ptr->coef;
 		}
 		si = -phases[i]->lk + iap;
-		strcpy(name, phases[i]->name);
+        name = phases[i]->name;
         sys[count_sys].name = name;
 		sys[count_sys].moles = si;
 		if (si > sys_tot)

@@ -121,12 +121,12 @@ public:
     bool Get_dump_on(void)							{return this->dump_on;}
 
 	// fpunchf
-	virtual void fpunchf(const char *name, const char *format, double d);
-	virtual void fpunchf(const char *name, const char *format, char * d);
-	virtual void fpunchf(const char *name, const char *format, int d);
+    virtual void fpunchf(std::string name, const char *format, double d);
+    virtual void fpunchf(std::string name, const char *format, std::string d);
+    virtual void fpunchf(std::string name, const char *format, int d);
 	virtual void fpunchf_end_row(const char *format);
-	static void fpunchf_helper(std::ostream *os, const char *format, ...);
-	static void fpunchf_helper(std::string *str, const char *format, ...);
+    static void fpunchf_helper(std::ostream os, const char *format, ...);
+    static void fpunchf_helper(std::string str, const char *format, ...);
 
 	virtual void screen_msg(const char * str);
     void Set_screen_on(bool tf)						{this->screen_on = tf;}

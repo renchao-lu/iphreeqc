@@ -1160,7 +1160,7 @@ void IPhreeqc::check_database(const char* sz_routine)
 
 void IPhreeqc::do_run(const char* sz_routine, std::istream* pis, PFN_PRERUN_CALLBACK pfn_pre, PFN_POSTRUN_CALLBACK pfn_post, void *cookie)
 {
-	char token[MAX_LENGTH];
+    std::string token;
 
 /*
  *   Maybe should be in read_input
@@ -1204,7 +1204,7 @@ void IPhreeqc::do_run(const char* sz_routine, std::istream* pis, PFN_PRERUN_CALL
 #ifdef PHREEQ98
    		AddSeries = !connect_simulations;
 #endif
-		::sprintf(token, "Reading input data for simulation %d.", this->PhreeqcPtr->simulation);
+        ::sprintf(const_cast<char*>(token.c_str()), "Reading input data for simulation %d.", this->PhreeqcPtr->simulation);
 
 		// bool save_punch_in = this->PhreeqcPtr->SelectedOutput_map.size() > 0;
 
@@ -1236,7 +1236,7 @@ void IPhreeqc::do_run(const char* sz_routine, std::istream* pis, PFN_PRERUN_CALL
 		ASSERT(this->PhreeqcPtr->SelectedOutput_map.size() == this->SelectedOutputStringMap.size());
         if (!this->PhreeqcPtr->title_x.empty())
 		{
-			::sprintf(token, "TITLE");
+            ::sprintf(const_cast<char*>(token.c_str()), "TITLE");
 			this->PhreeqcPtr->dup_print(token, TRUE);
 			if (this->PhreeqcPtr->pr.headings == TRUE)
 			{
@@ -1728,7 +1728,7 @@ int IPhreeqc::close_output_files(void)
 	return ret;
 }
 
-void IPhreeqc::fpunchf(const char *name, const char *format, double d)
+void IPhreeqc::fpunchf(std::string name, const char *format, double d)
 {
 	try
 	{
@@ -1736,7 +1736,7 @@ void IPhreeqc::fpunchf(const char *name, const char *format, double d)
 		if (this->get_sel_out_string_on(this->PhreeqcPtr->current_selected_output->Get_n_user()) && this->punch_on)
 		{
 			ASSERT(this->SelectedOutputStringMap.find(this->PhreeqcPtr->current_selected_output->Get_n_user()) != this->SelectedOutputStringMap.end());
-			PHRQ_io::fpunchf_helper(&(this->SelectedOutputStringMap[this->PhreeqcPtr->current_selected_output->Get_n_user()]), format, d);
+//			PHRQ_io::fpunchf_helper((this->SelectedOutputStringMap[this->PhreeqcPtr->current_selected_output->Get_n_user()]), format, d);
 		}
 		ASSERT(this->SelectedOutputMap.find(this->PhreeqcPtr->current_selected_output->Get_n_user()) != this->SelectedOutputMap.end());
 		this->SelectedOutputMap[this->PhreeqcPtr->current_selected_output->Get_n_user()]->PushBackDouble(name, d);
@@ -1747,7 +1747,7 @@ void IPhreeqc::fpunchf(const char *name, const char *format, double d)
 	}
 }
 
-void IPhreeqc::fpunchf(const char *name, const char *format, char *s)
+void IPhreeqc::fpunchf(std::string name, const char *format, char *s)
 {
 	try
 	{
@@ -1755,7 +1755,7 @@ void IPhreeqc::fpunchf(const char *name, const char *format, char *s)
 		if (this->get_sel_out_string_on(this->PhreeqcPtr->current_selected_output->Get_n_user()) && this->punch_on)
 		{
 			ASSERT(this->SelectedOutputStringMap.find(this->PhreeqcPtr->current_selected_output->Get_n_user()) != this->SelectedOutputStringMap.end());
-			PHRQ_io::fpunchf_helper(&(this->SelectedOutputStringMap[this->PhreeqcPtr->current_selected_output->Get_n_user()]), format, s);
+//			PHRQ_io::fpunchf_helper(&(this->SelectedOutputStringMap[this->PhreeqcPtr->current_selected_output->Get_n_user()]), format, s);
 		}
 		ASSERT(this->SelectedOutputMap.find(this->PhreeqcPtr->current_selected_output->Get_n_user()) != this->SelectedOutputMap.end());
 		this->SelectedOutputMap[this->PhreeqcPtr->current_selected_output->Get_n_user()]->PushBackString(name, s);
@@ -1766,7 +1766,7 @@ void IPhreeqc::fpunchf(const char *name, const char *format, char *s)
 	}
 }
 
-void IPhreeqc::fpunchf(const char *name, const char *format, int i)
+void IPhreeqc::fpunchf(std::string name, const char *format, int i)
 {
 	try
 	{
@@ -1774,7 +1774,7 @@ void IPhreeqc::fpunchf(const char *name, const char *format, int i)
 		if (this->get_sel_out_string_on(this->PhreeqcPtr->current_selected_output->Get_n_user()) && this->punch_on)
 		{
 			ASSERT(this->SelectedOutputStringMap.find(this->PhreeqcPtr->current_selected_output->Get_n_user()) != this->SelectedOutputStringMap.end());
-			PHRQ_io::fpunchf_helper(&(this->SelectedOutputStringMap[this->PhreeqcPtr->current_selected_output->Get_n_user()]), format, i);
+//			PHRQ_io::fpunchf_helper(&(this->SelectedOutputStringMap[this->PhreeqcPtr->current_selected_output->Get_n_user()]), format, i);
 		}
 		ASSERT(this->SelectedOutputMap.find(this->PhreeqcPtr->current_selected_output->Get_n_user()) != this->SelectedOutputMap.end());
 		this->SelectedOutputMap[this->PhreeqcPtr->current_selected_output->Get_n_user()]->PushBackLong(name, (long)i);

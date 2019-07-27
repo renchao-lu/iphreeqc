@@ -37,7 +37,7 @@ clean_up(void)
 #endif
 #endif
 
-	description_x = (char *) free_check_null(description_x);
+//	description_x = (char *) free_check_null(description_x);
 	isotopes_x.clear();
 //	moles_per_kilogram_string =
 //		(char *) free_check_null(moles_per_kilogram_string);
@@ -437,7 +437,7 @@ element_compare(const void *ptr1, const void *ptr2)
 	element_ptr1 = *(const struct element **) ptr1;
 	element_ptr2 = *(const struct element **) ptr2;
 /*      return(strcmp_nocase(element_ptr1->name, element_ptr2->name)); */
-	return (strcmp(element_ptr1->name, element_ptr2->name));
+    return element_ptr1->name == element_ptr2->name;
 
 }
 
@@ -566,7 +566,7 @@ elt_list_compare(const void *ptr1, const void *ptr2)
 
 	a = (const struct elt_list *) ptr1;
 	b = (const struct elt_list *) ptr2;
-    return (strncmp(a->elt.name, b->elt.name, MAX_LENGTH));
+//    return (strncmp(a->elt.name, b->elt.name, MAX_LENGTH));
 }
 
 /* ---------------------------------------------------------------------- */
@@ -1009,8 +1009,8 @@ inverse_sort(void)
  *
  * ********************************************************************** */
 /* ---------------------------------------------------------------------- */
-int Phreeqc::
-master_delete(char *ptr)
+void Phreeqc::
+master_delete(std::string ptr)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -1025,15 +1025,15 @@ master_delete(char *ptr)
  */
 	int j, n;
 
-	if (master_search(ptr, &n) == NULL)
-		return (FALSE);
+//	if (master_search(ptr, &n) == NULL)
+//		return (FALSE);
 //	master_free(master[n]);
 	for (j = n; j < (count_master - 1); j++)
 	{
 		master[j] = master[j + 1];
 	}
 	count_master--;
-	return (TRUE);
+//	return (TRUE);
 }
 
 /* ---------------------------------------------------------------------- */
@@ -1077,13 +1077,13 @@ master_bsearch(std::string ptr)
 //					   sizeof(struct master *), master_compare_string);
 	if (void_ptr == NULL)
 	{
-		char * dup = string_duplicate(ptr);
+        auto dup = ptr;
 		replace("(+","(", dup);
 //		void_ptr = bsearch((const char *) dup,
 //			(char *) master,
 //			(unsigned) count_master,
 //			sizeof(struct master *), master_compare_string);
-		dup = (char *) free_check_null(dup);
+//		dup = (char *) free_check_null(dup);
 	}
 	if (void_ptr == NULL)
 	{
@@ -1119,26 +1119,23 @@ master_compare(const void *ptr1, const void *ptr2)
     return (strcmp_nocase(master_ptr1->elt.name, master_ptr2->elt.name));
 }
 
-/* ---------------------------------------------------------------------- */
 struct master * Phreeqc::
-master_bsearch_primary(const char *ptr)
-/* ---------------------------------------------------------------------- */
+master_bsearch_primary(std::string ptr)
 {
 /*
  *   Find primary master species for first element in the string, ptr.
  *   Uses binary search. Assumes master is in sort order.
  */
 	int l;
-	char *ptr1;
-	char elt[MAX_LENGTH];
+    std::string ptr1, elt;
 	struct master *master_ptr_primary;
 /*
  *   Find element name
  */
-	char * temp_name = string_duplicate(ptr);
+    auto temp_name = ptr;
 	ptr1 = temp_name;
     get_elt(ptr1, elt, &l);
-	free_check_null(temp_name);
+//	free_check_null(temp_name);
 /*
  *   Search master species list
  */
@@ -1154,7 +1151,7 @@ master_bsearch_primary(const char *ptr)
 }
 /* ---------------------------------------------------------------------- */
 struct master * Phreeqc::
-master_bsearch_secondary(char *ptr)
+master_bsearch_secondary(std::string ptr)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -1162,8 +1159,7 @@ master_bsearch_secondary(char *ptr)
  *   i.e. S(6) for S.
  */
 	int l;
-	char *ptr1;
-	char elt[MAX_LENGTH];
+    std::string ptr1, elt;
 	struct master *master_ptr_primary, *master_ptr=NULL, *master_ptr_secondary=NULL;
 	int j;
 /*
@@ -1224,7 +1220,7 @@ master_bsearch_secondary(char *ptr)
 }
 /* ---------------------------------------------------------------------- */
 struct master * Phreeqc::
-master_search(char *ptr, int *n)
+master_search(std::string ptr, int *n)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -1240,7 +1236,7 @@ master_search(char *ptr, int *n)
 	*n = -999;
 	for (i = 0; i < count_master; i++)
 	{
-        if (strcmp(ptr, master[i].elt.name) == 0)
+        if (ptr == master[i].elt.name)
 		{
 			*n = i;
 //			master_ptr = master[i];
@@ -1371,14 +1367,14 @@ phase_bsearch(std::string ptr, int *j, int print)
 	void *void_ptr;
 
 	void_ptr = NULL;
-	if (count_phases > 0)
-	{
-		void_ptr = (void *)
-			bsearch((char *) ptr,
-					(char *) phases,
-					(size_t) count_phases,
-					(size_t) sizeof(struct phase *), phase_compare_string);
-	}
+//	if (count_phases > 0)
+//	{
+//		void_ptr = (void *)
+//			bsearch((char *) ptr,
+//					(char *) phases,
+//					(size_t) count_phases,
+//					(size_t) sizeof(struct phase *), phase_compare_string);
+//	}
 	if (void_ptr == NULL && print == TRUE)
 	{
 		error_string = sformatf( "Could not find phase in list, %s.", ptr);
@@ -1454,7 +1450,7 @@ phase_init(struct phase *phase_ptr)
 
 /* ---------------------------------------------------------------------- */
 struct phase * Phreeqc::
-phase_store(const char *name)
+phase_store(std::string name)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -1478,14 +1474,13 @@ phase_store(const char *name)
 	int n;
 	struct phase *phase_ptr;
 	ENTRY item, *found_item;
-	char token[MAX_LENGTH];
-	const char *ptr;
+    std::string token, ptr;
 /*
  *   Search list
  */
 
-	strcpy(token, name);
-	str_tolower(token);
+    token = name;
+//	str_tolower(token);
 	ptr = string_hsave(token);
 
 	item.key = ptr;
@@ -2103,9 +2098,7 @@ s_search(std::string name)
  */
 	struct species *s_ptr;
 	ENTRY item, *found_item;
-	char safe_name[MAX_LENGTH];
-
-	strcpy(safe_name, name);
+    auto safe_name = name;
 	item.key = safe_name;
 	item.data = NULL;
 	found_item = hsearch_multi(species_hash_table, item, FIND);
@@ -2119,7 +2112,7 @@ s_search(std::string name)
 
 /* ---------------------------------------------------------------------- */
 struct species * Phreeqc::
-s_store(const char *name, LDBLE l_z, int replace_if_found)
+s_store(std::string name, LDBLE l_z, int replace_if_found)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -2368,7 +2361,7 @@ species_list_compare(const void *ptr1, const void *ptr2)
 /* ---------------------------------------------------------------------- */
 {
 	int j;
-	const char *name1, *name2;
+    std::string name1, name2;
 	const struct species_list *nptr1, *nptr2;
 
 	nptr1 = (const struct species_list *) ptr1;
@@ -2413,7 +2406,7 @@ species_list_compare(const void *ptr1, const void *ptr2)
  *   Compare name of primary or secondary master species; log molality
  */
 
-	j = strcmp(name1, name2);
+    j = name1 == name2 ? true : false;
 
 /*
  *   Different master species
@@ -2472,7 +2465,7 @@ int Phreeqc::
 species_list_compare_master(const void *ptr1, const void *ptr2)
 /* ---------------------------------------------------------------------- */
 {
-	const char *name1, *name2;
+    std::string name1, name2;
 	const struct species_list *nptr1, *nptr2;
 
 	nptr1 = (const struct species_list *) ptr1;
@@ -2517,7 +2510,7 @@ species_list_compare_master(const void *ptr1, const void *ptr2)
  *   Compare name of primary or secondary master species; log molality
  */
 
-	return (strcmp(name1, name2));
+    return name1 == name2;
 }
 
 
@@ -2569,8 +2562,8 @@ surface_get_psi_master(std::string name, int plane)
 	struct master *master_ptr;
 	std::string token;
 
-	if (name == NULL)
-		return (NULL);
+    if (name.empty())
+        return nullptr;
 	token = name;
 	token.append("_psi");
 	switch (plane)
@@ -3137,7 +3130,7 @@ unknown_alloc(void)
 	unknown_ptr->delta = 0.0;
 	unknown_ptr->la = 0.0;
 	unknown_ptr->number = 0;
-	unknown_ptr->description = NULL;
+    unknown_ptr->description = "";
 	unknown_ptr->master = NULL;
 	unknown_ptr->phase = NULL;
 	unknown_ptr->si = 0.0;
@@ -3397,12 +3390,12 @@ logk_search(std::string name_in)
 /*
  *   Search list
  */
-	char * name = string_duplicate(name_in);
-	str_tolower(name);
+    auto name = name_in;
+//	str_tolower(name);
 	item.key = name;
 	item.data = NULL;
 	found_item = hsearch_multi(logk_hash_table, item, FIND);
-	free_check_null(name);
+//	free_check_null(name);
 	if (found_item != NULL)
 	{
 		logk_ptr = (struct logk *) (found_item->data);
@@ -3430,13 +3423,12 @@ entity_exists(const char *name, int n_user)
  *	 unknown		     10 UnKnown
  */
 	int return_value;
-	char token[MAX_LENGTH];
+    std::string token;
 	enum entity_type type;
 /*
  *   Read keyword
  */
-	strncpy(token, name, MAX_LENGTH-1);
-	token[MAX_LENGTH-1] = '\0';
+//	strncpy(token, name, MAX_LENGTH-1);
 	type = get_entity_enum(token);
 	return_value = TRUE;
 	switch (type)
@@ -3516,7 +3508,7 @@ entity_exists(const char *name, int n_user)
 
 /* ---------------------------------------------------------------------- */
 enum entity_type Phreeqc::
-get_entity_enum(char *name)
+get_entity_enum(std::string name)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -3535,8 +3527,7 @@ get_entity_enum(char *name)
  *
  */
 	int i;
-	char *ptr;
-	char token[MAX_LENGTH];
+    std::string token, ptr;
 /*
  *   Read keyword
  */

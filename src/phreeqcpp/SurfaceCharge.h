@@ -78,7 +78,7 @@ public:
 	void multiply(LDBLE extensive);
 
 	const std::string &Get_name() const	{return this->name;}
-	void Set_name(const char * f) {this->name = f ? f : "";}
+    void Set_name(std::string f) {this->name = f;}
 	LDBLE Get_specific_area() const {return this->specific_area;}
 	void Set_specific_area(LDBLE d) {this->specific_area = d;}
 	LDBLE Get_grams() const {return this->grams;}

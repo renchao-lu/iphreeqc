@@ -853,9 +853,9 @@ public:
 	virtual void screen_msg(const char *str);
 	virtual void warning_msg(const char *str);
 
-	virtual void fpunchf(const char *name, const char *format, double d);
-	virtual void fpunchf(const char *name, const char *format, char * d);
-	virtual void fpunchf(const char *name, const char *format, int d);
+        virtual void fpunchf(std::string name, const char *format, double d);
+        virtual void fpunchf(std::string name, const char *format, char * d);
+        virtual void fpunchf(std::string name, const char *format, int d);
 	virtual void fpunchf_end_row(const char *format);
 
 	virtual bool output_open(const char *file_name, std::ios_base::openmode mode = std::ios_base::out);

@@ -26,7 +26,7 @@ read_isotopes(void)
 
 	int l;
 	struct master_isotope *master_isotope_ptr;
-	char token[MAX_LENGTH];
+    std::string token;
     struct element* elt_ptr = nullptr;
 
 	int return_value, opt, opt_save;
@@ -107,7 +107,7 @@ read_isotopes(void)
 				input_error++;
 				break;
 			}
-			sscanf(token, SCANFORMAT, &(master_isotope_ptr->standard));
+//			sscanf(token, SCANFORMAT, &(master_isotope_ptr->standard));
 			opt_save = OPTION_DEFAULT;
 			break;
 		case 1:				/* total_is_major_isotope */
@@ -164,9 +164,9 @@ read_calculate_values(void)
     std::string ptr;
 	int l, length, line_length;
 	int return_value, opt, opt_save;
-	char token[MAX_LENGTH];
+    std::string token;
 	struct calculate_value *calculate_value_ptr;
-	char *description;
+    std::string description;
 	int n_user, n_user_end;
 	char *next_char;
 	const char *opt_list[] = {
@@ -178,8 +178,8 @@ read_calculate_values(void)
  *   Read advection number (not currently used)
  */
     ptr = line;
-    read_number_description(const_cast<char*>(ptr.c_str()), &n_user, &n_user_end, &description);
-	description = (char *) free_check_null(description);
+    read_number_description(const_cast<char*>(ptr.c_str()), &n_user, &n_user_end, description);
+//	description = (char *) free_check_null(description);
 	opt_save = OPTION_DEFAULT;
 /*
  *   Read lines
@@ -298,9 +298,9 @@ read_isotope_ratios(void)
     std::string ptr;
 	int l;
 	int return_value, opt, opt_save;
-	char token[MAX_LENGTH];
+    std::string token;
 	struct isotope_ratio *isotope_ratio_ptr;
-	char *description;
+    std::string description;
 	int n_user, n_user_end;
 	char *next_char;
 	const char *opt_list[] = {
@@ -311,8 +311,8 @@ read_isotope_ratios(void)
  *   Read number (not currently used)
  */
 	ptr = line;
-    read_number_description(const_cast<char*>(ptr.c_str()), &n_user, &n_user_end, &description);
-	description = (char *) free_check_null(description);
+    read_number_description(const_cast<char*>(ptr.c_str()), &n_user, &n_user_end, description);
+//	description = (char *) free_check_null(description);
 	opt_save = OPTION_DEFAULT;
 /*
  *   Read lines
@@ -397,9 +397,9 @@ read_isotope_alphas(void)
     std::string ptr;
 	int l;
 	int return_value, opt, opt_save;
-	char token[MAX_LENGTH];
+    std::string token;
 	struct isotope_alpha *isotope_alpha_ptr;
-	char *description;
+    std::string description;
 	int n_user, n_user_end;
 	char *next_char;
 	const char *opt_list[] = {
@@ -410,8 +410,8 @@ read_isotope_alphas(void)
  *   Read number (not currently used)
  */
 	ptr = line;
-    read_number_description(const_cast<char*>(ptr.c_str()), &n_user, &n_user_end, &description);
-	description = (char *) free_check_null(description);
+    read_number_description(ptr, &n_user, &n_user_end, description);
+//	description = (char *) free_check_null(description);
 	opt_save = OPTION_DEFAULT;
 /*
  *   Read lines
@@ -985,7 +985,7 @@ print_isotope_ratios(void)
 	int print_isotope;
 	struct master *master_ptr;
 	struct master_isotope *master_isotope_ptr;
-	char token[MAX_LENGTH];
+    std::string token;
 
 
 	if (pr.isotope_ratios == FALSE || pr.all == FALSE)
@@ -1025,7 +1025,7 @@ print_isotope_ratios(void)
 		/*
 		 *  Print isotope ratio
 		 */
-		strcpy(token, isotope_ratio[j]->name);
+        token = isotope_ratio[j]->name;
 		while (replace("_", " ", token) == TRUE);
 		output_msg(sformatf( "     %-20s\t%12.5e\t%15.5g  %-10s\n",
 				   token, (double) isotope_ratio[j]->ratio,
@@ -1047,7 +1047,7 @@ print_isotope_alphas(void)
 	int i, j;
 	int print_isotope;
 	struct master *master_ptr;
-	char token[MAX_LENGTH];
+    std::string token;
 	LDBLE log_alpha;
 
 	if (pr.isotope_alphas == FALSE || pr.all == FALSE)
@@ -1088,7 +1088,7 @@ print_isotope_alphas(void)
 		/*
 		 *  Print isotope ratio
 		 */
-		strcpy(token, isotope_alpha[j]->name);
+        token = isotope_alpha[j]->name;
 		while (replace("_", " ", token) == TRUE);
 		if (isotope_alpha[j]->named_logk != NULL)
 		{
@@ -1588,11 +1588,11 @@ master_isotope_search(const char *name)
  */
 	struct master_isotope *master_isotope_ptr;
 	ENTRY item, *found_item;
-	char token[MAX_LENGTH];
+    std::string token;
 /*
  *   Search list
  */
-	strcpy(token, name);
+    token = name;
 
 	item.key = token;
 	item.data = NULL;
@@ -1803,7 +1803,7 @@ calculate_value_free(struct calculate_value *calculate_value_ptr)
 
 /* ---------------------------------------------------------------------- */
 struct isotope_ratio * Phreeqc::
-isotope_ratio_store(const char *name, int replace_if_found)
+isotope_ratio_store(std::string name, int replace_if_found)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -1828,13 +1828,13 @@ isotope_ratio_store(const char *name, int replace_if_found)
  */
 	int n;
 	struct isotope_ratio *isotope_ratio_ptr;
-	char token[MAX_LENGTH];
+    std::string token;
 	ENTRY item, *found_item;
 /*
  *   Search list
  */
-	strcpy(token, name);
-	str_tolower(token);
+    token = name;
+//    str_tolower(token);
 	item.key = token;
 	item.data = NULL;
 	found_item = hsearch_multi(isotope_ratio_hash_table, item, FIND);
@@ -1940,13 +1940,13 @@ isotope_ratio_search(const char *name)
  *      or NULL if not found.
  */
 	struct isotope_ratio *isotope_ratio_ptr;
-	char token[MAX_LENGTH];
+    std::string token;
 	ENTRY item, *found_item;
 /*
  *   Search list
  */
-	strcpy(token, name);
-	str_tolower(token);
+    token = name;
+//	str_tolower(token);
 	item.key = token;
 	item.data = NULL;
 	found_item = hsearch_multi(isotope_ratio_hash_table, item, FIND);
@@ -1965,7 +1965,7 @@ isotope_ratio_search(const char *name)
 
 /* ---------------------------------------------------------------------- */
 struct isotope_alpha * Phreeqc::
-isotope_alpha_store(const char *name, int replace_if_found)
+isotope_alpha_store(std::string name, int replace_if_found)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -1990,13 +1990,13 @@ isotope_alpha_store(const char *name, int replace_if_found)
  */
 	int n;
 	struct isotope_alpha *isotope_alpha_ptr;
-	char token[MAX_LENGTH];
+    std::string token;
 	ENTRY item, *found_item;
 /*
  *   Search list
  */
-	strcpy(token, name);
-	str_tolower(token);
+    token = name;
+//	str_tolower(token);
 	item.key = token;
 	item.data = NULL;
 	found_item = hsearch_multi(isotope_alpha_hash_table, item, FIND);
@@ -2101,13 +2101,13 @@ isotope_alpha_search(const char *name)
  *      or NULL if not found.
  */
 	struct isotope_alpha *isotope_alpha_ptr;
-	char token[MAX_LENGTH];
+    std::string token;
 	ENTRY item, *found_item;
 /*
  *   Search list
  */
-	strcpy(token, name);
-	str_tolower(token);
+    token = name;
+//	str_tolower(token);
 	item.key = token;
 	item.data = NULL;
 	found_item = hsearch_multi(isotope_alpha_hash_table, item, FIND);

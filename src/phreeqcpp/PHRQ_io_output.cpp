@@ -80,7 +80,7 @@ fpunchf(const char *name, const char *format, double d)
 	}
 }
 void Phreeqc::
-fpunchf(const char *name, const char *format, char * s)
+fpunchf(const char *name, const char *format, std::string s)
 {
 	try
 	{
@@ -143,9 +143,9 @@ fpunchf_user(int user_index, const char *format, double d)
 }
 
 void Phreeqc::
-fpunchf_user(int user_index, const char *format, char * d)
+fpunchf_user(int user_index, const char *format, std::string d)
 {
-	const char *name;
+    std::string name;
 	
 	if (current_user_punch == NULL)
 		return;

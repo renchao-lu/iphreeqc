@@ -668,8 +668,7 @@ add_pp_assemblage(cxxPPassemblage *pp_assemblage_ptr)
  */
 	int i;
 	LDBLE amount_to_add, total;
-	char token[MAX_LENGTH];
-	char *ptr;
+    std::string token, ptr;
 	struct master *master_ptr;
 
 	if (check_pp_assemblage(pp_assemblage_ptr) == OK)
@@ -697,13 +696,13 @@ add_pp_assemblage(cxxPPassemblage *pp_assemblage_ptr)
 		comp_ptr->Set_delta(0.0);
 		if (comp_ptr->Get_add_formula().size() > 0)
 		{
-			strcpy(token, comp_ptr->Get_add_formula().c_str());
+            token = comp_ptr->Get_add_formula();
 			ptr = &(token[0]);
             get_elts_in_species(ptr, 1.0);
 		}
 		else
 		{
-			strcpy(token, phase_ptr->formula);
+            token = phase_ptr->formula;
 			add_elt_list(phase_ptr->next_elt, 1.0);
 		}
 		if (comp_ptr->Get_moles() > 0.0)
@@ -944,7 +943,7 @@ reaction_calc(cxxReaction *reaction_ptr)
  */
 	int return_value;
 	LDBLE coef;
-	char *ptr;
+    std::string ptr;
 	struct phase *phase_ptr;
 /*
  *   Go through list and generate list of elements and
@@ -970,10 +969,10 @@ reaction_calc(cxxReaction *reaction_ptr)
 		}
 		else
 		{
-			char * token = string_duplicate(it->first.c_str());
+            auto token = it->first;
 			ptr = token;
             get_elts_in_species(ptr, coef);
-			free_check_null(token);
+//			free_check_null(token);
 		}
 	}
 /*
@@ -1075,7 +1074,7 @@ add_ss_assemblage(cxxSSassemblage *ss_assemblage_ptr)
 	int i, j, k;
 	LDBLE amount_to_add, total;
 	struct master *master_ptr;
-	char *ptr;
+    std::string ptr;
 
 	if (ss_assemblage_ptr == NULL)
 		return (OK);
@@ -1100,11 +1099,11 @@ add_ss_assemblage(cxxSSassemblage *ss_assemblage_ptr)
 			comp_ptr->Set_delta(0.0);
 			if (comp_ptr->Get_moles() > 0.0)
 			{
-				char * token = string_duplicate(phase_ptr->formula);
-				ptr = &(token[0]);
+                auto token = phase_ptr->formula;
+                ptr = token[0];
 				count_elts = 0; // appt
                 get_elts_in_species(ptr, 1.0);
-				free_check_null(token);
+//				free_check_null(token);
 				for (k = 0; k < count_elts; k++)
 				{
                     master_ptr = elt_list[k].elt.primary;

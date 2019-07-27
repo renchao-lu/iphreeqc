@@ -560,7 +560,7 @@ spread_row_to_solution(struct spread_row *heading, struct spread_row *units,
 	CParser parser(this->phrq_io);
 
 	int return_value, opt;
-	char *next_char;
+    std::string next_char;
 	const char *opt_list[] = {
 		"temp",					/* 0 */
 		"temperature",			/* 1 */
@@ -698,9 +698,9 @@ spread_row_to_solution(struct spread_row *heading, struct spread_row *units,
 /*
  *   Parse string just like read_solution input 
  */
-		char * char_string = string_duplicate(string.c_str());
+        auto char_string = string;
 		next_char = char_string;
-		opt = get_option_string(opt_list, count_opt_list, &next_char);
+        opt = get_option_string(opt_list, count_opt_list, next_char);
 		if (opt == OPTION_DEFAULT && heading->type_vector[i] == NUMBER)
 		{
 			opt = 9;
@@ -720,7 +720,7 @@ spread_row_to_solution(struct spread_row *heading, struct spread_row *units,
 			break;
 		case 0:				/* temperature */
 		case 1:
-			sscanf(next_char, SCANFORMAT, &dummy);
+//			sscanf(next_char, SCANFORMAT, &dummy);
 			temp_solution.Set_tc(dummy);
 			break;
 		case 2:				/* density */
@@ -882,14 +882,14 @@ spread_row_to_solution(struct spread_row *heading, struct spread_row *units,
 					{
 						error_msg("Units is null", PHRQ_io::OT_CONTINUE);
 					}
-					free_check_null(char_string);
+//					free_check_null(char_string);
 					continue;
 				}
 				temp_isotope.Set_isotope_name(token.c_str());
 
 				/* read and save element name */
 				{
-					char *temp_iso_name = string_duplicate(token.c_str());
+                    auto temp_iso_name = token;
                     std::string ptr1 = temp_iso_name;
                     get_num(ptr1, &dummy);
 					temp_isotope.Set_isotope_number(dummy);
@@ -898,12 +898,12 @@ spread_row_to_solution(struct spread_row *heading, struct spread_row *units,
 						error_msg("Expecting element name.", PHRQ_io::OT_CONTINUE);
                         error_msg(line_save.c_str(), PHRQ_io::OT_CONTINUE);
 						input_error++;
-						temp_iso_name = (char*)free_check_null(temp_iso_name);
-						char_string = (char*)free_check_null(char_string);
+//						temp_iso_name = (char*)free_check_null(temp_iso_name);
+//						char_string = (char*)free_check_null(char_string);
 						return (CParser::PARSER_ERROR);
 					}
                     temp_isotope.Set_elt_name(ptr1.c_str());
-					temp_iso_name = (char*)free_check_null(temp_iso_name);
+//					temp_iso_name = (char*)free_check_null(temp_iso_name);
 				}
 				/* read and store isotope ratio */
                 if (copy_token(token, next_char) != CParser::TT_DIGIT)
@@ -912,7 +912,7 @@ spread_row_to_solution(struct spread_row *heading, struct spread_row *units,
 					error_string = sformatf(
 						"Expected numeric value for isotope ratio.");
 					error_msg(error_string, CONTINUE);
-					free_check_null(char_string);
+//					free_check_null(char_string);
 					continue;
 				}
 				sscanf(token.c_str(), SCANFORMAT, &dummy);
@@ -929,7 +929,7 @@ spread_row_to_solution(struct spread_row *heading, struct spread_row *units,
 						error_string = sformatf(
 							"Expected numeric value for uncertainty in isotope ratio.");
 						error_msg(error_string, PHRQ_io::OT_CONTINUE);
-						free_check_null(char_string);
+//						free_check_null(char_string);
 						continue;
 					}
 					sscanf(token.c_str(), SCANFORMAT, &dummy);
@@ -971,18 +971,18 @@ spread_row_to_solution(struct spread_row *heading, struct spread_row *units,
 		case 14:				/* pressure */
 		case 15:				/* press */
 			{
-				if (sscanf(next_char, SCANFORMAT, &dummy) == 1)
-				{
-					temp_solution.Set_patm(dummy);
-				}
+//				if (sscanf(next_char, SCANFORMAT, &dummy) == 1)
+//				{
+//					temp_solution.Set_patm(dummy);
+//				}
 			}
 			break;
 		case 16:				/* pote, V */
 			{
-				if (sscanf(next_char, SCANFORMAT, &dummy) == 1)
-				{
-					temp_solution.Set_potV(dummy);
-				}
+//				if (sscanf(next_char, SCANFORMAT, &dummy) == 1)
+//				{
+//					temp_solution.Set_potV(dummy);
+//				}
 			}
 			break;
 		case OPTION_DEFAULT:
@@ -993,7 +993,7 @@ spread_row_to_solution(struct spread_row *heading, struct spread_row *units,
 				next_char = char_string;
                 if (copy_token(token, next_char) == LOWER)
 				{
-					free_check_null(char_string);
+//					free_check_null(char_string);
 					continue;
 				}
 				cxxISolutionComp temp_comp(this->phrq_io);
@@ -1013,7 +1013,7 @@ spread_row_to_solution(struct spread_row *heading, struct spread_row *units,
 			}
 			break;
 		}
-		free_check_null(char_string);
+//		free_check_null(char_string);
 		if (return_value == EOF || return_value == KEYWORD)
 			break;
 	}
@@ -1085,13 +1085,6 @@ string_to_spread_row(char *string)
 		malloc_error();
 		return spread_row_ptr;
 	}
-	spread_row_ptr->char_vector =
-		(char **) PHRQ_malloc((size_t) spread_length * sizeof(char *));
-	if (spread_row_ptr->char_vector == NULL)
-	{
-		malloc_error();
-		return spread_row_ptr;
-	}
 	spread_row_ptr->d_vector =
 		(LDBLE *) PHRQ_malloc((size_t) spread_length * sizeof(LDBLE));
 	if (spread_row_ptr->d_vector == NULL)
@@ -1120,15 +1113,6 @@ string_to_spread_row(char *string)
 		{
 			spread_length *= 2;
 
-			spread_row_ptr->char_vector =
-				(char **) PHRQ_realloc(spread_row_ptr->char_vector,
-									   (size_t) spread_length * sizeof(char *));
-			if (spread_row_ptr->char_vector == NULL)
-			{
-				malloc_error();
-				return spread_row_ptr;
-			}
-
 			spread_row_ptr->d_vector =
 				(LDBLE *) PHRQ_realloc(spread_row_ptr->d_vector,
 									   (size_t) spread_length * sizeof(LDBLE));
@@ -1150,8 +1134,7 @@ string_to_spread_row(char *string)
         j = copy_token_tab(token, ptr, &l);
 		if (j == EOL)
 			break;
-		spread_row_ptr->char_vector[spread_row_ptr->count] =
-            string_duplicate(const_cast<char*>(token.c_str()));
+        spread_row_ptr->char_vector[spread_row_ptr->count] = token;
 		spread_row_ptr->d_vector[spread_row_ptr->count] = NAN;
 		if (j == EMPTY || l == 0)
 		{
@@ -1185,8 +1168,8 @@ string_to_spread_row(char *string)
  */
 	if (spread_row_ptr->count == 0)
 	{
-		spread_row_ptr->char_vector =
-			(char **) free_check_null(spread_row_ptr->char_vector);
+//		spread_row_ptr->char_vector =
+//			(char **) free_check_null(spread_row_ptr->char_vector);
 		spread_row_ptr->d_vector =
 			(LDBLE *) free_check_null(spread_row_ptr->d_vector);
 		spread_row_ptr->type_vector =
@@ -1228,14 +1211,14 @@ spread_row_free(struct spread_row *spread_row_ptr)
 
 	if (spread_row_ptr == NULL)
 		return (OK);
-	for (i = 0; i < spread_row_ptr->count; i++)
-	{
-		spread_row_ptr->char_vector[i] =
-			(char *) free_check_null(spread_row_ptr->char_vector[i]);
-	}
+//	for (i = 0; i < spread_row_ptr->count; i++)
+//	{
+//		spread_row_ptr->char_vector[i] =
+//			(char *) free_check_null(spread_row_ptr->char_vector[i]);
+//	}
 
-	spread_row_ptr->char_vector =
-		(char **) free_check_null(spread_row_ptr->char_vector);
+//	spread_row_ptr->char_vector =
+//		(char **) free_check_null(spread_row_ptr->char_vector);
 	spread_row_ptr->d_vector =
 		(LDBLE *) free_check_null(spread_row_ptr->d_vector);
 	spread_row_ptr->type_vector =
@@ -1346,7 +1329,7 @@ copy_token_tab(std::string token_ptr, std::string ptr, int *length)
 
 /* ---------------------------------------------------------------------- */
  int Phreeqc::
-get_option_string(const char **opt_list, int count_opt_list, char **next_char)
+get_option_string(const char **opt_list, int count_opt_list, std::string next_char)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -1354,42 +1337,41 @@ get_option_string(const char **opt_list, int count_opt_list, char **next_char)
  */
 	int j;
 	int opt_l, opt;
-	char *opt_ptr;
-	char option[MAX_LENGTH];
+    std::string option;
 
-	opt_ptr = *next_char;
-	if (opt_ptr[0] == '-')
-	{
-		opt_ptr++;
-        copy_token(option, opt_ptr, &opt_l);
-		if (find_option(&(option[1]), &opt, opt_list, count_opt_list, FALSE)
-			== OK)
-		{
-			j = opt;
-			*next_char = opt_ptr;
-		}
-		else
-		{
-			error_msg("Unknown option.", CONTINUE);
-			error_msg(*next_char, CONTINUE);
-			input_error++;
-			j = OPTION_ERROR;
-		}
-	}
-	else
-	{
-        copy_token(option, opt_ptr, &opt_l);
-		if (find_option(&(option[0]), &opt, opt_list, count_opt_list, TRUE)
-			== OK)
-		{
-			j = opt;
-			*next_char = opt_ptr;
-		}
-		else
-		{
-			j = OPTION_DEFAULT;
-		}
-	}
+    auto opt_ptr = next_char;
+//	if (opt_ptr[0] == '-')
+//	{
+//		opt_ptr++;
+//        copy_token(option, opt_ptr, &opt_l);
+//		if (find_option(&(option[1]), &opt, opt_list, count_opt_list, FALSE)
+//			== OK)
+//		{
+//			j = opt;
+//			*next_char = opt_ptr;
+//		}
+//		else
+//		{
+//			error_msg("Unknown option.", CONTINUE);
+//			error_msg(*next_char, CONTINUE);
+//			input_error++;
+//			j = OPTION_ERROR;
+//		}
+//	}
+//	else
+//	{
+//        copy_token(option, opt_ptr, &opt_l);
+//		if (find_option(&(option[0]), &opt, opt_list, count_opt_list, TRUE)
+//			== OK)
+//		{
+//			j = opt;
+//			*next_char = opt_ptr;
+//		}
+//		else
+//		{
+//			j = OPTION_DEFAULT;
+//		}
+//	}
 	return (j);
 }
 

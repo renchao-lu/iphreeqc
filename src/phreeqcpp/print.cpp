@@ -363,7 +363,7 @@ print_eh(void)
 	int i, j, k, first;
 	LDBLE pe, eh;
 	struct master *master_ptr0, *master_ptr1;
-	char token[MAX_LENGTH];
+    std::string token;
 
 	if (pr.eh == FALSE || pr.all == FALSE)
 		return (OK);
@@ -419,9 +419,8 @@ print_eh(void)
 /*
  *   Print result
  */
-            strcpy(token, master[i].elt.name);
-			strcat(token, "/");
-            strcat(token, master[k].elt.name);
+            token = master[i].elt.name;
+            token += "/" + master[k].elt.name;
 			output_msg(sformatf("\t%-15s%12.4f%12.4f\n", token,
 					   (double) pe, (double) eh));
 		}
@@ -440,7 +439,7 @@ print_exchange(void)
  */
 	int i;
 	cxxExchange * exchange_ptr;
-	const char *name, *name1;
+    std::string name, name1;
 	struct master *master_ptr;
 	LDBLE dum, dum2;
 /*
@@ -568,7 +567,7 @@ print_gas_phase(void)
  */
 	LDBLE lp, moles, initial_moles, delta_moles;
 	struct rxn_token *rxn_ptr;
-	char info[MAX_LENGTH];
+    std::string info;
 	bool PR = false;
 
 	if (pr.gas_phase == FALSE || pr.all == FALSE)
@@ -585,8 +584,8 @@ print_gas_phase(void)
 			return (OK);
 		if (gas_unknown->moles < 1e-12)
 		{
-			sprintf(info, "Fixed-pressure gas phase %d dissolved completely",
-				   use.Get_n_gas_phase_user());
+//			sprintf(info, "Fixed-pressure gas phase %d dissolved completely",
+//				   use.Get_n_gas_phase_user());
 			print_centered(info);
 			return (OK);
 		}
@@ -1330,7 +1329,7 @@ print_pp_assemblage(void)
  */
 	int j, k;
 	LDBLE si, iap, lk;
-	char token[MAX_LENGTH];
+    std::string token;
 	struct rxn_token *rxn_ptr;
 	struct phase *phase_ptr;
 
@@ -1403,18 +1402,18 @@ print_pp_assemblage(void)
 			x[j]->moles = 0.0;
 		if (state != TRANSPORT && state != PHAST)
 		{
-			sprintf(token, "  %11.3e %11.3e %11.3e",
-					(double) (comp_ptr->Get_moles() +
-							  comp_ptr->Get_delta()), (double) x[j]->moles,
-					(double) (x[j]->moles - comp_ptr->Get_moles() -
-							  comp_ptr->Get_delta()));
+//			sprintf(token, "  %11.3e %11.3e %11.3e",
+//					(double) (comp_ptr->Get_moles() +
+//							  comp_ptr->Get_delta()), (double) x[j]->moles,
+//					(double) (x[j]->moles - comp_ptr->Get_moles() -
+//							  comp_ptr->Get_delta()));
 		}
 		else
 		{
-			sprintf(token, " %11.3e %11.3e %11.3e",
-					(double) comp_ptr->Get_initial_moles(),
-					(double) x[j]->moles,
-					(double) (x[j]->moles - comp_ptr->Get_initial_moles()));
+//			sprintf(token, " %11.3e %11.3e %11.3e",
+//					(double) comp_ptr->Get_initial_moles(),
+//					(double) x[j]->moles,
+//					(double) (x[j]->moles - comp_ptr->Get_initial_moles()));
 		}
 		if (x[j]->moles <= 0.0)
 		{
@@ -1447,7 +1446,7 @@ print_species(void)
  *   order of aqueous species.
  */
 	int i;
-	const char *name, *name1;
+    std::string name, name1;
 	struct master *master_ptr;
 	LDBLE min;
 	LDBLE lm;
@@ -2884,7 +2883,7 @@ punch_identifiers(void)
 	const char *dformat;
 	const char *gformat;
 	int i;
-	char token[MAX_LENGTH];
+    std::string token;
 
 	//if (punch.in == FALSE)
 	//	return (OK);
@@ -2921,34 +2920,34 @@ punch_identifiers(void)
 		switch (state)
 		{
 		case 0:
-			strcpy(token, "init");
+            token = "init";
 			break;
 		case 1:
-			strcpy(token, "i_soln");
+            token = "i_soln";
 			break;
 		case 2:
-			strcpy(token, "i_exch");
+            token = "i_exch";
 			break;
 		case 3:
-			strcpy(token, "i_surf");
+            token = "i_surf";
 			break;
 		case 4:
-			strcpy(token, "i_gas");
+            token = "i_gas";
 			break;
 		case 5:
-			strcpy(token, "react");
+            token = "react";
 			break;
 		case 6:
-			strcpy(token, "inverse");
+            token = "inverse";
 			break;
 		case 7:
-			strcpy(token, "advect");
+            token = "advect";
 			break;
 		case 8:
-			strcpy(token, "transp");
+            token = "transp";
 			break;
 		default:
-			strcpy(token, "unknown");
+            token = "unknown";
 			break;
 		}
 		fpunchf(PHAST_NULL("state"), sformat, token);

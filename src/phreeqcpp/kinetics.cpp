@@ -1172,9 +1172,9 @@ rk_kinetics(int i, LDBLE kin_time, int use_mix, int nsaver,
 			}
 		}
 		{
-			char str[MAX_LENGTH];
-			sprintf(str, "RK-steps: Bad%4d. OK%5d. Time %3d%%", step_bad,
-					step_ok, (int) (100 * h_sum / kin_time));
+            std::string str;
+//			sprintf(str, "RK-steps: Bad%4d. OK%5d. Time %3d%%", step_bad,
+//					step_ok, (int) (100 * h_sum / kin_time));
 			status(0, str, true);
 		}
 #ifdef SKIP

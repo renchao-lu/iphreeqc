@@ -276,7 +276,7 @@ cxxISolutionComp::dump_xml(std::ostream & s_oss, unsigned int indent) const cons
 #endif
 /* ---------------------------------------------------------------------- */
 CParser::STATUS_TYPE cxxISolutionComp::
-read(const char *line_in, cxxSolution *solution_ptr)
+read(std::string line_in, cxxSolution *solution_ptr)
 /* ---------------------------------------------------------------------- */
 {
 /*

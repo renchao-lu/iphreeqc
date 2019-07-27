@@ -148,8 +148,7 @@ size_t Phreeqc::list_components(std::list<std::string> &list_c)
 	for (it = accumulator.begin(); it != accumulator.end(); it++)
 	{
 		if (it->first == "Charge") continue;
-		char string[MAX_LENGTH];
-		strcpy(string, it->first.c_str());
+        std::string string = it->first;
 		struct master *master_ptr = master_bsearch_primary(string);
 		if (master_ptr == NULL) continue;
 		if (master_ptr->type != AQ) continue;
@@ -650,7 +649,6 @@ void Phreeqc::init(void)
 	*---------------------------------------------------------------------- */
     title_x                 = "";
 	new_x                   = FALSE;
-	description_x			= NULL;
 	tc_x                    = 0;
 	tk_x                    = 0;
 	patm_x                  = 1;
@@ -1069,7 +1067,6 @@ void Phreeqc::init(void)
 	basic_interpreter       = NULL;
 	basic_callback_ptr      = NULL;
 	basic_callback_cookie   = NULL;
-	basic_fortran_callback_ptr  = NULL;
 
 	/* cl1.cpp ------------------------------- */
 	x_arg                   = NULL; 
@@ -1116,8 +1113,6 @@ void Phreeqc::init(void)
 	max_row_count           = 50;
 	max_column_count        = 50;
 	carbon                  = FALSE;
-	col_name                = NULL;
-	row_name                = NULL;
 	count_rows              = 0;
 	count_optimize          = 0;
 	col_phases              = 0;
@@ -1234,7 +1229,7 @@ void Phreeqc::init(void)
 #ifdef NPP
 	default_data_base = string_duplicate("c:\\phreeqc\\database\\phreeqc.dat");
 #else
-	default_data_base = string_duplicate("phreeqc.dat");
+    default_data_base = "phreeqc.dat";
 #endif
 #ifdef PHREEQ98
 	int outputlinenr;
@@ -1788,9 +1783,9 @@ Phreeqc::InternalCopy(const Phreeqc *pSrc)
 	//logk = (struct logk **) PHRQ_malloc((size_t) max_logk * sizeof(struct logk *));
 	for (int i = 0; i < pSrc->count_logk; i++)
 	{
-		char * name = string_duplicate(pSrc->logk[i]->name);
+        std::string name = pSrc->logk[i]->name;
 		struct logk *logk_ptr = logk_store(name, FALSE);
-		free_check_null(name);
+        free_check_null(&name);
 		memcpy(logk_ptr, pSrc->logk[i], sizeof(struct logk));
 		logk_ptr->name = string_hsave(pSrc->logk[i]->name);
 		logk_ptr->add_logk = NULL;
@@ -1853,11 +1848,11 @@ Phreeqc::InternalCopy(const Phreeqc *pSrc)
 		{
 			count_elts = 0;
 			paren_count = 0;
-			char * string = string_duplicate(s_ptr->mole_balance);
+            std::string string = s_ptr->mole_balance;
             std::string ptr = string;
             get_secondary_in_species(ptr, 1.0);
 			s_ptr->next_secondary = elt_list_save();
-			free_check_null(string);
+            free_check_null(&string);
 		}
 		//next_sys_total
 		s_ptr->next_sys_total = NULL;
@@ -2124,7 +2119,7 @@ Phreeqc::InternalCopy(const Phreeqc *pSrc)
 		for (int i = 0; i < count_rates; i++)
 		{
             rates[i].name = string_hsave(pSrc->rates[i].name.c_str());
-            rates[i].commands = string_duplicate(pSrc->rates[i].commands.c_str());
+            rates[i].commands = pSrc->rates[i].commands;
 			rates[i].new_def = TRUE;
 			rates[i].linebase = NULL;
 			rates[i].varbase = NULL;
@@ -2143,7 +2138,7 @@ Phreeqc::InternalCopy(const Phreeqc *pSrc)
         user_print.commands = "";
         if (pSrc->user_print.commands != "")
 		{
-            user_print.commands = string_duplicate(pSrc->user_print.commands.c_str());
+            user_print.commands = pSrc->user_print.commands;
 		}
         user_print.new_def = TRUE;
         user_print.linebase = NULL;
@@ -2367,7 +2362,7 @@ Phreeqc::InternalCopy(const Phreeqc *pSrc)
 		if (pSrc->master_isotope[i]->master)
 		{
             auto name = pSrc->master_isotope[i]->master->elt.name;
-            master_isotope_ptr->master = master_search(const_cast<char*>(name), &n);
+            master_isotope_ptr->master = master_search(name, &n);
 //			free_check_null(name);
 		}
 		if (master_isotope_ptr->master == NULL)

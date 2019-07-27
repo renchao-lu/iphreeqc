@@ -23,7 +23,7 @@ class cxxISolutionComp: public PHRQ_base
 
   public:
 
-	CParser::STATUS_TYPE read(const char *line, cxxSolution *solution_ptr);
+    CParser::STATUS_TYPE read(std::string line, cxxSolution *solution_ptr);
 
 	void dump_xml(std::ostream & os, unsigned int indent = 0) const;
 

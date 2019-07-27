@@ -147,7 +147,7 @@ public:
     LDBLE sum_match_species(std::string stemplate, std::string name);
     LDBLE sum_match_ss(std::string stemplate, std::string name);
     int match_elts_in_species(std::string name, std::string stemplate);
-    int extract_bracket(std::string string, char *bracket_string);
+    int extract_bracket(std::string string, std::string bracket_string);
     LDBLE surf_total(std::string total_name, std::string surface_name);
     LDBLE surf_total_no_redox(std::string total_name, std::string surface_name);
 	static int system_species_compare(const void *ptr1, const void *ptr2);
@@ -265,10 +265,10 @@ public:
 
 	void fpunchf_heading(const char *name);
 	void fpunchf(const char *name, const char *format, double d);
-	void fpunchf(const char *name, const char *format, char * d);
+    void fpunchf(const char *name, const char *format, std::string d);
 	void fpunchf(const char *name, const char *format, int d);
 	void fpunchf_user(int user_index, const char *format, double d);
-	void fpunchf_user(int user_index, const char *format, char * d);
+    void fpunchf_user(int user_index, const char *format, std::string d);
 	int fpunchf_end_row(const char *format);
 #ifdef SKIP
 	// dw.cpp -------------------------------
@@ -318,7 +318,7 @@ public:
 	int count_isotope_unknowns(struct inverse *inv_ptr,
 		struct isotope **isotope_unknowns);
 	cxxSolutionIsotope *get_isotope(cxxSolution *solution_ptr, const char *elt);
-	LDBLE get_inv_total(cxxSolution *solution_ptr, const char *elt);
+    LDBLE get_inv_total(cxxSolution *solution_ptr, std::string elt);
 	int isotope_balance_equation(struct inverse *inv_ptr, int row, int n);
 	int post_mortem(void);
 	bool test_cl1_solution(void);
@@ -382,11 +382,11 @@ public:
 		int replace_if_found);
 	struct isotope_alpha *isotope_alpha_alloc(void);
 	struct isotope_alpha *isotope_alpha_search(const char *name);
-	struct isotope_alpha *isotope_alpha_store(const char *name,
+    struct isotope_alpha *isotope_alpha_store(std::string name,
 		int replace_if_found);
 	struct isotope_ratio *isotope_ratio_alloc(void);
 	struct isotope_ratio *isotope_ratio_search(const char *name);
-	struct isotope_ratio *isotope_ratio_store(const char *name,
+    struct isotope_ratio *isotope_ratio_store(std::string name,
 		int replace_if_found);
     struct master_isotope *master_isotope_store(std::string name,
 		int replace_if_found);
@@ -503,7 +503,7 @@ public:
 	// parse.cpp -------------------------------
 	int check_eqn(int association);
 	int get_charge(char *charge, LDBLE * z);
-    int get_elt(std::string t_ptr, char *element, int *i);
+    int get_elt(std::string t_ptr, std::string element, int *i);
     int get_elts_in_species(std::string t_ptr, LDBLE coef);
     int get_num(std::string t_ptr, LDBLE * num);
     int get_secondary_in_species(std::string t_ptr, LDBLE coef);
@@ -599,8 +599,7 @@ public:
 	int convert_units(cxxSolution *solution_ptr);
 	LDBLE f_Vm(LDBLE v1);
 	struct unknown *find_surface_charge_unknown(std::string &str_ptr, int plane);
-	struct master **get_list_master_ptrs(char *ptr,
-	struct master *master_ptr);
+    struct master **get_list_master_ptrs(std::string ptr, struct master *master_ptr);
 	int inout(void);
 	int is_special(struct species *spec);
 	int mb_for_species_aq(int n);
@@ -692,13 +691,13 @@ public:
 	int read_conc(cxxSolution *solution_ptr, int count_mass_balance, char *str);
     int *read_list_ints_range(std::string ptr, int *count_ints, int positive,
 		int *int_list);
-	int read_log_k_only(char *ptr, LDBLE * log_k);
+    int read_log_k_only(std::string ptr, LDBLE * log_k);
 	int read_t_c_only(char *ptr, LDBLE *t_c);
 	int read_p_c_only(char *ptr, LDBLE * p_c);
 	int read_omega_only(char *ptr, LDBLE *omega);
-	int read_number_description(char *ptr, int *n_user, int *n_user_end,
-		char **description, int allow_negative=FALSE);
-	int check_key(const char *str);
+    int read_number_description(std::string ptr, int *n_user, int *n_user_end,
+        std::string description, int allow_negative=FALSE);
+    int check_key(std::string str);
 	int check_units(std::string &tot_units, bool alkalinity, bool check_compatibility,
 			const char *default_units, bool print);
 	int find_option(const char *item, int *n, const char **list, int count_list,
@@ -706,7 +705,7 @@ public:
     int get_option(const char **opt_list, int count_opt_list, std::string next_char);
     int get_true_false(std::string string, int default_value);
 
-	int add_psi_master_species(char *token);
+    int add_psi_master_species(std::string token);
 	int read_analytical_expression_only(char *ptr, LDBLE * log_k);
 	/* VP: Density Start */
 	int read_millero_abcdef (char *ptr, LDBLE * abcdef);
@@ -722,12 +721,12 @@ public:
 	int read_phase_vm(char *ptr, LDBLE * delta_v,
 		DELTA_V_UNIT * units);
     void read_llnl_aqueous_model_parameters();
-	int read_exchange(void);
-	int read_exchange_master_species(void);
-	int read_exchange_species(void);
-	int read_gas_phase(void);
-	int read_incremental_reactions(void);
-	int read_inverse(void);
+    int read_exchange();
+    int read_exchange_master_species();
+    int read_exchange_species();
+    int read_gas_phase();
+    int read_incremental_reactions();
+    int read_inverse();
     int read_inv_balances(struct inverse *inverse_ptr, std::string next_char);
     int read_inv_isotopes(struct inverse *inverse_ptr, std::string ptr);
     int read_inv_phases(struct inverse *inverse_ptr, std::string next_char);
@@ -825,7 +824,7 @@ public:
 	int read_solution_spread(void);
     int copy_token_tab(std::string token_ptr, std::string ptr, int *length);
 	int get_option_string(const char **opt_list, int count_opt_list,
-		char **next_char);
+        std::string next_char);
 	int spread_row_free(struct spread_row *spread_row_ptr);
 	int spread_row_to_solution(struct spread_row *heading,
 		struct spread_row *units,
@@ -878,7 +877,7 @@ protected:
 	cxxNameDouble elt_list_NameDouble(void);
 	struct elt_list * NameDouble2elt_list(const cxxNameDouble &nd);
 public:
-	enum entity_type get_entity_enum(char *name);
+    enum entity_type get_entity_enum(std::string name);
 	struct inverse *inverse_alloc(void);
 	int inverse_delete(int i);
 	static int inverse_isotope_compare(const void *ptr1, const void *ptr2);
@@ -891,12 +890,12 @@ protected:
     struct logk *logk_search(std::string name);
 	struct master *master_alloc(void);
 	static int master_compare(const void *ptr1, const void *ptr2);
-	int master_delete(char *ptr);
+    void master_delete(std::string ptr);
 public:
     struct master *master_bsearch(std::string ptr);
-	struct master *master_bsearch_primary(const char *ptr);
-	struct master *master_bsearch_secondary(char *ptr);
-	struct master *master_search(char *ptr, int *n);
+    struct master *master_bsearch_primary(std::string ptr);
+    struct master *master_bsearch_secondary(std::string ptr);
+    struct master *master_search(std::string ptr, int *n);
 	struct pe_data *pe_data_alloc(void);
 public:
 	struct pe_data *pe_data_dup(struct pe_data *pe_ptr_old);
@@ -908,7 +907,7 @@ public:
 protected:
 	static int phase_compare(const void *ptr1, const void *ptr2);
 	int phase_delete(int i);
-	struct phase *phase_store(const char *name);
+    struct phase *phase_store(std::string name);
 public:
     struct Rate *rate_bsearch(char *ptr, int *j);
     int rate_free(struct Rate rate_ptr);
@@ -923,7 +922,7 @@ public:
 	static int s_compare(const void *ptr1, const void *ptr2);
 	int s_delete(int i);
     struct species *s_search(std::string name);
-	struct species *s_store(const char *name, LDBLE z, int replace_if_found);
+    struct species *s_store(std::string name, LDBLE z, int replace_if_found);
 protected:
 	struct save_values *save_values_bsearch(struct save_values *k, int *n);
 	static int save_values_compare(const void *ptr1, const void *ptr2);
@@ -995,7 +994,7 @@ public:
 	int fill_tally_table(int *n_user, int index_conservative, int n_buffer);
 	int get_tally_table_rows_columns(int *rows, int *columns);
 	int get_tally_table_column_heading(int column, int *type, char *string);
-	int get_tally_table_row_heading(int column, char *string);
+    int get_tally_table_row_heading(int column, std::string string);
 	int store_tally_table(LDBLE * array, int row_dim, int col_dim,
 		LDBLE fill_factor);
 	int zero_tally_table(void);
@@ -1097,13 +1096,13 @@ public:
 #endif
     int copy_token(std::string token_ptr, std::string ptr, int *length);
     int copy_token(std::string &token, std::string ptr);
-	int dup_print(const char *ptr, int emphasis);
+    int dup_print(std::string ptr, int emphasis);
 	int equal(LDBLE a, LDBLE b, LDBLE eps);
 public:
 	void *free_check_null(void *ptr);
 protected:
 	void free_hash_strings(HashTable * Table);
-    int get_token(std::string eqnaddr, char *string, LDBLE * z, int *l);
+    int get_token(std::string eqnaddr, std::string string, LDBLE * z, int *l);
 	int hcreate_multi(unsigned Count, HashTable ** HashTable_ptr);
 	void hdestroy_multi(HashTable * HashTable_ptr);
 	ENTRY *hsearch_multi(HashTable * Table, ENTRY item, ACTION action);
@@ -1112,17 +1111,15 @@ public:
 	void malloc_error(void);
 protected:
 	int parse_couple(char *token);
-	int print_centered(const char *string);
+    int print_centered(std::string string);
 public:
-	static int replace(const char *str1, const char *str2, char *str);
-	static bool replace(const char *str1, const char *str2, std::string & str);
+    static bool replace(std::string str1, std::string str2, std::string & str);
     static int strcmp_nocase(std::string str1, std::string str2);
-	static int strcmp_nocase_arg1(const char *str1, const char *str2);
+    static int strcmp_nocase_arg1(std::string str1, const char *str2);
 protected:
 	void space(void **ptr, int i, int *max, int struct_size);
     void squeeze_white(std::string s_l);
-	int status(int count, const char *str, bool kinetics = false);
-	void str_tolower(char *str);
+    int status(int count, std::string str, bool kinetics = false);
 	void str_toupper(char *str);
 public:
 #if !defined(NDEBUG) && defined(WIN32_MEMORY_DEBUG)
@@ -1365,7 +1362,7 @@ protected:
     std::string title_x;
 	std::string last_title_x;
 	int new_x;
-	char *description_x;
+    std::string description_x;
 	LDBLE tc_x;
 	LDBLE tk_x;
 	LDBLE patm_x;

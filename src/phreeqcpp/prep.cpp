@@ -47,8 +47,8 @@ prep(void)
 				  STOP);
 		return ERROR;
 	}
-	description_x = (char *) free_check_null(description_x);
-	description_x = string_duplicate(solution_ptr->Get_description().c_str());
+//	description_x = (char *) free_check_null(description_x);
+    description_x = solution_ptr->Get_description();
 /*
  *   Allocate space for unknowns
  *   Must allocate all necessary space before pointers to
@@ -442,11 +442,11 @@ build_gas_phase(void)
 		for (int j = 0; j < count_elts; j++)
 		{
 			unknown_ptr = NULL;
-            if (strcmp(elt_list[j].elt.name, "H") == 0)
+            if (elt_list[j].elt.name == "H")
 			{
 				unknown_ptr = mass_hydrogen_unknown;
 			}
-            else if (strcmp(elt_list[j].elt.name, "O") == 0)
+            else if (elt_list[j].elt.name == "O")
 			{
 				unknown_ptr = mass_oxygen_unknown;
 			}
@@ -489,11 +489,11 @@ build_gas_phase(void)
 		for (int j = 0; j < count_elts; j++)
 		{
 			unknown_ptr = NULL;
-            if (strcmp(elt_list[j].elt.name, "H") == 0)
+            if (elt_list[j].elt.name == "H")
 			{
 				unknown_ptr = mass_hydrogen_unknown;
 			}
-            else if (strcmp(elt_list[j].elt.name, "O") == 0)
+            else if (elt_list[j].elt.name == "O")
 			{
 				unknown_ptr = mass_oxygen_unknown;
 			}
@@ -676,7 +676,7 @@ build_ss_assemblage(void)
 	int row, col;
 	struct master *master_ptr;
 	struct rxn_token *rxn_ptr;
-	char *ptr;
+    std::string ptr;
 
 	if (ss_unknown == NULL)
 		return (OK);
@@ -779,10 +779,10 @@ build_ss_assemblage(void)
  */
 		count_elts = 0;
 		paren_count = 0;
-		char * token = string_duplicate(x[i]->phase->formula);
+        std::string token = x[i]->phase->formula;
 		ptr = token;
         get_elts_in_species(ptr, 1.0);
-		free_check_null(token);
+//		free_check_null(token);
 /*
  *   Go through elements in phase
  */
@@ -792,7 +792,7 @@ build_ss_assemblage(void)
 		for (int j = 0; j < count_elts; j++)
 		{
 
-            if (strcmp(elt_list[j].elt.name, "H") == 0
+            if (elt_list[j].elt.name == "H"
 				&& mass_hydrogen_unknown != NULL)
 			{
 				store_jacob0(mass_hydrogen_unknown->number, x[i]->number,
@@ -801,7 +801,7 @@ build_ss_assemblage(void)
 								 elt_list[j].coef);
 
 			}
-            else if (strcmp(elt_list[j].elt.name, "O") == 0
+            else if (elt_list[j].elt.name == "O"
 					 && mass_oxygen_unknown != NULL)
 			{
 				store_jacob0(mass_oxygen_unknown->number, x[i]->number,
@@ -1448,7 +1448,7 @@ build_pure_phases(void)
  */
 	bool stop;
 	std::string token;
-	char *ptr;
+    std::string ptr;
 	struct master *master_ptr;
 	struct rxn_token *rxn_ptr;
 /*
@@ -1513,17 +1513,17 @@ build_pure_phases(void)
 		cxxPPassemblageComp * comp_ptr = (cxxPPassemblageComp *) x[i]->pp_assemblage_comp_ptr;
 		if (comp_ptr->Get_add_formula().size() > 0)
 		{
-			char * char_name = string_duplicate(comp_ptr->Get_add_formula().c_str());
+            std::string char_name =comp_ptr->Get_add_formula();
 			ptr = char_name;
             get_elts_in_species(ptr, 1.0);
-			free_check_null(char_name);
+//			free_check_null(char_name);
 		}
 		else
 		{
-			char * char_name = string_duplicate(x[i]->phase->formula);
+            std::string char_name = x[i]->phase->formula;
 			ptr = char_name;
             get_elts_in_species(ptr, 1.0);
-			free_check_null(char_name);
+//			free_check_null(char_name);
 		}
 /*
  *   Go through elements in phase
@@ -1535,7 +1535,7 @@ build_pure_phases(void)
 		for (int j = 0; j < count_elts; j++)
 		{
 
-            if (strcmp(elt_list[j].elt.name, "H") == 0
+            if (elt_list[j].elt.name == "H"
 				&& mass_hydrogen_unknown != NULL)
 			{
 				store_jacob0(mass_hydrogen_unknown->number, x[i]->number,
@@ -1544,7 +1544,7 @@ build_pure_phases(void)
 								 elt_list[j].coef);
 
 			}
-            else if (strcmp(elt_list[j].elt.name, "O") == 0
+            else if (elt_list[j].elt.name == "O"
 					 && mass_oxygen_unknown != NULL)
 			{
 				store_jacob0(mass_oxygen_unknown->number, x[i]->number,
@@ -1999,11 +1999,11 @@ convert_units(cxxSolution *solution_ptr)
 			}
 			else
 			{
-				char * temp_desc = string_duplicate(comp_ref.Get_description().c_str());
-				char *ptr = temp_desc;
+                std::string temp_desc = comp_ref.Get_description();
+                std::string ptr = temp_desc;
                 copy_token(token, ptr);
 				master_ptr = master_bsearch(token.c_str());
-				free_check_null(temp_desc);
+//				free_check_null(temp_desc);
 				if (master_ptr != NULL)
 				{
 					/* use gfw for element redox state */
@@ -2099,7 +2099,7 @@ convert_units(cxxSolution *solution_ptr)
 
 /* ---------------------------------------------------------------------- */
 struct master ** Phreeqc::
-get_list_master_ptrs(char *ptr, struct master *master_ptr)
+get_list_master_ptrs(std::string ptr, struct master *master_ptr)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -2108,7 +2108,7 @@ get_list_master_ptrs(char *ptr, struct master *master_ptr)
  *           returned.
  */
 	int j, l, count_list;
-	char token[MAX_LENGTH];
+    std::string token;
 	struct master **master_ptr_list;
 	struct master *master_ptr0;
 /*
@@ -3084,7 +3084,7 @@ add_surface_charge_balance(void)
  *   Include charge balance in list for mass-balance equations
  */
 	int i;
-	char *ptr;
+    std::string ptr;
 	std::string token;
 
 	struct master *master_ptr;
@@ -3135,10 +3135,10 @@ add_surface_charge_balance(void)
 /*
  *   Include charge balance in list for mass-balance equations
  */
-    char * temp_name = string_duplicate(master_ptr->elt.name);
+    std::string temp_name = master_ptr->elt.name;
 	ptr = temp_name;
     get_secondary_in_species(ptr, 1.0);
-	free_check_null(temp_name);
+//	free_check_null(temp_name);
 
 	return (OK);
 }
@@ -3198,10 +3198,10 @@ add_cd_music_charge_balances(int n)
 	 *   Include charge balance in list for mass-balance equations
 	 */
 	{
-        char * temp_name = string_duplicate( master_ptr->elt.name);
-		char *ptr = temp_name;
+        std::string temp_name = master_ptr->elt.name;
+        std::string ptr = temp_name;
         get_secondary_in_species(ptr, s[n]->dz[0]);
-		free_check_null(temp_name);
+//		free_check_null(temp_name);
 	}
 	/*
 	 *  Find potential unknown for plane 1
@@ -3213,10 +3213,10 @@ add_cd_music_charge_balances(int n)
 	 *   Include charge balance in list for mass-balance equations
 	 */
 	{
-        char * temp_name = string_duplicate( master_ptr->elt.name);
-		char *ptr = temp_name;
+        std::string temp_name = master_ptr->elt.name;
+        std::string ptr = temp_name;
         get_secondary_in_species(ptr, s[n]->dz[1]);
-		free_check_null(temp_name);
+//		free_check_null(temp_name);
 	}
 	/*
 	 *  Find potential unknown for plane 2
@@ -3228,10 +3228,10 @@ add_cd_music_charge_balances(int n)
 	 *   Include charge balance in list for mass-balance equations
 	 */
 	{
-        char * temp_name = string_duplicate(master_ptr->elt.name);
-		char *ptr = temp_name;
+        std::string temp_name = master_ptr->elt.name;
+        std::string ptr = temp_name;
         get_secondary_in_species(ptr, s[n]->dz[2]);
-		free_check_null(temp_name);
+//		free_check_null(temp_name);
 	}
 
 	return (OK);
@@ -3830,7 +3830,7 @@ find_surface_charge_unknown(std::string &str, int plane)
 	str = token;
 	for (int i = 0; i < count_unknowns; i++)
 	{
-		if (strcmp(str.c_str(), x[i]->description) == 0)
+        if (str.c_str() == x[i]->description)
 		{
 			return (x[i]);
 		}
@@ -4314,7 +4314,7 @@ setup_solution(void)
  */
 	struct master *master_ptr;
 	cxxSolution *solution_ptr;
-	char *ptr;
+    std::string ptr;
 	std::string token;
 	struct master_isotope *master_isotope_ptr;
 	struct phase *phase_ptr;
@@ -4353,7 +4353,7 @@ setup_solution(void)
 			comp_it = solution_ptr->Get_initial_data()->Get_comps().find(it->first.c_str());
 			comp_ptr = &(comp_it->second);
 		}
-		char * temp_desc = string_duplicate(it->first.c_str());
+        std::string temp_desc = it->first;
 		ptr = temp_desc;
         copy_token(token, ptr);
 		master_ptr = master_bsearch(token.c_str());
@@ -4364,7 +4364,7 @@ setup_solution(void)
 		{
 			if (strcmp(token.c_str(), "H(1)") != 0 && strcmp(token.c_str(), "E") != 0)
 			{
-				free_check_null(temp_desc);
+//				free_check_null(temp_desc);
 				continue;
 			}
 		}
@@ -4378,7 +4378,7 @@ setup_solution(void)
 					"Master species not in database for %s, skipping element.",
 					it->first.c_str());
 			warning_msg(error_string);
-			free_check_null(temp_desc);
+//			free_check_null(temp_desc);
 			continue;
 		}
 		if (master_ptr->type != AQ)
@@ -4388,7 +4388,7 @@ setup_solution(void)
 					"Only aqueous concentrations are allowed in solution data, ignoring %s.",
 					it->first.c_str());
 			warning_msg(error_string);
-			free_check_null(temp_desc);
+//			free_check_null(temp_desc);
 			continue;
 		}
 /*
@@ -4417,8 +4417,8 @@ setup_solution(void)
 /*
  *   Set pointers
  */
-		free_check_null(temp_desc);
-		temp_desc = string_duplicate(it->first.c_str());
+//		free_check_null(temp_desc);
+        temp_desc = it->first;
 		ptr = temp_desc;
         copy_token(token, ptr);
 		Utilities::str_tolower(token);
@@ -4471,13 +4471,13 @@ setup_solution(void)
 				input_error++;
 			}
 		}
-		free_check_null(temp_desc);
+//		free_check_null(temp_desc);
 /*
  *   Charge balance unknown
  */
 		if (comp_ptr && comp_ptr->Get_equation_name().size() > 0)
 		{
-			char * temp_eq_name = string_duplicate(comp_ptr->Get_equation_name().c_str());
+            std::string temp_eq_name = comp_ptr->Get_equation_name();
 			ptr = temp_eq_name;
             copy_token(token, ptr);
 			Utilities::str_tolower(token);
@@ -4524,7 +4524,7 @@ setup_solution(void)
 					solution_phase_boundary_unknown = x[count_unknowns];
 				}
 			}
-			free_check_null(temp_eq_name);
+//			free_check_null(temp_eq_name);
 		}
 		count_unknowns++;
 	}
@@ -5312,10 +5312,10 @@ write_mb_eqn_x(void)
 	for (i = 1; i < count_trxn; i++)
 	{
 		j = count_elts;
-		char * temp_name = string_duplicate(trxn.token[i].s->name);
-		char * ptr = temp_name;
+        std::string temp_name = trxn.token[i].s->name;
+        std::string ptr = temp_name;
         get_elts_in_species(ptr, trxn.token[i].coef);
-		free_check_null(temp_name);
+//		free_check_null(temp_name);
 		for (k = j; k < count_elts; k++)
 		{
 			if (trxn.token[i].s->secondary != NULL)
@@ -5334,17 +5334,17 @@ write_mb_eqn_x(void)
 		}
 		if (trxn.token[i].s->secondary == NULL)
 		{
-            char * temp_name = string_duplicate(trxn.token[i].s->primary->elt.name);
-			char *ptr = temp_name;
+            std::string temp_name = trxn.token[i].s->primary->elt.name;
+            std::string ptr = temp_name;
             get_secondary_in_species(ptr, trxn.token[i].coef);
-			free_check_null(temp_name);
+//			free_check_null(temp_name);
 		}
 		else
 		{
-            char * temp_name = string_duplicate(trxn.token[i].s->secondary->elt.name);
+            std::string temp_name = trxn.token[i].s->secondary->elt.name;
 			ptr = temp_name;
             get_secondary_in_species(ptr, trxn.token[i].coef);
-			free_check_null(temp_name);
+//			free_check_null(temp_name);
 		}
 	}
 	if (count_elts > 0)
@@ -5380,27 +5380,27 @@ write_mb_for_species_list(int n)
 	{
 		if (trxn.token[i].s->secondary == NULL)
 		{
-            char * temp_name = string_duplicate(trxn.token[i].s->primary->elt.name);
-			char * ptr = temp_name;
+            std::string temp_name = trxn.token[i].s->primary->elt.name;
+            std::string ptr = temp_name;
             get_secondary_in_species(ptr, trxn.token[i].coef);
-			free_check_null(temp_name);
+//			free_check_null(temp_name);
 		}
 		else
 		{
-            char * temp_name = string_duplicate(trxn.token[i].s->secondary->elt.name);
-			char * ptr = temp_name;
+            std::string temp_name = trxn.token[i].s->secondary->elt.name;
+            std::string ptr = temp_name;
             if (get_secondary_in_species(ptr, trxn.token[i].coef) == ERROR)
 			{
 				input_error++;
                 error_string = sformatf( "Error parsing %s.", trxn.token[i].s->secondary->elt.name);
 				error_msg(error_string, CONTINUE);
 			}
-			free_check_null(temp_name);
+//			free_check_null(temp_name);
 		}
 	}
 	for (i = 0; i < count_elts; i++)
 	{
-        if (strcmp(elt_list[i].elt.name, "O(-2)") == 0)
+        if (elt_list[i].elt.name == "O(-2)")
 		{
 			if (count_elts >= max_elts)
 			{
@@ -5448,22 +5448,22 @@ write_phase_sys_total(int n)
 	{
 		if (trxn.token[i].s->secondary == NULL)
 		{
-            char * temp_name = string_duplicate(trxn.token[i].s->primary->elt.name);
-			char *ptr = temp_name;
+            std::string temp_name = trxn.token[i].s->primary->elt.name;
+            std::string ptr = temp_name;
             get_secondary_in_species(ptr, trxn.token[i].coef);
-			free_check_null(temp_name);
+//			free_check_null(temp_name);
 		}
 		else
 		{
-            char * temp_name = string_duplicate(trxn.token[i].s->secondary->elt.name);
-			char *ptr = temp_name;
+            std::string temp_name = trxn.token[i].s->secondary->elt.name;
+            std::string ptr = temp_name;
             get_secondary_in_species(ptr, trxn.token[i].coef);
-			free_check_null(temp_name);
+//			free_check_null(temp_name);
 		}
 	}
 	for (i = 0; i < count_elts; i++)
 	{
-        if (strcmp(elt_list[i].elt.name, "O(-2)") == 0)
+        if (elt_list[i].elt.name == "O(-2)")
 		{
 			if (count_elts >= max_elts)
 			{
@@ -6307,10 +6307,10 @@ build_min_exch(void)
 		count_elts = 0;
 		paren_count = 0;
 		{
-			char * formula = string_duplicate(comp_ref.Get_formula().c_str());
-			char * ptr = formula;
+            std::string formula = comp_ref.Get_formula();
+            std::string ptr = formula;
             get_elts_in_species(ptr, 1.0);
-			free_check_null(formula);
+//			free_check_null(formula);
 		}
 #ifdef COMBINE
 		change_hydrogen_in_elt_list(0);
@@ -6441,10 +6441,10 @@ build_min_surface(void)
 		//
 		{
 			/* Add specified formula for all types of surfaces */
-			char * formula = string_duplicate(comp_ptr->Get_formula().c_str());
+            std::string formula = comp_ptr->Get_formula();
             std::string ptr1 = formula;
             get_elts_in_species(ptr1, 1.0);
-			free_check_null(formula);
+//			free_check_null(formula);
 		}
 #ifdef COMBINE
 		change_hydrogen_in_elt_list(0);
@@ -6593,12 +6593,12 @@ change_hydrogen_in_elt_list(LDBLE charge)
 	elt_list_combine();
 	for (j = 0; j < count_elts; j++)
 	{
-        if (strcmp(elt_list[j].elt.name, "H") == 0)
+        if (elt_list[j].elt.name == "H")
 		{
 			found_h = j;
 			coef_h = elt_list[j].coef;
 		}
-        else if (strcmp(elt_list[j].elt.name, "O") == 0)
+        else if (elt_list[j].elt.name == "O")
 		{
 			found_o = j;
 			coef_o = elt_list[j].coef;

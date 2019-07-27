@@ -672,7 +672,7 @@ run_as_cells(void)
 	struct save save_data;
 	LDBLE kin_time;
 	int count_steps, use_mix;
-	char token[2 * MAX_LENGTH];
+    std::string token;
 
 	state = REACTION;
 	if (run_info.Get_cells().Get_numbers().size() == 0 ||
@@ -754,7 +754,7 @@ run_as_cells(void)
 		rate_sim_time = 0;
 		for (reaction_step = 1; reaction_step <= count_steps; reaction_step++)
 		{
-			sprintf(token, "Reaction step %d.", reaction_step);
+//			sprintf(token, "Reaction step %d.", reaction_step);
 			if (reaction_step > 1 && incremental_reactions == FALSE)
 			{
 				copy_use(-2);

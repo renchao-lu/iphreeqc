@@ -90,9 +90,9 @@ public:
 #ifdef IPHREEQC_NO_FORTRAN_MODULE
 	double basic_callback(double x1, double x2, char * str);
 #else
-	double basic_callback(double x1, double x2, const char * str);
+    double basic_callback(double x1, double x2, std::string str);
 #endif
-	void register_basic_callback(double ( *fcn)(double x1, double x2, const char *str, void *cookie), void *cookie1);
+    void register_basic_callback(double ( *fcn)(double x1, double x2, std::string str, void *cookie), void *cookie1);
 #ifdef IPHREEQC_NO_FORTRAN_MODULE
 	void register_fortran_basic_callback(double ( *fcn)(double *x1, double *x2, char *str, size_t l));
 #else
@@ -102,10 +102,10 @@ public:
     LDBLE activity(std::string species_name);
     LDBLE activity_coefficient(std::string species_name);
     LDBLE log_activity_coefficient(std::string species_name);
-	LDBLE aqueous_vm(const char *species_name);
-	LDBLE phase_vm(const char *phase_name);
-	LDBLE diff_c(const char *species_name);
-	LDBLE setdiff_c(const char *species_name, double d);
+    LDBLE aqueous_vm(std::string species_name);
+    LDBLE phase_vm(std::string phase_name);
+    LDBLE diff_c(std::string species_name);
+    LDBLE setdiff_c(std::string species_name, double d);
 	LDBLE sa_declercq(double type, double sa, double d, double m, double m0, double gfw);
 	LDBLE calc_SC(void);
 	/* VP: Density Start */
@@ -133,14 +133,14 @@ public:
     LDBLE iso_value(std::string total_name);
     LDBLE kinetics_moles(std::string kinetics_name);
     LDBLE kinetics_moles_delta(std::string kinetics_name);
-	LDBLE log_activity(const char *species_name);
-	LDBLE log_molality(const char *species_name);
-	LDBLE molality(const char *species_name);
-	LDBLE pressure(void);
-	LDBLE pr_pressure(const char *phase_name);
-	LDBLE pr_phi(const char *phase_name);
-	LDBLE saturation_ratio(const char *phase_name);
-	int saturation_index(const char *phase_name, LDBLE * iap, LDBLE * si);
+    LDBLE log_activity(std::string species_name);
+    LDBLE log_molality(std::string species_name);
+    LDBLE molality(std::string species_name);
+    LDBLE pressure();
+    LDBLE pr_pressure(std::string phase_name);
+    LDBLE pr_phi(std::string phase_name);
+    LDBLE saturation_ratio(std::string phase_name);
+    int saturation_index(std::string phase_name, LDBLE * iap, LDBLE * si);
 	int solution_number(void);
 	LDBLE solution_sum_secondary(const char *total_name);
     LDBLE sum_match_gases(std::string stemplate, std::string name);
@@ -168,8 +168,8 @@ public:
     int system_total_ss();
     int system_total_elt(std::string total_name);
     int system_total_elt_secondary(std::string total_name);
-	LDBLE total(const char *total_name);
-	LDBLE total_mole(const char *total_name);
+    LDBLE total(std::string total_name);
+    LDBLE total_mole(std::string total_name);
 	int system_total_solids(cxxExchange *exchange_ptr,
 		cxxPPassemblage *pp_assemblage_ptr,
 		cxxGasPhase *gas_phase_ptr,
@@ -893,7 +893,7 @@ protected:
 	static int master_compare(const void *ptr1, const void *ptr2);
 	int master_delete(char *ptr);
 public:
-	struct master *master_bsearch(const char *ptr);
+    struct master *master_bsearch(std::string ptr);
 	struct master *master_bsearch_primary(const char *ptr);
 	struct master *master_bsearch_secondary(char *ptr);
 	struct master *master_search(char *ptr, int *n);
@@ -1135,9 +1135,9 @@ public:
 #endif
 protected:
     std::string string_pad(std::string str, int i);
-	int string_trim(char *str);
-	int string_trim_right(char *str);
-	int string_trim_left(char *str);
+    int string_trim(std::string str);
+    int string_trim_right(std::string str);
+    int string_trim_left(std::string str);
 	static LDBLE under(LDBLE xval);
 	void zero_double(LDBLE * target, int n);
 	int get_input_errors(void);
@@ -1787,13 +1787,8 @@ protected:
 
 	/* Basic */
 	PBasic * basic_interpreter;
-	double (*basic_callback_ptr) (double x1, double x2, const char *str, void *cookie);
+    double (*basic_callback_ptr) (double x1, double x2, std::string str, void *cookie);
 	void *basic_callback_cookie;
-#ifdef IPHREEQC_NO_FORTRAN_MODULE
-	double (*basic_fortran_callback_ptr) (double *x1, double *x2, char *str, size_t l);
-#else
-	double (*basic_fortran_callback_ptr) (double *x1, double *x2, const char *str, int l);
-#endif
 #if defined(SWIG) || defined(SWIG_IPHREEQC)
 	class BasicCallback *basicCallback;
     void SetCallback(BasicCallback *cb) { basicCallback = cb; }

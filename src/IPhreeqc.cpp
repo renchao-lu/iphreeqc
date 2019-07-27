@@ -916,29 +916,9 @@ int IPhreeqc::RunString(const char* input)
 	return this->PhreeqcPtr->get_input_errors();
 }
 
-void IPhreeqc::SetBasicCallback(double (*fcn)(double x1, double x2, const char *str, void *cookie), void *cookie1)
+void IPhreeqc::SetBasicCallback(double (*fcn)(double x1, double x2, std::string str, void *cookie), void *cookie1)
 {
 	this->PhreeqcPtr->register_basic_callback(fcn, cookie1);
-}
-#ifdef IPHREEQC_NO_FORTRAN_MODULE
-void IPhreeqc::SetBasicFortranCallback(double (*fcn)(double *x1, double *x2, char *str, size_t l))
-{
-	this->PhreeqcPtr->register_fortran_basic_callback(fcn);
-}
-#else
-void IPhreeqc::SetBasicFortranCallback(double (*fcn)(double *x1, double *x2, const char *str, int l))
-{
-	this->PhreeqcPtr->register_fortran_basic_callback(fcn);
-}
-#endif
-VRESULT IPhreeqc::SetCurrentSelectedOutputUserNumber(int n)
-{
-	if (0 <= n)
-	{
-		this->CurrentSelectedOutputUserNumber = n;
-		return VR_OK;
-	}
-	return VR_INVALIDARG;
 }
 
 void IPhreeqc::SetDumpFileName(const char *filename)

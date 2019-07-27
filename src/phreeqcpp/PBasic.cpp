@@ -474,8 +474,8 @@ clearvars(void)
 	}
 }
 
-char * PBasic::
-numtostr(char * Result, LDBLE n)
+std::string PBasic::
+numtostr(std::string Result, LDBLE n)
 {
 	char *l_s;
 	long i;
@@ -531,9 +531,9 @@ numtostr(char * Result, LDBLE n)
 	l_s[i - 1] = '\0';
 /* p2c: basic.p, line 237:
  * Note: Modification of string length may translate incorrectly [146] */
-	strcpy(Result, l_s);
+    Result = l_s;
 	PhreeqcPtr->free_check_null(l_s);
-	return (Result);
+    return Result;
 /*  } else {
     if (PhreeqcPtr->punch.high_precision == FALSE) sprintf(l_s, "%30.10f", n);
       else sprintf(l_s, "%30.12f", n);
@@ -551,7 +551,7 @@ numtostr(char * Result, LDBLE n)
 }
 
 void PBasic::
-parse(char * l_inbuf, tokenrec ** l_buf)
+parse(std::string l_inbuf, tokenrec ** l_buf)
 {
 	long i, j, begin, len, m, lp, q;
 	char token[toklength + 1] = {0};
@@ -567,7 +567,7 @@ parse(char * l_inbuf, tokenrec ** l_buf)
 	do
 	{
 		ch = ' ';
-		while (i <= (int) strlen(l_inbuf) && (ch == ' ' || ch == '\t'))
+        while (i <= (int) l_inbuf.size() && (ch == ' ' || ch == '\t'))
 		{
 			ch = l_inbuf[i - 1];
 			i++;
@@ -596,7 +596,7 @@ parse(char * l_inbuf, tokenrec ** l_buf)
 				q += 1;
 				t->kind = tokstr;
 				j = 0;
-				len = (int) strlen(l_inbuf);
+                len = l_inbuf.size();
 				begin = i;
 				while (i <= len && l_inbuf[i - 1] != ch)
 				{
@@ -675,12 +675,12 @@ parse(char * l_inbuf, tokenrec ** l_buf)
 				break;
 
 			case '<':
-				if (i <= (int) strlen(l_inbuf) && l_inbuf[i - 1] == '=')
+                if (i <= (int) l_inbuf.size() && l_inbuf[i - 1] == '=')
 				{
 					t->kind = tokle;
 					i++;
 				}
-				else if (i <= (int) strlen(l_inbuf) && l_inbuf[i - 1] == '>')
+                else if (i <= (int) l_inbuf.size() && l_inbuf[i - 1] == '>')
 				{
 					t->kind = tokne;
 					i++;
@@ -690,7 +690,7 @@ parse(char * l_inbuf, tokenrec ** l_buf)
 				break;
 
 			case '>':
-				if (i <= (int) strlen(l_inbuf) && l_inbuf[i - 1] == '=')
+                if (i <= (int) l_inbuf.size() && l_inbuf[i - 1] == '=')
 				{
 					t->kind = tokge;
 					i++;
@@ -705,7 +705,7 @@ parse(char * l_inbuf, tokenrec ** l_buf)
 					i--;
 					j = 0;
 					token[toklength] = '\0';
-					while (i <= (int) strlen(l_inbuf) &&
+                    while (i <= (int) l_inbuf.size() &&
 						   (l_inbuf[i - 1] == '$' || l_inbuf[i - 1] == '_' ||
 							isalnum((int) l_inbuf[i - 1])))
 					{
@@ -731,7 +731,7 @@ parse(char * l_inbuf, tokenrec ** l_buf)
 						t->kind = item->second;
 						if (t->kind == tokrem)
 						{
-							m = (int) strlen(l_inbuf) + 1;
+                            m = l_inbuf.size();
 							if (m < 256)
 								m = 256;
 							t->UU.sp = (char *) PhreeqcPtr->PHRQ_calloc(m, sizeof(char));
@@ -745,7 +745,7 @@ parse(char * l_inbuf, tokenrec ** l_buf)
 //							sprintf(t->UU.sp, "%.*s",
 //									(int) (strlen(l_inbuf) - i + 1),
 //									l_inbuf + i - 1);
-							i = (int) strlen(l_inbuf) + 1;
+                            i = (int) l_inbuf.size();
 						}
 					}
 					else
@@ -834,7 +834,7 @@ parse(char * l_inbuf, tokenrec ** l_buf)
 			}
 		}
 	}
-	while (i <= (int) strlen(l_inbuf));
+    while (i <= (int) l_inbuf.size());
 	if (q) {
 		if (phreeqci_gui)
 		{
@@ -889,7 +889,7 @@ listtokens(FILE * f, tokenrec * l_buf)
 {
 	bool ltr;
 	char STR1[256] = {0};
-	char *string;
+    std::string string;
 	ltr = false;
 	while (l_buf != NULL)
 	{
@@ -1753,7 +1753,7 @@ parseinput(tokenrec ** l_buf)
 }
 
 void PBasic::
-errormsg(const char * l_s)
+errormsg(std::string l_s)
 {
 	if (phreeqci_gui)
 	{
@@ -1873,7 +1873,7 @@ strexpr(struct LOC_exec * LINK)
 	if (!n.stringval)
 		//tmerr(": chemical name is not enclosed in \"  \"" );
 		tmerr(": Expected quoted string or character variable." );
-	return (n.UU.sval);
+    return n.UU.sval;
 }
 
 std::string PBasic::
@@ -2034,7 +2034,7 @@ factor(struct LOC_exec * LINK)
 
 	long i, j, m;
 	tokenrec *tok, *tok1;
-	char *l_s;
+    std::string l_s;
 	LDBLE l_dummy;
 	int i_rate;
 	union
@@ -2808,7 +2808,7 @@ factor(struct LOC_exec * LINK)
 			{
 				//n.UU.val = PhreeqcPtr->system_total(elt_name, &count_species, &(names_arg),
 				//	&(types_arg), &(moles_arg));
-				n.UU.val = PhreeqcPtr->edl_species(surf_name, &count_species, &(names_arg), &(moles_arg), &area, &thickness);
+                n.UU.val = PhreeqcPtr->edl_species(surf_name, &count_species, names_arg, &(moles_arg), &area, &thickness);
 			}
 			/*
 			*  fill in varrec structures
@@ -2899,14 +2899,6 @@ factor(struct LOC_exec * LINK)
 				/*
 				* malloc space
 				*/
-				names_varrec->UU.U1.sarr = (char **) PhreeqcPtr->PHRQ_malloc((count + 1) * sizeof(char *));
-				if (names_varrec->UU.U1.sarr == NULL)
-				{
-					PhreeqcPtr->malloc_error();
-#if !defined(R_SO)
-					exit(4);
-#endif
-				}
 				moles_varrec->UU.U0.arr = (LDBLE *) PhreeqcPtr->PHRQ_malloc((count + 1) * sizeof(LDBLE));
 				if (moles_varrec->UU.U0.arr == NULL)
 				{
@@ -2917,7 +2909,7 @@ factor(struct LOC_exec * LINK)
 				}
 
 				// first position not used
-				names_varrec->UU.U1.sarr[0] = NULL;
+                names_varrec->UU.U1.sarr[0] = "";
 				moles_varrec->UU.U0.arr[0] = 0;
 
 				// set dims for Basic array
@@ -3005,7 +2997,7 @@ factor(struct LOC_exec * LINK)
 
 			// put formula as return value
 			n.stringval = true;
-			n.UU.sval = PhreeqcPtr->string_duplicate(form.c_str());
+            n.UU.sval = form;
 
 			/*
 			*  fill in varrec structure
@@ -3018,15 +3010,12 @@ factor(struct LOC_exec * LINK)
 				/*
 				* malloc space
 				*/
-				elts_varrec->UU.U1.sarr = (char **) PhreeqcPtr->PHRQ_malloc((count + 1) * sizeof(char *));
-				if (elts_varrec->UU.U1.sarr == NULL)
-					PhreeqcPtr->malloc_error();
 				coef_varrec->UU.U0.arr = (LDBLE *) PhreeqcPtr->PHRQ_malloc((count + 1) * sizeof(LDBLE));
 				if (coef_varrec->UU.U0.arr == NULL)
 					PhreeqcPtr->malloc_error();
 
 				// first position not used
-				elts_varrec->UU.U1.sarr[0] = NULL;
+                elts_varrec->UU.U1.sarr[0] = "";
 				coef_varrec->UU.U0.arr[0] = 0;
 
 				// set dims for Basic array
@@ -3045,7 +3034,7 @@ factor(struct LOC_exec * LINK)
 				i = 1;
 				for (cxxNameDouble::iterator it = stoichiometry.begin(); it != stoichiometry.end(); it++)
 				{
-					elts_varrec->UU.U1.sarr[i] = PhreeqcPtr->string_duplicate((it->first).c_str());
+                    elts_varrec->UU.U1.sarr[i] = it->first;
 					coef_varrec->UU.U0.arr[i] = it->second;
 					i++;
 				}
@@ -3111,7 +3100,7 @@ factor(struct LOC_exec * LINK)
 
 			// put formula as return value
 			n.stringval = true;
-			n.UU.sval = PhreeqcPtr->string_duplicate(form.c_str());
+            n.UU.sval = form;
 
 			/*
 			*  fill in varrec structure
@@ -3124,15 +3113,12 @@ factor(struct LOC_exec * LINK)
 				/*
 				* malloc space
 				*/
-				elts_varrec->UU.U1.sarr = (char **) PhreeqcPtr->PHRQ_malloc((count + 1) * sizeof(char *));
-				if (elts_varrec->UU.U1.sarr == NULL)
-					PhreeqcPtr->malloc_error();
 				coef_varrec->UU.U0.arr = (LDBLE *) PhreeqcPtr->PHRQ_malloc((count + 1) * sizeof(LDBLE));
 				if (coef_varrec->UU.U0.arr == NULL)
 					PhreeqcPtr->malloc_error();
 
 				// first position not used
-				elts_varrec->UU.U1.sarr[0] = NULL;
+                elts_varrec->UU.U1.sarr[0] = "";
 				coef_varrec->UU.U0.arr[0] = 0;
 
 				// set dims for Basic array
@@ -3151,7 +3137,7 @@ factor(struct LOC_exec * LINK)
 				i = 1;
 				for (cxxNameDouble::iterator it = stoichiometry.begin(); it != stoichiometry.end(); it++)
 				{
-					elts_varrec->UU.U1.sarr[i] = PhreeqcPtr->string_duplicate((it->first).c_str());
+                    elts_varrec->UU.U1.sarr[i] = it->first;
 					coef_varrec->UU.U0.arr[i] = it->second;
 					i++;
 				}
@@ -3202,7 +3188,7 @@ factor(struct LOC_exec * LINK)
 
 			// put type as return value
 			n.stringval = true;
-			n.UU.sval = PhreeqcPtr->string_duplicate(type.c_str());
+            n.UU.sval = type;
 
 			/*
 			*  fill in varrec structure
@@ -3213,14 +3199,6 @@ factor(struct LOC_exec * LINK)
 			/*
 			* malloc space
 			*/
-			elts_varrec->UU.U1.sarr = (char **) PhreeqcPtr->PHRQ_malloc((count + 1) * sizeof(char *));
-			if (elts_varrec->UU.U1.sarr == NULL)
-			{
-				PhreeqcPtr->malloc_error();
-#if !defined(R_SO)
-				exit(4);
-#endif
-			}
 			coef_varrec->UU.U0.arr = (LDBLE *) PhreeqcPtr->PHRQ_malloc((count + 1) * sizeof(LDBLE));
 			if (coef_varrec->UU.U0.arr == NULL)
 			{
@@ -3231,7 +3209,7 @@ factor(struct LOC_exec * LINK)
 			}
 
 			// first position not used
-			elts_varrec->UU.U1.sarr[0] = NULL;
+            elts_varrec->UU.U1.sarr[0] = "";
 			coef_varrec->UU.U0.arr[0] = 0;
 
 			// set dims for Basic array
@@ -3250,7 +3228,7 @@ factor(struct LOC_exec * LINK)
 			i = 1;
 			for (cxxNameDouble::iterator it = stoichiometry.begin(); it != stoichiometry.end(); it++)
 			{
-				elts_varrec->UU.U1.sarr[i] = PhreeqcPtr->string_duplicate((it->first).c_str());
+                elts_varrec->UU.U1.sarr[i] = it->first;
 				coef_varrec->UU.U0.arr[i] = it->second;
 				i++;
 			}
@@ -3291,28 +3269,28 @@ factor(struct LOC_exec * LINK)
 
 	case tokmol:
 		{
-			const char * str = stringfactor(STR1, LINK);
+            auto str = stringfactor(STR1, LINK);
 			n.UU.val = (parse_all) ? 1 : PhreeqcPtr->molality(str);
 		}
 		break;
 
 	case tokla:
 		{
-			const char * str = stringfactor(STR1, LINK);
+            auto str = stringfactor(STR1, LINK);
 			n.UU.val = (parse_all) ? 1 : PhreeqcPtr->log_activity(str);
 		}
 		break;
 
 	case toklm:
 		{
-			const char * str = stringfactor(STR1, LINK);
+            auto str = stringfactor(STR1, LINK);
 			n.UU.val = (parse_all) ? 1 : PhreeqcPtr->log_molality(str);
 		}
 		break;
 
 	case toksr:
 		{
-			const char * str = stringfactor(STR1, LINK);
+            auto str = stringfactor(STR1, LINK);
 			n.UU.val = (parse_all) ? 1 : PhreeqcPtr->saturation_ratio(str);
 		}
 		break;
@@ -3537,7 +3515,7 @@ factor(struct LOC_exec * LINK)
 
 	case toksi:
 		{
-			const char * str = stringfactor(STR1, LINK);
+            auto str = stringfactor(STR1, LINK);
 			if (parse_all)
 			{
 				n.UU.val = 1;
@@ -3551,7 +3529,7 @@ factor(struct LOC_exec * LINK)
 
 	case toktot:
 		{
-			const char * str = stringfactor(STR1, LINK);
+            auto str = stringfactor(STR1, LINK);
 			n.UU.val = (parse_all) ? 1 : PhreeqcPtr->total(str);
 		}
 		break;
@@ -3560,7 +3538,7 @@ factor(struct LOC_exec * LINK)
 	case toktotmol:
 	case toktotmoles:
 		{
-			const char * str = stringfactor(STR1, LINK);
+            auto str = stringfactor(STR1, LINK);
 			n.UU.val = (parse_all) ? 1 : PhreeqcPtr->total_mole(str);
 		}
 		break;
@@ -3640,8 +3618,8 @@ factor(struct LOC_exec * LINK)
 		break;
   	case tokgfw:
 		{
-			const char * str = stringfactor(STR1, LINK);
-			LDBLE gfw;
+            auto str = stringfactor(STR1, LINK);
+            double gfw;
 			PhreeqcPtr->compute_gfw(str, &gfw);
  			n.UU.val = (parse_all) ? 1 : gfw;
 		}
@@ -3651,13 +3629,13 @@ factor(struct LOC_exec * LINK)
  		break;
   	case tokvm:
 		{
-			const char * str = stringfactor(STR1, LINK);
+            auto str = stringfactor(STR1, LINK);
  			n.UU.val = (parse_all) ? 1 : PhreeqcPtr->aqueous_vm(str);
 		}
  		break;
   	case tokphase_vm:
 		{
-			const char * str = stringfactor(STR1, LINK);
+            auto str = stringfactor(STR1, LINK);
  			n.UU.val = (parse_all) ? 1 : PhreeqcPtr->phase_vm(str);
 		}
  		break;
@@ -3680,7 +3658,7 @@ factor(struct LOC_exec * LINK)
 		break;
 	case tokt_sc:
 		{
-			const char * str = stringfactor(STR1, LINK);
+            auto str = stringfactor(STR1, LINK);
 			n.UU.val = (parse_all) ? 1 : PhreeqcPtr->calc_t_sc(str);
 		}
 		break;
@@ -3737,9 +3715,6 @@ factor(struct LOC_exec * LINK)
 
 	case tokstr_:
 		n.stringval = true;
-		n.UU.sval = (char *) PhreeqcPtr->PHRQ_calloc(256, sizeof(char));
-		if (n.UU.sval == NULL)
-			PhreeqcPtr->malloc_error();
 		numtostr(n.UU.sval, realfactor(LINK));
 		break;
 
@@ -3775,10 +3750,7 @@ factor(struct LOC_exec * LINK)
 			}
 
 			// set function value
-			n.UU.sval = (char *) PhreeqcPtr->PHRQ_calloc(std_num.size() + 2, sizeof(char));
-			if (n.UU.sval == NULL)
-				PhreeqcPtr->malloc_error();
-			strcpy(n.UU.sval, std_num.c_str());
+            n.UU.sval = std_num;
 			n.stringval = true;	
 
 			// free work space
@@ -3818,10 +3790,7 @@ factor(struct LOC_exec * LINK)
 			}
 
 			// set function value
-			n.UU.sval = (char *) PhreeqcPtr->PHRQ_calloc(std_num.size() + 2, sizeof(char));
-			if (n.UU.sval == NULL)
-				PhreeqcPtr->malloc_error();
-			strcpy(n.UU.sval, std_num.c_str());
+            n.UU.sval = std_num;
 			n.stringval = true;	
 
 			// free work space
@@ -3853,7 +3822,7 @@ factor(struct LOC_exec * LINK)
 			if (LINK->t->kind != tokvar || elt_varrec->stringvar != 1)
 				snerr(": Cannot find element string variable");
 			free_dim_stringvar(elt_varrec);
-			*elt_varrec->UU.U1.sval = (char *) PhreeqcPtr->free_check_null(*elt_varrec->UU.U1.sval);
+//			*elt_varrec->UU.U1.sval = (char *) PhreeqcPtr->free_check_null(*elt_varrec->UU.U1.sval);
 
 			// right parenthesis
 			LINK->t = LINK->t->next;
@@ -3875,17 +3844,12 @@ factor(struct LOC_exec * LINK)
 			*count_varrec->UU.U0.val = (parse_all) ? 1 : eq;
 
 			// set element name
-			size_t l = elt_name.size();
-			l = l < 256 ? 256 : l + 1;
-			char * token = (char *) PhreeqcPtr->PHRQ_malloc( l * sizeof(char));
-			strcpy(token, elt_name.c_str());
-			*elt_varrec->UU.U1.sval = token;
+            elt_varrec->UU.U1.sval = elt_name;
 		}
 		break;
 	case tokcallback:
 		{		
 			double x1, x2;
-			char * str;
 
 			// left parenthesis
 			require(toklp, LINK);
@@ -3899,7 +3863,7 @@ factor(struct LOC_exec * LINK)
 			require(tokcomma, LINK);
 			
 			// string arugument
-			str = strexpr(LINK);
+            auto str = strexpr(LINK);
 
 			require(tokrp, LINK);
 
@@ -3947,7 +3911,7 @@ factor(struct LOC_exec * LINK)
 
 	case tokdiff_c:
 		{
-			const char * str = stringfactor(STR1, LINK);
+            auto str = stringfactor(STR1, LINK);
  			n.UU.val = (parse_all) ? 1 : PhreeqcPtr->diff_c(str);
 		}
 		break;
@@ -3958,7 +3922,7 @@ factor(struct LOC_exec * LINK)
 
 			require(toklp, LINK);
 
-			const char * str = stringfactor(STR1, LINK);
+            auto str = stringfactor(STR1, LINK);
 			require(tokcomma, LINK);
 
 			// double arugument
@@ -3981,33 +3945,33 @@ factor(struct LOC_exec * LINK)
 			n = expr(LINK);
 		disposetokens(&tok);
 		LINK->t = tok1;
-		PhreeqcPtr->PHRQ_free(l_s);
+        PhreeqcPtr->PHRQ_free(&l_s);
 		break;
 
 	case tokchr_:
 		n.stringval = true;
 		n.UU.sval = (char *) PhreeqcPtr->PHRQ_calloc(256, sizeof(char));
-		if (n.UU.sval == NULL)
+        if (n.UU.sval.empty())
 			PhreeqcPtr->malloc_error();
-		strcpy(n.UU.sval, " ");
+        n.UU.sval = " ";
 		n.UU.sval[0] = (char) intfactor(LINK);
 		break;
 
 	case tokeol_:
 		n.stringval = true;
 		n.UU.sval = (char *) PhreeqcPtr->PHRQ_calloc(256, sizeof(char));
-		if (n.UU.sval == NULL)
+        if (n.UU.sval.empty())
 			PhreeqcPtr->malloc_error();
-		strcpy(n.UU.sval, "\n");
+        n.UU.sval = "\n";
 		break;
 
 	case tokasc:
 		l_s = strfactor(LINK);
-		if (*l_s == '\0')
+        if (l_s == "\0")
 			n.UU.val = 0.0;
 		else
 			n.UU.val = l_s[0];
-		PhreeqcPtr->PHRQ_free(l_s);
+        PhreeqcPtr->PHRQ_free(&l_s);
 		break;
 
 	case tokmid_:
@@ -4018,7 +3982,7 @@ factor(struct LOC_exec * LINK)
 		i = intexpr(LINK);
 		if (i < 1)
 			i = 1;
-		j = (int) strlen(n.UU.sval);
+        j = (int) n.UU.sval.size();
 		if (LINK->t != NULL && LINK->t->kind == tokcomma)
 		{
 			LINK->t = LINK->t->next;
@@ -4027,14 +3991,14 @@ factor(struct LOC_exec * LINK)
 		{
 			std::string str = n.UU.sval;
 			str = str.substr(i - 1, j);
-			strcpy(n.UU.sval, str.c_str());
+            n.UU.sval = str.c_str();
 		}
 		require(tokrp, LINK);
 		break;
 	case toklen:
 		l_s = strfactor(LINK);
-		n.UU.val = (double) strlen(l_s);
-		PhreeqcPtr->PHRQ_free(l_s);
+        n.UU.val = (int) l_s.size();
+        PhreeqcPtr->PHRQ_free(&l_s);
 		break;
 
 	case tokpeek:
@@ -4171,31 +4135,23 @@ sexpr(struct LOC_exec * LINK)
 			if (n.stringval)
 			{
 				m = 1;
-				if (n.UU.sval)
+                if (!n.UU.sval.empty())
 				{
-					m += (int) strlen(n.UU.sval);
+                    m += (int) n.UU.sval.size();
 				}
-				if (n2.UU.sval)
+                if (!n2.UU.sval.empty())
 				{
-					m += (int) strlen(n2.UU.sval);
+                    m += (int) n2.UU.sval.size();
 				}
 				//m = (int) strlen(n.UU.sval) + (int) strlen(n2.UU.sval) + 1;
 				if (m < 256)
 					m = 256;
 
-				n.UU.sval = (char *) PhreeqcPtr->PHRQ_realloc(n.UU.sval, (size_t) m * sizeof(char));
-				if (n.UU.sval == NULL)
-				{
-					PhreeqcPtr->malloc_error();
-				}
-				else
-				{
-					if (n2.UU.sval)
+                if (!n.UU.sval.empty() && !n2.UU.sval.empty())
 					{
-						strcat(n.UU.sval, n2.UU.sval);
-						PhreeqcPtr->PHRQ_free(n2.UU.sval);
+                        n.UU.sval += n2.UU.sval;
+                        PhreeqcPtr->PHRQ_free(&n2.UU.sval);
 					}
-				}
 			}
 			else
 				n.UU.val += n2.UU.val;
@@ -4231,32 +4187,32 @@ relexpr(struct LOC_exec * LINK)
 			tmerr("");
 		if (n.stringval)
 		{
-			f = (bool) ((!strcmp(n.UU.sval, n2.UU.sval)
-							&& (unsigned long) k < 32
-							&& ((1L << ((long) k)) &
-								((1L << ((long) tokeq)) |
-								 (1L << ((long) tokge)) | (1L <<
-														   ((long) tokle))))
-							!= 0) || (strcmp(n.UU.sval, n2.UU.sval) < 0
-									  && (unsigned long) k < 32
-									  && ((1L << ((long) k)) &
-										  ((1L << ((long) toklt)) |
-										   (1L << ((long) tokle)) | (1L <<
-																	 ((long)
-																	  tokne))))
-									  != 0)
-						   || (strcmp(n.UU.sval, n2.UU.sval) > 0
-							   && (unsigned long) k < 32
-							   && ((1L << ((long) k)) &
-								   ((1L << ((long) tokgt)) |
-									(1L << ((long) tokge)) | (1L <<
-															  ((long)
-															   tokne)))) !=
-							   0));
+//            f = (bool) ((!strcmp(n.UU.sval, n2.UU.sval)
+//							&& (unsigned long) k < 32
+//							&& ((1L << ((long) k)) &
+//								((1L << ((long) tokeq)) |
+//								 (1L << ((long) tokge)) | (1L <<
+//														   ((long) tokle))))
+//                            != 0) || (strcmp(n.UU.sval, n2.UU.sval) < 0
+//									  && (unsigned long) k < 32
+//									  && ((1L << ((long) k)) &
+//										  ((1L << ((long) toklt)) |
+//										   (1L << ((long) tokle)) | (1L <<
+//																	 ((long)
+//																	  tokne))))
+//									  != 0)
+//						   || (strcmp(n.UU.sval, n2.UU.sval) > 0
+//							   && (unsigned long) k < 32
+//							   && ((1L << ((long) k)) &
+//								   ((1L << ((long) tokgt)) |
+//									(1L << ((long) tokge)) | (1L <<
+//															  ((long)
+//															   tokne)))) !=
+//							   0));
 			/* p2c: basic.p, line 2175: Note:
 			 * Line breaker spent 0.0+1.00 seconds, 5000 tries on line 1518 [251] */
-			PhreeqcPtr->PHRQ_free(n.UU.sval);
-			PhreeqcPtr->PHRQ_free(n2.UU.sval);
+            PhreeqcPtr->PHRQ_free(&n.UU.sval);
+            PhreeqcPtr->PHRQ_free(&n2.UU.sval);
 		}
 		else
 			f = (bool) ((n.UU.val == n2.UU.val && (unsigned long) k < 32 &&
@@ -4446,14 +4402,14 @@ cmdnew(struct LOC_exec *LINK)
 				}
 				for (i = 0; i < k; i++)
 				{
-					PhreeqcPtr->free_check_null(varbase->UU.U1.sarr[i]);
+                    PhreeqcPtr->free_check_null(&varbase->UU.U1.sarr[i]);
 				}
-				PhreeqcPtr->free_check_null(varbase->UU.U1.sarr);
+                PhreeqcPtr->free_check_null(&varbase->UU.U1.sarr);
 			}
-			else if (*varbase->UU.U1.sval != NULL)
+            else if (!varbase->UU.U1.sval.empty())
 			{
-				*varbase->UU.U1.sval =
-					(char *) PhreeqcPtr->free_check_null(*varbase->UU.U1.sval);
+//				*varbase->UU.U1.sval =
+//					(char *) PhreeqcPtr->free_check_null(*varbase->UU.U1.sval);
 			}
 
 		}
@@ -4699,7 +4655,7 @@ cmdchange_surf(struct LOC_exec *LINK)
     change_surf("Hfo",    0.3,      "Sfo",      0,      5      )
 	       (old_name, fraction, new_name, new_Dw, cell_no)
  */
-	char *c1;
+    std::string c1;
 	int count;
 
 	PhreeqcPtr->change_surf_count += 1;

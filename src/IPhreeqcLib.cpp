@@ -771,7 +771,7 @@ RunString(int id, const char* input)
 }
 
 IPQ_RESULT
-SetBasicCallback(int id, double (*fcn)(double x1, double x2, const char *str, void *cookie), void *cookie1)
+SetBasicCallback(int id, double (*fcn)(double x1, double x2, std::string str, void *cookie), void *cookie1)
 {
 	IPhreeqc* IPhreeqcPtr = IPhreeqcLib::GetInstance(id);
 	if (IPhreeqcPtr)
@@ -781,33 +781,7 @@ SetBasicCallback(int id, double (*fcn)(double x1, double x2, const char *str, vo
 	}
 	return IPQ_BADINSTANCE;
 }
-#if !defined(R_SO)
-#ifdef IPHREEQC_NO_FORTRAN_MODULE
-IPQ_RESULT
-SetBasicFortranCallback(int id, double (*fcn)(double *x1, double *x2, char *str, size_t l))
-{
-	IPhreeqc* IPhreeqcPtr = IPhreeqcLib::GetInstance(id);
-	if (IPhreeqcPtr)
-	{
-		IPhreeqcPtr->SetBasicFortranCallback(fcn);
-		return IPQ_OK;
-	}
-	return IPQ_BADINSTANCE;
-}
-#else
-IPQ_RESULT
-SetBasicFortranCallback(int id, double (*fcn)(double *x1, double *x2, const char *str, int l))
-{
-	IPhreeqc* IPhreeqcPtr = IPhreeqcLib::GetInstance(id);
-	if (IPhreeqcPtr)
-	{
-		IPhreeqcPtr->SetBasicFortranCallback(fcn);
-		return IPQ_OK;
-	}
-	return IPQ_BADINSTANCE;
-}
-#endif /* IPHREEQC_NO_FORTRAN_MODULE */
-#endif /* !defined(R_SO) */
+
 IPQ_RESULT
 SetCurrentSelectedOutputUserNumber(int id, int n)
 {

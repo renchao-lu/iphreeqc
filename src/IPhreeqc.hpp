@@ -703,21 +703,7 @@ public:
 	 *  @param cookie1          A user defined value to be passed to the callback function.
 	 *  @see                    SetBasicFortranCallback
 	 */
-	void                     SetBasicCallback(double (*fcn)(double x1, double x2, const char *str, void *cookie), void * cookie1);
-
-	/**
-	 *  Sets a Fortran callback function for Basic programs. The syntax for the Basic command is
-	 *  10 result = CALLBACK(x1, x2, string$)
-	 *  The syntax for the Fortran function is
-	 *  double precision my_callback(x1, x2, string), where x1 and x2 are double precision and string is a character variable.
-	 *  @param fcn              The name of a user-defined function.
-	 *  @see                    SetBasicCallback
-	 */
-#ifdef IPHREEQC_NO_FORTRAN_MODULE
-	void                     SetBasicFortranCallback(double (*fcn)(double *x1, double *x2, char *str, size_t l));
-#else
-	void                     SetBasicFortranCallback(double (*fcn)(double *x1, double *x2, const char *str, int l));
-#endif
+        void                     SetBasicCallback(double (*fcn)(double x1, double x2, std::string str, void *cookie), void * cookie1);
 
 	/**
 	 *  Sets the current <B>SELECTED_OUTPUT</B> user number for use in subsequent calls to (@ref GetSelectedOutputColumnCount, 

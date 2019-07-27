@@ -83,10 +83,8 @@ log_activity_coefficient(std::string species_name)
 	return (g);
 }
 
-/* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-aqueous_vm(const char *species_name)
-/* ---------------------------------------------------------------------- */
+aqueous_vm(std::string species_name)
 {
 	struct species *s_ptr;
 	LDBLE g;
@@ -102,10 +100,9 @@ aqueous_vm(const char *species_name)
 	}
 	return (g);
 }
-/* ---------------------------------------------------------------------- */
+
 LDBLE Phreeqc::
-phase_vm(const char *phase_name)
-/* ---------------------------------------------------------------------- */
+phase_vm(std::string phase_name)
 {
 	struct phase *phase_ptr;
 	int l;
@@ -122,10 +119,9 @@ phase_vm(const char *phase_name)
 	}
 	return (g);
 }
-/* ---------------------------------------------------------------------- */
+
 LDBLE Phreeqc::
 sa_declercq(double sa_type, double Sa, double d, double m, double m0, double gfw)
-/* ---------------------------------------------------------------------- */
 {
 	if (sa_type == 0) 
 	{
@@ -172,10 +168,8 @@ sa_declercq(double sa_type, double Sa, double d, double m, double m0, double gfw
  
 }
 
-/* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-diff_c(const char *species_name)
-/* ---------------------------------------------------------------------- */
+diff_c(std::string species_name)
 {
 	struct species *s_ptr;
 	LDBLE g;
@@ -194,10 +188,9 @@ diff_c(const char *species_name)
 	}
 	return (g);
 }
-/* ---------------------------------------------------------------------- */
+
 LDBLE Phreeqc::
-setdiff_c(const char *species_name, double d)
-/* ---------------------------------------------------------------------- */
+setdiff_c(std::string species_name, double d)
 {
 	struct species *s_ptr;
 	LDBLE g;
@@ -1509,7 +1502,7 @@ kinetics_moles_delta(std::string kinetics_name)
 }
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-log_activity(const char *species_name)
+log_activity(std::string species_name)
 /* ---------------------------------------------------------------------- */
 {
 	struct species *s_ptr;
@@ -1538,7 +1531,7 @@ log_activity(const char *species_name)
 
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-log_molality(const char *species_name)
+log_molality(std::string species_name)
 /* ---------------------------------------------------------------------- */
 {
 	struct species *s_ptr;
@@ -1567,7 +1560,7 @@ log_molality(const char *species_name)
 
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-molality(const char *species_name)
+molality(std::string species_name)
 /* ---------------------------------------------------------------------- */
 {
 	struct species *s_ptr;
@@ -1587,7 +1580,7 @@ molality(const char *species_name)
 }
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-pr_pressure(const char *phase_name)
+pr_pressure(std::string phase_name)
 /* ---------------------------------------------------------------------- */
 {
 	struct phase *phase_ptr;
@@ -1616,7 +1609,7 @@ pressure(void)
 }
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-pr_phi(const char *phase_name)
+pr_phi(std::string phase_name)
 /* ---------------------------------------------------------------------- */
 {
 	struct phase *phase_ptr;
@@ -1635,10 +1628,9 @@ pr_phi(const char *phase_name)
 	}
 	return (1.0);
 }
-/* ---------------------------------------------------------------------- */
+
 LDBLE Phreeqc::
-saturation_ratio(const char *phase_name)
-/* ---------------------------------------------------------------------- */
+saturation_ratio(std::string phase_name)
 {
 	struct rxn_token *rxn_ptr;
 	struct phase *phase_ptr;
@@ -1669,7 +1661,7 @@ saturation_ratio(const char *phase_name)
 
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-saturation_index(const char *phase_name, LDBLE * iap, LDBLE * si)
+saturation_index(std::string phase_name, LDBLE * iap, LDBLE * si)
 /* ---------------------------------------------------------------------- */
 {
 	struct rxn_token *rxn_ptr;
@@ -2707,18 +2699,18 @@ surf_total_no_redox(std::string total_name, std::string surface_name)
 }
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-total(const char *total_name)
+total(std::string total_name)
 /* ---------------------------------------------------------------------- */
 {
 	struct master *master_ptr;
 	LDBLE t;
 	int i;
 
-	if (strcmp(total_name, "H") == 0)
+    if (total_name == "H")
 	{
 		return (total_h_x / mass_water_aq_x);
 	}
-	if (strcmp(total_name, "O") == 0)
+    if (total_name == "O")
 	{
 		return (total_o_x / mass_water_aq_x);
 	}
@@ -2777,18 +2769,18 @@ total(const char *total_name)
 }
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-total_mole(const char *total_name)
+total_mole(std::string total_name)
 /* ---------------------------------------------------------------------- */
 {
 	struct master *master_ptr;
 	LDBLE t;
 	int i;
 
-	if (strcmp(total_name, "H") == 0)
+    if (total_name, "H")
 	{
 		return (total_h_x);
 	}
-	if (strcmp(total_name, "O") == 0)
+    if (total_name == "O")
 	{
 		return (total_o_x);
 	}
@@ -4378,51 +4370,20 @@ basic_callback(double x1, double x2, const char * str)
 
 #else  /* defined(SWIG) || defined(SWIG_IPHREEQC) */
 
-#ifdef IPHREEQC_NO_FORTRAN_MODULE
 double Phreeqc::
-basic_callback(double x1, double x2, char * str)
-#else
-double Phreeqc::
-basic_callback(double x1, double x2, const char * str)
-#endif
+basic_callback(double x1, double x2, std::string str)
 {
-	double local_x1 = x1;
-	double local_x2 = x2;
-
 	if (basic_callback_ptr != NULL)
 	{
-		return (*basic_callback_ptr) (x1, x2, (const char *) str, basic_callback_cookie);
-	}
-	if (basic_fortran_callback_ptr != NULL)
-	{
-#ifdef IPHREEQC_NO_FORTRAN_MODULE
-		return (*basic_fortran_callback_ptr) (&local_x1, &local_x2, str, (int) strlen(str));
-#else
-		return (*basic_fortran_callback_ptr) (&local_x1, &local_x2, str, (int) strlen(str));
-#endif
+        return (*basic_callback_ptr) (x1, x2, str, basic_callback_cookie);
 	}
 	return 0;
 }
 
 void 
-Phreeqc::register_basic_callback(double (*fcn)(double x1, double x2, const char *str, void *cookie), void *cookie1)
+Phreeqc::register_basic_callback(double (*fcn)(double x1, double x2, std::string str, void *cookie), void *cookie1)
 {
 	this->basic_callback_ptr = fcn;
 	this->basic_callback_cookie = cookie1;
 }
-#ifdef IPHREEQC_NO_FORTRAN_MODULE
-void 
-Phreeqc::register_fortran_basic_callback(double ( *fcn)(double *x1, double *x2, char *str, size_t l))
-{
-	this->basic_fortran_callback_ptr = fcn;
-}
-#else
-
-void 
-Phreeqc::register_fortran_basic_callback(double ( *fcn)(double *x1, double *x2, const char *str, int l))
-{
-	this->basic_fortran_callback_ptr = fcn;
-}
-#endif
-
 #endif  /* defined(SWIG) || defined(SWIG_IPHREEQC) */

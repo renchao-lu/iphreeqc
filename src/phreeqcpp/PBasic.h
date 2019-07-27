@@ -387,12 +387,12 @@ public:
 	void clearloops(void);
 	void clearvar(varrec * v);
 	void clearvars(void);
-	char * numtostr(char * Result, LDBLE n);
-	void parse(char * inbuf, tokenrec ** buf);
+    std::string numtostr(std::string Result, LDBLE n);
+    void parse(std::string inbuf, tokenrec ** buf);
 	void listtokens(FILE * f, tokenrec * buf);
 	void disposetokens(tokenrec ** tok);
 	void parseinput(tokenrec ** buf);
-	void errormsg(const char * s);
+    void errormsg(std::string s);
 	void snerr(const char * s);
 	void tmerr(const char * s);
 	void badsubscr(void);

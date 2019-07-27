@@ -1055,7 +1055,7 @@ master_free(struct master *master_ptr)
 
 /* ---------------------------------------------------------------------- */
 struct master * Phreeqc::
-master_bsearch(const char *ptr)
+master_bsearch(std::string ptr)
 /* ---------------------------------------------------------------------- */
 {
 /*

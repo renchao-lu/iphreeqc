@@ -156,7 +156,7 @@ tidy_model(void)
 //		qsort(master, (unsigned) count_master, sizeof(struct master *), master_compare);
 
 /* elements */
-		qsort(elements, (size_t) count_elements, (size_t) sizeof(struct element *), element_compare);
+//		qsort(elements, (size_t) count_elements, (size_t) sizeof(struct element *), element_compare);
 /* phases */
 		qsort(phases, (size_t) count_phases, (size_t) sizeof(struct phase *), phase_compare);
 
@@ -636,14 +636,13 @@ coef_in_master(struct master * master_ptr)
 {
 	int l;
 	LDBLE coef;
-    std::string ptr;
-	char elt_name[MAX_LENGTH];
-	struct elt_list *next_elt;
+    std::string ptr, elt_name;
+    struct elt_list *next_elt;
 
 	coef = 0.0;
-    auto temp_name = master_ptr->elt.name;
-	ptr = temp_name;
-    get_elt(ptr, elt_name, &l);
+//    auto temp_name = master_ptr->elt.name;
+//	ptr = temp_name;
+//    get_elt(ptr, elt_name, &l);
 //	free_check_null(temp_name);
 //	for (next_elt = master_ptr->s->next_elt; next_elt->elt != NULL;
 //		 next_elt++)
@@ -732,10 +731,10 @@ replace_solids_gases(void)
 	struct rxn_token_temp *token_ptr;
 	struct phase *phase_ptr;
 	int replaced;
-	char token[MAX_LENGTH];
-/*
- *
- */
+    std::string token;
+    /*
+     *
+     */
 	add_count = 0;
 	repeat = TRUE;
 	replaced = FALSE;
@@ -765,11 +764,11 @@ replace_solids_gases(void)
 				/* try phase name without (g) or  (s) */
 				if (phase_ptr == NULL)
 				{
-					strcpy(token, token_ptr->name);
-					replace("(g)", "", token);
-					replace("(s)", "", token);
-					replace("(G)", "", token);
-					replace("(S)", "", token);
+                    token = token_ptr->name;
+//                    replace("(g)", "", token);
+//					replace("(s)", "", token);
+//					replace("(G)", "", token);
+//					replace("(S)", "", token);
 					phase_ptr = phase_bsearch(token, &n, FALSE);
 				}
 				if (phase_ptr == NULL)
@@ -1370,11 +1369,11 @@ tidy_inverse(void)
 					if (master_ptr->primary != TRUE)
 					{
 						input_error++;
-						error_string = sformatf(
-								"Isotope ratio may only be used"
-								" for total element in phase.\n"
-								"Secondary species not allowed: %s.",
-                                master_ptr->elt.name);
+//						error_string = sformatf(
+//								"Isotope ratio may only be used"
+//								" for total element in phase.\n"
+//								"Secondary species not allowed: %s.",
+//                                master_ptr->elt.name);
 						error_msg(error_string, CONTINUE);
 						continue;
 					}
@@ -1394,10 +1393,10 @@ tidy_inverse(void)
 					if (elt_list_ptr == NULL)
 					{
 						input_error++;
-						error_string = sformatf(
-								"Element, %s,for which isotope ratio was defined is not found in phase, %s",
-                                master_ptr->elt.name,
-								inverse[i].phases[j].phase->name);
+//						error_string = sformatf(
+//								"Element, %s,for which isotope ratio was defined is not found in phase, %s",
+//                                master_ptr->elt.name,
+//								inverse[i].phases[j].phase->name);
 						error_msg(error_string, CONTINUE);
 						continue;
 					}
@@ -1533,14 +1532,14 @@ tidy_inverse(void)
 				continue;
 			for (k = 0; k < count_in; k++)
 			{
-                if (master_ptr == inv_elts[k].master->elt.primary)
-				{
-					for (l = 0; l < inverse[i].count_solns; l++)
-					{
-						inv_elts[k].uncertainties[l] =
-							inverse[i].elts[j].uncertainties[l];
-					}
-				}
+//                if (master_ptr == inv_elts[k].master->elt.primary)
+//				{
+//					for (l = 0; l < inverse[i].count_solns; l++)
+//					{
+//						inv_elts[k].uncertainties[l] =
+//							inverse[i].elts[j].uncertainties[l];
+//					}
+//				}
 			}
 			inverse[i].elts[j].uncertainties =
 				(LDBLE *) free_check_null(inverse[i].elts[j].uncertainties);
@@ -2749,10 +2748,10 @@ tidy_species(void)
 	}
 	for (i = 0; i < count_master; i++)
 	{
-        auto temp_name = master[i].elt.name;
-		ptr = temp_name;
-		if (ptr[0] != '[')
-		{
+//        auto temp_name = master[i].elt.name;
+//		ptr = temp_name;
+//		if (ptr[0] != '[')
+//		{
 //			while ((c = (int) *(++ptr)) != '\0')
 //			{
 //				if (isupper((int) c))
@@ -2765,12 +2764,12 @@ tidy_species(void)
 //					break;
 //				}
 //			}
-		}
+//		}
 //		free_check_null(temp_name);
 		/* store sequence number in master structure */
         master[i].number = i;
-        if (master[i].elt.name != "Alkalinity")
-		{
+//        if (master[i].elt.name != "Alkalinity")
+//		{
 //            if (master[i].primary == TRUE)
 //			{
 //                master[i].s->primary = master[i];
@@ -2779,19 +2778,19 @@ tidy_species(void)
 //			{
 //				master[i]->s->secondary = master[i];
 //			}
-		}
-        if (master[i].elt.name == "C")
-		{
-            s_co3 = master[i].s;
-		}
+//		}
+//        if (master[i].elt.name == "C")
+//		{
+//            s_co3 = master[i].s;
+//		}
         if (master[i].gfw_formula != "")
 		{
             if (compute_gfw(master[i].gfw_formula, &master[i].gfw) == ERROR)
 			{
 				input_error++;
-				error_string = sformatf(
-						"Calculating gfw for master species, %s, formula %s.",
-                        master[i].elt.name, master[i].gfw_formula);
+//				error_string = sformatf(
+//						"Calculating gfw for master species, %s, formula %s.",
+//                        master[i].elt.name, master[i].gfw_formula);
 				error_msg(error_string, CONTINUE);
 			}
 		}
@@ -2855,20 +2854,20 @@ tidy_species(void)
  */
 	for (i = 0; i < count_elements; i++)
 	{
-		elements[i]->master = master_bsearch(elements[i]->name);
-		if (elements[i]->master == NULL)
+        elements[i].master = master_bsearch(elements[i].name);
+        if (elements[i].master == NULL)
 		{
 			input_error++;
 			error_string = sformatf( "No master species for element %s.",
-					elements[i]->name);
+                    elements[i].name);
 			error_msg(error_string, CONTINUE);
 		}
-		elements[i]->primary = master_bsearch_primary(elements[i]->name);
-		if (elements[i]->primary == NULL)
+        elements[i].primary = master_bsearch_primary(elements[i].name);
+        if (elements[i].primary == NULL)
 		{
 			input_error++;
 			error_string = sformatf( "No master species for element %s.",
-					elements[i]->name);
+                    elements[i].name);
 			error_msg(error_string, CONTINUE);
 		}
 	}
@@ -2880,7 +2879,7 @@ tidy_species(void)
 	{
         if (master[i].primary == FALSE)
 		{
-            master_ptr = master[i].s->secondary->elt.primary;
+//            master_ptr = master[i].s->secondary->elt.primary;
 			if (master_ptr == NULL)
 			{
 				input_error++;
@@ -2895,16 +2894,16 @@ tidy_species(void)
 			else if (master_ptr->s->secondary == NULL)
 			{
 				input_error++;
-				error_string = sformatf(
-						"Every primary master species for a redox element\n"
-						"\tmust also be a secondary master species.\n"
-						"\t%s is the primary master species for element %s.\n"
-						"\tAnother entry in SOLUTION_MASTER_SPECIES is needed.\n"
-						"\tDefine species %s as a secondary master species for a valence state.\n"
-						"\tFor example: \n" "\t%s(0)\t%s alk gfw",
-                        master_ptr->s->name, master_ptr->elt.name,
-                        master_ptr->s->name, master_ptr->elt.name,
-						master_ptr->s->name);
+//				error_string = sformatf(
+//						"Every primary master species for a redox element\n"
+//						"\tmust also be a secondary master species.\n"
+//						"\t%s is the primary master species for element %s.\n"
+//						"\tAnother entry in SOLUTION_MASTER_SPECIES is needed.\n"
+//						"\tDefine species %s as a secondary master species for a valence state.\n"
+//						"\tFor example: \n" "\t%s(0)\t%s alk gfw",
+//                        master_ptr->s->name, master_ptr->elt.name,
+//                        master_ptr->s->name, master_ptr->elt.name,
+//						master_ptr->s->name);
 				error_msg(error_string, CONTINUE);
 			}
 		}
@@ -3025,17 +3024,17 @@ tidy_species(void)
         if (master[i].gfw <= 0.0)
 		{
             if (master[i].type >= EMINUS) continue;
-            if (master[i].elt.name != "E" &&
-                master[i].elt.name != "e" &&
-                master[i].elt.name != "H(1)" &&
-                master[i].elt.name !="O(-2)"
-			    )
-			{
-				input_error++;
-				error_string = sformatf(
-                    "Gram formula wt in SOLUTION_MASTER_SPECIES should not be <= 0.0, %s.\n", master[i].elt.name);
-				error_msg(error_string, CONTINUE);
-			}
+//            if (master[i].elt.name != "E" &&
+//                master[i].elt.name != "e" &&
+//                master[i].elt.name != "H(1)" &&
+//                master[i].elt.name !="O(-2)"
+//			    )
+//			{
+//				input_error++;
+//				error_string = sformatf(
+//                    "Gram formula wt in SOLUTION_MASTER_SPECIES should not be <= 0.0, %s.\n", master[i].elt.name);
+//				error_msg(error_string, CONTINUE);
+//			}
 		}
 	}
 	return (OK);
@@ -3333,9 +3332,8 @@ phase_rxn_to_trxn(struct phase *phase_ptr, struct reaction *rxn_ptr)
  *   temp reaction structure.
  */
 	int i, l;
-    std::string ptr;
-	char token[MAX_LENGTH];
-	LDBLE l_z;
+    std::string ptr, token;
+    LDBLE l_z;
 
 	trxn.token[0].name = phase_ptr->formula;
 	/* charge */
@@ -3408,7 +3406,7 @@ tidy_isotopes(void)
 				continue;
 			}
 			std::ostringstream iso_name_str;
-            iso_name_str << (int) isotope_number << master_ptr->elt.name;
+//            iso_name_str << (int) isotope_number << master_ptr->elt.name;
 
 			std::map < std::string, cxxSolutionIsotope >::iterator jit;
 			jit = primary_isotopes.find(iso_name_str.str().c_str());
@@ -3416,7 +3414,7 @@ tidy_isotopes(void)
 			{
 				cxxSolutionIsotope temp_isotope;
 				temp_isotope.Set_isotope_name(iso_name_str.str().c_str());
-                temp_isotope.Set_elt_name(master_ptr->elt.name);
+//                temp_isotope.Set_elt_name(master_ptr->elt.name);
 				temp_isotope.Set_isotope_number(isotope_number);
 				primary_isotopes[iso_name_str.str().c_str()] = temp_isotope;
 			}
@@ -3454,8 +3452,8 @@ tidy_isotopes(void)
 				}
 
 				/* only fill for pertinent isotope */
-                if (master_ptr->elt.primary != primary_ptr)
-					continue;
+//                if (master_ptr->elt.primary != primary_ptr)
+//					continue;
 				if (lit->second.Get_isotope_number() !=	isotope_number)
 					continue;
 
@@ -3464,8 +3462,8 @@ tidy_isotopes(void)
 				{
 					for (int k = primary_number + 1; k < count_master; k++)
 					{
-                        if (master[k].elt.primary != primary_ptr)
-							break;
+//                        if (master[k].elt.primary != primary_ptr)
+//							break;
                         master[k].isotope_ratio = lit->second.Get_ratio();
                         master[k].isotope_ratio_uncertainty = lit->second.Get_ratio_uncertainty();
                         if (master[k].isotope == TRUE)
@@ -3501,22 +3499,22 @@ tidy_isotopes(void)
 				/* skip primary master species of redox elements */
                 if (master[k].primary == TRUE && master[k].s->secondary != NULL)
 					continue;
-                if (master[k].elt.primary == primary_ptr && master[k].isotope == FALSE)
-				{
-					input_error++;
-					error_string = sformatf(
-							"Isotopic ratio not defined for element or valence state %g%s, using 0.",
-                            (double) isotope_number, master[k].elt.name);
-					warning_msg(error_string);
-                    master[k].isotope = TRUE;
-                    master[k].isotope_ratio = 0.0;
-                    master[k].isotope_ratio_uncertainty = 0.001;
-				}
+//                if (master[k].elt.primary == primary_ptr && master[k].isotope == FALSE)
+//				{
+//					input_error++;
+//					error_string = sformatf(
+//							"Isotopic ratio not defined for element or valence state %g%s, using 0.",
+//                            (double) isotope_number, master[k].elt.name);
+//					warning_msg(error_string);
+//                    master[k].isotope = TRUE;
+//                    master[k].isotope_ratio = 0.0;
+//                    master[k].isotope_ratio_uncertainty = 0.001;
+//				}
                 if (master[k].isotope == FALSE)
 					continue;
 				cxxSolutionIsotope temp_iso;
 				temp_iso.Set_isotope_number(isotope_number);
-                temp_iso.Set_elt_name(master[k].elt.name);
+//                temp_iso.Set_elt_name(master[k].elt.name);
 				temp_iso.Set_total(0);
                 temp_iso.Set_ratio(master[k].isotope_ratio);
                 temp_iso.Set_ratio_uncertainty(master[k].isotope_ratio_uncertainty);
@@ -3528,10 +3526,10 @@ tidy_isotopes(void)
 				{
 					temp_iso.Set_ratio_uncertainty_defined(true);
 				}
-				std::string token = sformatf("%d%s", (int) isotope_number,
-                        master[k].elt.name);
-				temp_iso.Set_isotope_name(token.c_str());
-				new_isotopes[token] = temp_iso;
+//				std::string token = sformatf("%d%s", (int) isotope_number,
+//                        master[k].elt.name);
+//				temp_iso.Set_isotope_name(token.c_str());
+//				new_isotopes[token] = temp_iso;
 			}
 		}
 		solution_ref.Set_isotopes(new_isotopes);
@@ -5351,22 +5349,22 @@ tidy_master_isotope(void)
 		/*
 		 * Mark master species list as minor isotope
 		 */
-		if (master_isotope[i]->minor_isotope == TRUE)
+        if (master_isotope[i].minor_isotope == TRUE)
 		{
-			master_ptr = master_bsearch(master_isotope[i]->name);
+            master_ptr = master_bsearch(master_isotope[i].name);
 			if (master_ptr == NULL)
 			{
 				input_error++;
 				error_string = sformatf(
 						"Did not find master species for isotope, %s",
-						master_isotope[i]->name);
+                        master_isotope[i].name);
 				error_msg(error_string, CONTINUE);
-				master_isotope[i]->master = NULL;
+                master_isotope[i].master = NULL;
 				continue;
 			}
 			else
 			{
-				master_isotope[i]->master = master_ptr;
+                master_isotope[i].master = master_ptr;
 			}
 			master_ptr->minor_isotope = TRUE;
 		}

@@ -125,7 +125,7 @@ get_all_components(void)
 	j = 0;
 	t_buffer[j].name = string_hsave("Alkalinity");
 	t_buffer[j].master = master_bsearch("Alkalinity");
-    t_buffer[j].gfw = t_buffer[j].master->elt.gfw;
+//    t_buffer[j].gfw = t_buffer[j].master->elt.gfw;
 	j++;		
 
 	// store total_h
@@ -144,9 +144,9 @@ get_all_components(void)
 	{
         if (master[i].total > 0.0 && master[i].s->type == AQ)
 		{
-            t_buffer[j].name = master[i].elt.name;
+//            t_buffer[j].name = master[i].elt.name;
 //			t_buffer[j].master = master[i];
-            t_buffer[j].gfw = master[i].elt.gfw;
+//            t_buffer[j].gfw = master[i].elt.gfw;
 			j++;
 		}
 	}
@@ -830,12 +830,12 @@ elt_list_to_tally_table(struct tally_buffer *buffer_ptr)
 		{
 			if (buffer_ptr[i].master != NULL)
 			{
-                if (elt_list[j].elt.primary ==
-                    buffer_ptr[i].master->elt.primary)
-				{
-					buffer_ptr[i].moles = elt_list[j].coef;
-					break;
-				}
+//                if (elt_list[j].elt.primary ==
+//                    buffer_ptr[i].master->elt.primary)
+//				{
+//					buffer_ptr[i].moles = elt_list[j].coef;
+//					break;
+//				}
 			}
 		}
 		if (i >= count_tally_table_rows)
@@ -864,14 +864,14 @@ master_to_tally_table(struct tally_buffer *buffer_ptr)
 	{
         if (master[j].total <= 0)
 			continue;
-        if (master[j].elt.primary->s == s_h2o)
-			continue;
-        if (master[j].elt.primary->s == s_hplus)
-			continue;
-        if (master[j].elt.primary->s == s_h3oplus)
-			continue;
-        if (master[j].elt.primary->type != AQ)
-			continue;
+//        if (master[j].elt.primary->s == s_h2o)
+//			continue;
+//        if (master[j].elt.primary->s == s_hplus)
+//			continue;
+//        if (master[j].elt.primary->s == s_h3oplus)
+//			continue;
+//        if (master[j].elt.primary->type != AQ)
+//			continue;
 //		for (i = 0; i < count_tally_table_rows; i++)
 //		{
 //			if (master[j] ==  buffer_ptr[i].master)
@@ -902,12 +902,11 @@ build_tally_table(void)
 	int j, k, l, n, p, save_print_use;
 	int count_tt_pure_phase, count_tt_ss_phase, count_tt_kinetics;
 	struct phase *phase_ptr;
-	char token[MAX_LENGTH];
-    std::string ptr;
-/*
- *  make list of all elements in all entitites
- *  defines the number of rows in the table
- */
+    std::string token, ptr;
+    /*
+     *  make list of all elements in all entitites
+     *  defines the number of rows in the table
+     */
 	get_all_components();
 
 	save_print_use = pr.use;
@@ -1016,14 +1015,14 @@ build_tally_table(void)
 				paren_count = 0;
 				if (comp_ptr->Get_add_formula().size() > 0)
 				{
-					strcpy(token, comp_ptr->Get_add_formula().c_str());
-					ptr = &(token[0]);
+                    token = comp_ptr->Get_add_formula().c_str();
+                    ptr = &(token[0]);
                     get_elts_in_species(ptr, 1.0);
 				}
 				else
 				{
-					strcpy(token, phase_ptr->formula);
-					add_elt_list(phase_ptr->next_elt, 1.0);
+                    token = phase_ptr->formula;
+                    add_elt_list(phase_ptr->next_elt, 1.0);
 				}
 				qsort(elt_list, (size_t) count_elts,
 					  (size_t) sizeof(struct elt_list), elt_list_compare);
@@ -1075,8 +1074,8 @@ build_tally_table(void)
 					tally_table[n].type = Ss_phase;
 					count_elts = 0;
 					paren_count = 0;
-					strcpy(token, phase_ptr->formula);
-					add_elt_list(phase_ptr->next_elt, 1.0);
+                    token = phase_ptr->formula;
+                    add_elt_list(phase_ptr->next_elt, 1.0);
 					qsort(elt_list, (size_t) count_elts,
 						  (size_t) sizeof(struct elt_list), elt_list_compare);
 					elt_list_combine();
@@ -1125,8 +1124,10 @@ build_tally_table(void)
 				phase_ptr = NULL;
 				if (kinetics_comp_ptr->Get_namecoef().size() == 1)
 				{
-					strcpy(token, kinetics_comp_ptr->Get_namecoef().begin()->first.c_str());
-					phase_ptr = phase_bsearch(token, &p, FALSE);
+                    token = kinetics_comp_ptr->Get_namecoef()
+                                .begin()
+                                ->first.c_str();
+                    phase_ptr = phase_bsearch(token, &p, FALSE);
 				}
 				if (phase_ptr != NULL)
 				{

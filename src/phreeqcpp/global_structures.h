@@ -568,12 +568,19 @@ struct CellData
  *---------------------------------------------------------------------- */
 struct element
 {
-        std::string name;					/* element name */
-	/*    int in; */
-	struct master *master;
-	struct master *primary;
-	LDBLE gfw;
+    element(std::string name_, struct master* master_, struct master* primary_,
+            double gfw_)
+        : name(name_), master(master_), primary(primary_), gfw(gfw_)
+    {
+    }
+
+    std::string name; /* element name */
+    /*    int in; */
+    struct master* master;
+    struct master* primary;
+    double gfw;
 };
+
 /*----------------------------------------------------------------------
  *   Element List
  *---------------------------------------------------------------------- */
@@ -788,7 +795,7 @@ struct phase
         int isotope = 0;
         double total_primary = 0.0;
  	/*    LDBLE la;  */ /* initial guess of master species log activity */
-        struct element elt;		/* element structure */
+//        struct element elt;		/* element structure */
         double alk = 0.0;					/* alkalinity of species */
         double gfw = 0.0;					/* default gfw for species */
         std::string gfw_formula;			/* formula from which to calcuate gfw */

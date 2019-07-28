@@ -47,8 +47,8 @@ transport(void)
 	LDBLE water_m, water_imm;
 	int first_c, last_c, b_c;
 	int max_iter;
-	char token[MAX_LENGTH];
-	LDBLE kin_time, stagkin_time, kin_time_save;
+    std::string token;
+    LDBLE kin_time, stagkin_time, kin_time_save;
 
 	int punch_boolean = 0;
 	LDBLE step_fraction;
@@ -432,9 +432,10 @@ transport(void)
 		/*
 		* Now transport
 		*/
-		sprintf(token, "\nCalculating transport: %d (mobile) cells, %d shifts, %d mixruns...\n\n",
-			count_cells, count_shifts - transport_start + 1, nmix);
-		screen_msg(token);
+        //		sprintf(token, "\nCalculating transport: %d (mobile) cells, %d
+        //shifts, %d mixruns...\n\n", 			count_cells, count_shifts -
+        //transport_start + 1, nmix);
+        screen_msg(token);
 		max_iter = 0;
 		for (transport_step = transport_start; transport_step <= count_shifts;
 			transport_step++)
@@ -483,9 +484,9 @@ transport(void)
 					}
 					else if (!multi_Dflag)
 					{
-						sprintf(token, "Transport step %3d. Mixrun %3d.",
-							transport_step, j);
-						dup_print(token, FALSE);
+                        //						sprintf(token, "Transport step %3d. Mixrun
+                        //%3d.", 							transport_step, j);
+                        dup_print(token, FALSE);
 					}
 
 					if (heat_nmix > 0)
@@ -519,15 +520,15 @@ transport(void)
 							max_iter = overall_iterations;
 						cell_no = i;
 						mixrun = j;
-						if (multi_Dflag)
-							sprintf(token,
-							"Transport step %3d. MCDrun %3d. Cell %3d. (Max. iter %3d)",
-							transport_step, j, i, max_iter);
-						else
-							sprintf(token,
-							"Transport step %3d. Mixrun %3d. Cell %3d. (Max. iter %3d)",
-							transport_step, j, i, max_iter);
-						status(0, token);
+                        //						if (multi_Dflag)
+                        //							sprintf(token,
+                        //							"Transport step %3d. MCDrun %3d. Cell
+                        //%3d. (Max. iter %3d)", 							transport_step, j, i,
+                        //max_iter); 						else 							sprintf(token, 							"Transport step %3d.
+                        //Mixrun %3d. Cell %3d. (Max. iter %3d)",
+                        //							transport_step, j, i,
+                        //max_iter);
+                        status(0, token);
 
 						if (i == 0 || i == count_cells + 1)
 							run_reactions(i, kin_time, NOMIX, step_fraction); // nsaver = i
@@ -604,8 +605,9 @@ transport(void)
 			*/
 			if (ishift != 0)
 			{
-				sprintf(token, "Transport step %3d.", transport_step);
-				dup_print(token, FALSE);
+                //				sprintf(token, "Transport step %3d.",
+                //transport_step);
+                dup_print(token, FALSE);
 				if (b_c == 1)
 					rate_sim_time_start =
 					(transport_step - 1) * timest + (j - 1) * kin_time;
@@ -697,15 +699,14 @@ transport(void)
 						kin_time /= 2;
 					cell_no = i;
 					mixrun = 0;
-					if (multi_Dflag)
-						sprintf(token,
-						"Transport step %3d. MCDrun %3d. Cell %3d. (Max. iter %3d)",
-						transport_step, 0, i, max_iter);
-					else
-						sprintf(token,
-						"Transport step %3d. Mixrun %3d. Cell %3d. (Max. iter %3d)",
-						transport_step, 0, i, max_iter);
-					status(0, token);
+                    //					if (multi_Dflag)
+                    //						sprintf(token,
+                    //						"Transport step %3d. MCDrun %3d. Cell %3d.
+                    //(Max. iter %3d)", 						transport_step, 0, i, max_iter); 					else
+                    //						sprintf(token,
+                    //						"Transport step %3d. Mixrun %3d. Cell %3d.
+                    //(Max. iter %3d)", 						transport_step, 0, i, max_iter);
+                    status(0, token);
 					run_reactions(i, kin_time, NOMIX, step_fraction);
 					if (multi_Dflag == TRUE)
 						fill_spec(i);
@@ -768,16 +769,16 @@ transport(void)
 			{
 				if (multi_Dflag && j == nmix && (transport_step % print_modulus == 0))
 				{
-					sprintf(token,
-						"Transport step %3d. Multicomponent diffusion run %3d.",
-						transport_step, j);
-					dup_print(token, FALSE);
+                    //					sprintf(token,
+                    //						"Transport step %3d. Multicomponent diffusion
+                    //run %3d.", 						transport_step, j);
+                    dup_print(token, FALSE);
 				}
 				else if (!multi_Dflag)
 				{
-					sprintf(token, "Transport step %3d. Mixrun %3d.",
-						transport_step, j);
-					dup_print(token, FALSE);
+                    //					sprintf(token, "Transport step %3d. Mixrun
+                    //%3d.", 						transport_step, j);
+                    dup_print(token, FALSE);
 				}
 				rate_sim_time_start =
 					(transport_step - 1) * timest + (j - 1) * kin_time;
@@ -816,15 +817,14 @@ transport(void)
 						max_iter = overall_iterations;
 					cell_no = i;
 					mixrun = j;
-					if (multi_Dflag)
-						sprintf(token,
-						"Transport step %3d. MCDrun %3d. Cell %3d. (Max. iter %3d)",
-						transport_step, j, i, max_iter);
-					else
-						sprintf(token,
-						"Transport step %3d. Mixrun %3d. Cell %3d. (Max. iter %3d)",
-						transport_step, j, i, max_iter);
-					status(0, token);
+                    //					if (multi_Dflag)
+                    //						sprintf(token,
+                    //						"Transport step %3d. MCDrun %3d. Cell %3d.
+                    //(Max. iter %3d)", 						transport_step, j, i, max_iter); 					else
+                    //						sprintf(token,
+                    //						"Transport step %3d. Mixrun %3d. Cell %3d.
+                    //(Max. iter %3d)", 						transport_step, j, i, max_iter);
+                    status(0, token);
 
 					if (i == 0 || i == count_cells + 1)
 						run_reactions(i, kin_time, NOMIX, step_fraction);
@@ -898,18 +898,20 @@ transport(void)
 
 		if (multi_Dflag && moles_added[0].moles > 0)
 		{
-			sprintf(token,
-				"\nFor balancing negative concentrations in MCD, added in total to the system:");
-			if (phrq_io)
+            //			sprintf(token,
+            //				"\nFor balancing negative concentrations in MCD, added in
+            //total to the system:");
+            if (phrq_io)
 				phrq_io->warning_msg(token);
 			for (i = 0; i < count_elements; i++)
 			{
 				if (!moles_added[i].moles)
 					break;
-				sprintf(token,
-					"\t %.4e moles %s.",
-					(double)moles_added[i].moles, moles_added[i].name);
-				if (phrq_io)
+                //				sprintf(token,
+                //					"\t %.4e moles %s.",
+                //					(double)moles_added[i].moles,
+                //moles_added[i].name);
+                if (phrq_io)
 					phrq_io->warning_msg(token);
 			}
 		}
@@ -1112,9 +1114,11 @@ init_mix(void)
 			{
 				m = (LDBLE *)free_check_null(m);
 				m1 = (LDBLE *)free_check_null(m1);
-				char token[MAX_LENGTH];
-				sprintf(token, "Calculated number of mixes %g, is beyond program limit,\nERROR: please decrease time_step, or increase cell-lengths.", 2.25 * maxmix);
-				error_msg(token, STOP);
+                std::string token;
+                //				sprintf(token, "Calculated number of mixes %g, is
+                //beyond program limit,\nERROR: please decrease time_step, or
+                //increase cell-lengths.", 2.25 * maxmix);
+                error_msg(token, STOP);
 			}
 			if (bcon_first == 1 || bcon_last == 1)
 				l_nmix = 1 + (int) floor(2.25 * maxmix);
@@ -1233,9 +1237,11 @@ init_mix(void)
 			{
 				m = (LDBLE *)free_check_null(m);
 				m1 = (LDBLE *)free_check_null(m1);
-				char token[MAX_LENGTH];
-				sprintf(token, "Calculated number of mixes %g, is beyond program limit,\nERROR: please decrease time_step, or increase cell-lengths.", 1.5 * maxmix);
-				error_msg(token, STOP);
+                std::string token;
+                //				sprintf(token, "Calculated number of mixes %g, is
+                //beyond program limit,\nERROR: please decrease time_step, or
+                //increase cell-lengths.", 1.5 * maxmix);
+                error_msg(token, STOP);
 			}
 			l_nmix = 1 + (int) floor(1.5 * maxmix);
 
@@ -1583,8 +1589,8 @@ set_initial_moles(int i)
 /* ---------------------------------------------------------------------- */
 {
 	cxxKinetics *kinetics_ptr;
-	char token[MAX_LENGTH], token1[MAX_LENGTH], *ptr;
-	int j, k, l;
+    std::string token, token1, ptr;
+    int j, k, l;
 	/*
 	*   Pure phase assemblage
 	*/
@@ -1667,8 +1673,8 @@ set_initial_moles(int i)
 		cxxExchComp comp;
 		count_elts = 0;
 		paren_count = 0;
-		strcpy(token, "X");
-		ptr = token;
+        token = "X";
+        ptr = token;
         get_elts_in_species(ptr, 2e-10);
 		ptr = token;
 		LDBLE z;
@@ -1695,9 +1701,8 @@ fill_spec(int l_cell_no)
 	/* copy species activities into sol_D.spec... */
 
 	int i, i2, count_spec, count_exch_spec;
-	char token[MAX_LENGTH];
-    std::string name;
-	struct species *s_ptr, *s_ptr2;
+    std::string token, name;
+    struct species *s_ptr, *s_ptr2;
 	struct master *master_ptr;
 	LDBLE dum, dum2;
 	LDBLE lm;
@@ -1808,18 +1813,19 @@ fill_spec(int l_cell_no)
 					else
 						dum = 1;
 				}
-                name = master_ptr->elt.name;
-                if (name != "X")
-				{
-					if (!warn_MCD_X)
-					{
-						sprintf(token,
-							"MCD found more than 1 exchanger, uses X for interlayer diffusion.");
-						warning_msg(token);
-						warn_MCD_X = 1;
-					}
-					continue;
-				}
+//                name = master_ptr->elt.name;
+//                if (name != "X")
+//				{
+//					if (!warn_MCD_X)
+//					{
+//                        //						sprintf(token,
+//                        //							"MCD found more than 1 exchanger, uses X
+//                        //for interlayer diffusion.");
+//                        warning_msg(token);
+//						warn_MCD_X = 1;
+//					}
+//					continue;
+//				}
 				dum2 = s_ptr->moles * dum;	/* equivalent fraction */
 				sol_D[l_cell_no].spec[count_spec].name = s_ptr->name;
 				//string_hsave(s_ptr->name);
@@ -1971,10 +1977,10 @@ multi_D(LDBLE DDt, int mobile_cell, int stagnant)
 	int icell, jcell, i, l, n, length, length2, il_calcs;
 	int i1, loop_f_c;
 	int first_c, last_c, last_c2 = 0;
-	char token[MAX_LENGTH];
-	LDBLE mixf, temp;
-	LDBLE dVtemp = 0.0;
-	if (dV_dcell && stagnant)
+    std::string token;
+    double mixf, temp;
+    double dVtemp = 0.0;
+    if (dV_dcell && stagnant)
 	{
 		dVtemp = dV_dcell;
 		dV_dcell = 0;
@@ -2261,10 +2267,11 @@ multi_D(LDBLE DDt, int mobile_cell, int stagnant)
 				}
 				if (temp < -1e-12)
 				{
-					sprintf(token,
-						"Negative concentration in MCD: added %.4e moles %s in cell %d",
-						(double)-temp, it->first.c_str(), i);
-					warning_msg(token);
+                    //					sprintf(token,
+                    //						"Negative concentration in MCD: added %.4e
+                    //moles %s in cell %d", 						(double)-temp, it->first.c_str(),
+                    //i);
+                    warning_msg(token);
 					for (i1 = 0; i1 < count_elements; i1++)
 					{
                         if (!moles_added[i1].name.empty() && moles_added[i1].name != it->first)

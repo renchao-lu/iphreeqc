@@ -1475,13 +1475,13 @@ xsolution_save(int n_user)
 	{
 		for (int i = 0; i < count_master_isotope; i++)
 		{
-			if (master_isotope[i]->moles > 0)
+            if (master_isotope[i].moles > 0)
 			{
-				master_i_ptr = master_bsearch(master_isotope[i]->name);
-				master_ptr = master_isotope[i]->elt->master;
-				if (master_isotope[i]->minor_isotope == TRUE)
+                master_i_ptr = master_bsearch(master_isotope[i].name);
+                master_ptr = master_isotope[i].elt->master;
+                if (master_isotope[i].minor_isotope == TRUE)
 				{
-					master_i_ptr->total = master_isotope[i]->moles;
+                    master_i_ptr->total = master_isotope[i].moles;
 					if (master_ptr->total > 0)
 					{
 						master_i_ptr->s->la =
@@ -1493,19 +1493,19 @@ xsolution_save(int n_user)
 						master_i_ptr->s->la = master_ptr->s->la;
 					}
 				}
-				else if (master_isotope[i]->minor_isotope == FALSE
+                else if (master_isotope[i].minor_isotope == FALSE
 						 && master_ptr->s != s_hplus
 						 && master_ptr->s != s_h2o)
 				{
 					if (master_ptr->s->secondary != NULL)
 					{
 						master_ptr->s->secondary->total =
-							master_isotope[i]->moles;
+                            master_isotope[i].moles;
 					}
 					else
 					{
 						master_ptr->s->primary->total =
-							master_isotope[i]->moles;
+                            master_isotope[i].moles;
 					}
 				}
 			}
@@ -1526,10 +1526,10 @@ xsolution_save(int n_user)
 /*
  *   Save list of log activities
  */
-        if (master[i].in != FALSE)
-		{
-            temp_solution.Get_master_activity()[master[i].elt.name] = master[i].s->la;
-		}
+//        if (master[i].in != FALSE)
+//		{
+//            temp_solution.Get_master_activity()[master[i].elt.name] = master[i].s->la;
+//		}
         if (master[i].total <= MIN_TOTAL)
 		{
             master[i].total = 0.0;
@@ -1539,7 +1539,7 @@ xsolution_save(int n_user)
 /*
  *   Save list of concentrations
  */
-        temp_solution.Get_totals()[master[i].elt.name] = master[i].total;
+//        temp_solution.Get_totals()[master[i].elt.name] = master[i].total;
 	}
 	if (pitzer_model == TRUE || sit_model == TRUE)
 	{
@@ -1974,25 +1974,25 @@ step_save_exch(int n_user)
 	{
         if (master[i].s->type != EX)
 			continue;
-        std::string e(master[i].elt.name);
+//        std::string e(master[i].elt.name);
 		for (size_t j = 0; j < temp_exchange.Get_exchange_comps().size(); j++)
 		{
 			cxxNameDouble *nd = &(temp_exchange.Get_exchange_comps()[j].Get_totals());
-			cxxNameDouble::iterator nd_it = nd->find(e);
-			if (nd_it != nd->end())
-			{
-				LDBLE coef;
-                if (master[i].total <= MIN_TOTAL)
-				{
-					coef = MIN_TOTAL;
-				}
-				else
-				{
-                    coef = master[i].total;
-				}
-				nd->insert(nd_it->first.c_str(), coef);
-				break;
-			}
+//			cxxNameDouble::iterator nd_it = nd->find(e);
+//			if (nd_it != nd->end())
+//			{
+//				LDBLE coef;
+//                if (master[i].total <= MIN_TOTAL)
+//				{
+//					coef = MIN_TOTAL;
+//				}
+//				else
+//				{
+//                    coef = master[i].total;
+//				}
+//				nd->insert(nd_it->first.c_str(), coef);
+//				break;
+//			}
 		}
 	}
 
@@ -2023,20 +2023,20 @@ step_save_surf(int n_user)
 		{
 			cxxSurfaceComp * comp_ptr = &(surface_ptr->Get_surface_comps()[j]);
 			cxxNameDouble & totals = comp_ptr->Get_totals();
-            if (totals.find(master[i].elt.name) == totals.end())
-			{
-				continue;
-			}
-			else
-			{
-                LDBLE coef = master[i].total;
-                if (master[i].total <= MIN_TOTAL)
-				{
-					coef = MIN_TOTAL;
-				}
-                totals[master[i].elt.name] = coef;
-				break;
-			}
+//            if (totals.find(master[i].elt.name) == totals.end())
+//			{
+//				continue;
+//			}
+//			else
+//			{
+//                LDBLE coef = master[i].total;
+//                if (master[i].total <= MIN_TOTAL)
+//				{
+//					coef = MIN_TOTAL;
+//				}
+//                totals[master[i].elt.name] = coef;
+//				break;
+//			}
 		}
 	}
 	/*

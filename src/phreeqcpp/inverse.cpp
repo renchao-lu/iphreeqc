@@ -70,10 +70,10 @@ inverse_models(void)
 			if (inverse[n].pat != NULL)
 			{
                 string = inverse[n].pat;
-				if (replace(".pat", ".pat", string) != TRUE)
-				{
-                    string += ".pat";
-				}
+//				if (replace(".pat", ".pat", string) != TRUE)
+//				{
+//                    string += ".pat";
+//				}
                 netpath_file = fopen(string.data(), "w");
 				if (netpath_file == NULL)
 				{
@@ -374,10 +374,10 @@ setup_inverse(struct inverse *inv_ptr)
 	for (i = 0; i < count_master; i++)
 	{
         master[i].in = -1;
-        if (master[i].elt.name == "Alk")
-		{
-			master_alk = master[i];
-		}
+//        if (master[i].elt.name == "Alk")
+//		{
+//			master_alk = master[i];
+//		}
 	}
 	/* mark master species included in model, write row names */
 	count_rows_t = count_rows;
@@ -388,10 +388,10 @@ setup_inverse(struct inverse *inv_ptr)
 		master_ptr = inv_ptr->elts[i].master;
         if (master_ptr == &master_alk)
 			i_alk = i;
-        if (master_ptr->elt.name == "C(4)")
-			i_carb = i;
+//        if (master_ptr->elt.name == "C(4)")
+//			i_carb = i;
 		inv_ptr->elts[i].master->in = count_rows_t;
-        row_name[count_rows_t] = inv_ptr->elts[i].master->elt.name;
+//        row_name[count_rows_t] = inv_ptr->elts[i].master->elt.name;
 		count_rows_t++;
 	}
 	/* put concentrations in array */
@@ -528,7 +528,7 @@ setup_inverse(struct inverse *inv_ptr)
 			coef = inv_ptr->elts[i].master->coef;
 			rxn_ptr = inv_ptr->elts[i].master->rxn_primary;
 			column = col_redox + k;
-            col_name[column] = inv_ptr->elts[i].master->elt.name;
+//            col_name[column] = inv_ptr->elts[i].master->elt.name;
 			k++;
 			for (j = 0; rxn_ptr->token[j].s != NULL; j++)
 			{
@@ -847,9 +847,9 @@ setup_inverse(struct inverse *inv_ptr)
 			/* if uncertainty is greater than concentration,
 			   maximum negative is equal to concentrations,
 			   except alkalinity */
-			if (coef > fabs(conc) &&
-                ( inv_ptr->elts[j].master->elt.name != "Alkalinity"))
-				coef = fabs(conc) + toler;
+//			if (coef > fabs(conc) &&
+//                ( inv_ptr->elts[j].master->elt.name != "Alkalinity"))
+//				coef = fabs(conc) + toler;
 
 			my_array[count_rows * max_column_count + i] = -coef * f;
 			my_array[count_rows * max_column_count + column] = -1.0 * f;
@@ -1828,10 +1828,10 @@ print_model(struct inverse *inv_ptr)
 			if (equal(d3, 0.0, MIN_TOTAL_INVERSE) == TRUE)
 				d3 = 0.0;
 
-			output_msg(sformatf(
-					   "%15.15s   %12.3e  +%12.3e  =%12.3e\n",
-                       inv_ptr->elts[j].master->elt.name, (double) d1,
-					   (double) d2, (double) d3));
+//			output_msg(sformatf(
+//					   "%15.15s   %12.3e  +%12.3e  =%12.3e\n",
+//                       inv_ptr->elts[j].master->elt.name, (double) d1,
+//					   (double) d2, (double) d3));
 			if (equal(d1, 0.0, MIN_TOTAL_INVERSE) == FALSE)
 			{
 				d3 = fabs(d2 / d1);
@@ -3621,7 +3621,7 @@ count_isotope_unknowns(struct inverse *inv_ptr,
 			isotopes[count_isotopes].primary = primary_ptr;
 			isotopes[count_isotopes].master = primary_ptr;
 			isotopes[count_isotopes].isotope_number = isotope_number;
-            isotopes[count_isotopes].elt_name = primary_ptr->elt.name;
+//            isotopes[count_isotopes].elt_name = primary_ptr->elt.name;
 			count_isotopes++;
 
 			/* redox element */
@@ -3640,8 +3640,8 @@ count_isotope_unknowns(struct inverse *inv_ptr,
 			k++;
 			for (; k < count_master; k++)
 			{
-                if (master[k].elt.primary != primary_ptr)
-					break;
+//                if (master[k].elt.primary != primary_ptr)
+//					break;
 				isotopes =
 					(struct isotope *) PHRQ_realloc(isotopes,
 													(size_t) (count_isotopes
@@ -3656,7 +3656,7 @@ count_isotope_unknowns(struct inverse *inv_ptr,
 				isotopes[count_isotopes].primary = primary_ptr;
                 isotopes[count_isotopes].master = &master[k];
 				isotopes[count_isotopes].isotope_number = isotope_number;
-                isotopes[count_isotopes].elt_name = master[k].elt.name;
+//                isotopes[count_isotopes].elt_name = master[k].elt.name;
 				count_isotopes++;
 			}
 		}
@@ -3726,10 +3726,10 @@ check_isotopes(struct inverse *inv_ptr)
 			}
 			if (err == TRUE)
 			{
-				error_string = sformatf(
-						"In solution %d, isotope ratio(s) are needed for element: %g%s.",
-						solution_ptr->Get_n_user(), (double) isotope_number,
-                        primary_ptr->elt.name);
+//				error_string = sformatf(
+//						"In solution %d, isotope ratio(s) are needed for element: %g%s.",
+//						solution_ptr->Get_n_user(), (double) isotope_number,
+//                        primary_ptr->elt.name);
 				error_msg(error_string, CONTINUE);
 				input_error++;
 				continue;
@@ -4086,10 +4086,10 @@ dump_netpath(struct inverse *inverse_ptr)
 
 	/* open file */
 	string = inverse_ptr->netpath;
-	if (replace(".lon", ".lon", string) != true)
-	{
-		string.append(".lon");
-	}
+//	if (replace(".lon", ".lon", string) != true)
+//	{
+//		string.append(".lon");
+//	}
 	netpath_file = fopen(string.c_str(), "w");
 	if (netpath_file == NULL)
 	{
@@ -4901,7 +4901,7 @@ dump_netpath_pat(struct inverse *inv_ptr)
  */
 	std::string string;
 	string = inv_ptr->pat;
-	replace(".pat", "", string);
+//	replace(".pat", "", string);
 	trim(string);
 	std::string string1 = sformatf("%s-%d.mod", string.c_str(), count_inverse_models);
 	model_file = fopen(string1.c_str(), "w");
@@ -4937,24 +4937,24 @@ dump_netpath_pat(struct inverse *inv_ptr)
 	for (j = 0; j < inv_ptr->count_elts; j++)
 	{
 		master_ptr = inv_ptr->elts[j].master;
-        master_ptr = master_ptr->elt.primary;
-        if (master_ptr->elt.name == "Alkalinity")
-			continue;
-        if (master_ptr->elt.name == "H")
-			continue;
-        if (master_ptr->elt.name == "O")
-			continue;
-        if (master_ptr->elt.name == "X")
-			continue;
-        if (master_ptr->elt.name == "E")
-			continue;
+//        master_ptr = master_ptr->elt.primary;
+//        if (master_ptr->elt.name == "Alkalinity")
+//			continue;
+//        if (master_ptr->elt.name == "H")
+//			continue;
+//        if (master_ptr->elt.name == "O")
+//			continue;
+//        if (master_ptr->elt.name == "X")
+//			continue;
+//        if (master_ptr->elt.name == "E")
+//			continue;
 		master_ptr->in = TRUE;
 	}
 	for (j = 0; j < count_master; j++)
 	{
         if (master[j].in == TRUE)
 		{
-            string = master[j].elt.name;
+//            string = master[j].elt.name;
 			Utilities::str_toupper(string);
 			fprintf(model_file, " %-2s", string.c_str());
 		}
@@ -5111,9 +5111,9 @@ dump_netpath_pat(struct inverse *inv_ptr)
 			}
 			else
 			{
-                string = rxn_ptr->s->secondary->elt.name;
-				replace("(", " ", string);
-				replace(")", " ", string);
+//                string = rxn_ptr->s->secondary->elt.name;
+//				replace("(", " ", string);
+//				replace(")", " ", string);
 				std::string::iterator b = string.begin();
 				std::string::iterator e = string.end();
 				CParser::copy_token(token, b, e);

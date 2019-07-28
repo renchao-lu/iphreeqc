@@ -580,10 +580,10 @@ calc_solution_volume(void)
 	{
         if (master[i].s->type != AQ) continue;
         struct master master_ptr = master[i];
-        if (master_ptr.primary == TRUE && (master_ptr.elt.name =="Alkalinity"))
-		{
-            total_mass += master_ptr.total_primary * master_ptr.elt.gfw;
-		}
+//        if (master_ptr.primary == TRUE && (master_ptr.elt.name =="Alkalinity"))
+//		{
+//            total_mass += master_ptr.total_primary * master_ptr.elt.gfw;
+//		}
 	}
 	LDBLE rho = calc_dens();
 	LDBLE vol = 1e-3 * total_mass / rho;
@@ -748,7 +748,7 @@ calc_surface_charge(std::string surface_name)
 			if (token_ptr->s->type != SURF)
 				continue;
 			master_ptr = trxn.token[i].s->primary;
-            token =  master_ptr->elt.name;
+//            token =  master_ptr->elt.name;
 //			replace("_", " ", token);
 			ptr = token;
             copy_token(token1, ptr, &j);
@@ -802,21 +802,21 @@ diff_layer_total(std::string total_name, std::string surface_name)
 		{
 			if (x[j]->type != SURFACE_CB)
 				continue;
-            name = x[j]->master[0]->elt.name;
+//            name = x[j]->master[0]->elt.name;
 			Utilities::replace("_psi", "", name);
 		}
 		else if (use.Get_surface_ptr()->Get_type() == cxxSurface::CD_MUSIC)
 		{
 			if (x[j]->type != SURFACE_CB)
 				continue;
-            name = x[j]->master[0]->elt.name;
+//            name = x[j]->master[0]->elt.name;
 			Utilities::replace("_psi", "", name);
 		}
 		else
 		{
 			if (x[j]->type != SURFACE)
 				continue;
-            token =  x[j]->master[0]->elt.name;
+//            token =  x[j]->master[0]->elt.name;
 			Utilities::replace("_", " ", token);
 			std::string::iterator b = token.begin();
 			std::string::iterator e = token.end();
@@ -1887,22 +1887,22 @@ match_elts_in_species(std::string name, std::string mytemplate)
 
     auto token = name;
 	squeeze_white(token);
-	replace("(+", "(", token);
+//	replace("(+", "(", token);
 	if (strstr("token", "++") != NULL)
 	{
-		replace("++++++", "+6", token);
-		replace("+++++", "+5", token);
-		replace("++++", "+4", token);
-		replace("+++", "+3", token);
-		replace("++", "+2", token);
+//		replace("++++++", "+6", token);
+//		replace("+++++", "+5", token);
+//		replace("++++", "+4", token);
+//		replace("+++", "+3", token);
+//		replace("++", "+2", token);
 	}
 	if (strstr("token", "--") != NULL)
 	{
-		replace("------", "-6", token);
-		replace("-----", "-5", token);
-		replace("----", "-4", token);
-		replace("---", "-3", token);
-		replace("--", "-2", token);
+//		replace("------", "-6", token);
+//		replace("-----", "-5", token);
+//		replace("----", "-4", token);
+//		replace("---", "-3", token);
+//		replace("--", "-2", token);
 	}
 
 	ptr = token;
@@ -1946,9 +1946,9 @@ match_elts_in_species(std::string name, std::string mytemplate)
 	ptr = template1;
     while (extract_bracket(ptr, equal_list) == TRUE)
 	{
-		replace("{", "", equal_list);
-		replace("}", "", equal_list);
-		while (replace(",", " ", equal_list) == TRUE);
+//		replace("{", "", equal_list);
+//		replace("}", "", equal_list);
+//		while (replace(",", " ", equal_list) == TRUE);
 		ptr1 = equal_list;
 		/*
 		 *   Get first name in a list from template
@@ -2018,9 +2018,9 @@ match_elts_in_species(std::string name, std::string mytemplate)
     while (extract_bracket(ptr, equal_list) == TRUE)
 	{
         equal_list1 = equal_list;
-		replace("{", "", equal_list);
-		replace("}", "", equal_list);
-		while (replace(",", " ", equal_list) == TRUE);
+//		replace("{", "", equal_list);
+//		replace("}", "", equal_list);
+//		while (replace(",", " ", equal_list) == TRUE);
 		ptr1 = equal_list;
 		/*
 		 *   Get first name in a list
@@ -2034,7 +2034,7 @@ match_elts_in_species(std::string name, std::string mytemplate)
 			error_msg(error_string, CONTINUE);
 			return (ERROR);
 		}
-		replace(equal_list1, elt_name.c_str(), template1);
+//		replace(equal_list1, elt_name.c_str(), template1);
 		squeeze_white(template1);
 		ptr = template1;
 	}
@@ -2061,7 +2061,7 @@ match_elts_in_species(std::string name, std::string mytemplate)
 			case_no = 3;
 		}
 	}
-	while (replace("*", "", template1));
+//	while (replace("*", "", template1));
 	match = FALSE;
 	switch (case_no)
 	{
@@ -2385,8 +2385,8 @@ surf_total(std::string total_name, std::string surface_name)
 			continue;
 		
 		std::string token;
-        token = x[j]->master[0]->elt.name;
-		replace("_", " ", token);
+//        token = x[j]->master[0]->elt.name;
+//		replace("_", " ", token);
 		std::string::iterator b = token.begin();
 		std::string::iterator e = token.end();
 		std::string name;
@@ -2439,15 +2439,15 @@ surf_total(std::string total_name, std::string surface_name)
 			{
 				if (redox && rxn_ptr->s->secondary)
 				{
-                    token = rxn_ptr->s->secondary->elt.name;
+//                    token = rxn_ptr->s->secondary->elt.name;
 				}
 				else if (!redox && rxn_ptr->s->secondary)
 				{
-                    token = rxn_ptr->s->secondary->elt.primary->elt.name;
+//                    token = rxn_ptr->s->secondary->elt.primary->elt.name;
 				}
 				else if (!redox && rxn_ptr->s->primary)
 				{
-                    token = rxn_ptr->s->primary->elt.name;
+//                    token = rxn_ptr->s->primary->elt.name;
 				}
 				else
 				{
@@ -2634,8 +2634,8 @@ surf_total_no_redox(std::string total_name, std::string surface_name)
 	{
 		if (x[j]->type != SURFACE)
 			continue;
-        token = x[j]->master[0]->elt.name;
-		replace("_", " ", token);
+//        token = x[j]->master[0]->elt.name;
+//		replace("_", " ", token);
 		ptr = token;
         copy_token(name, ptr, &k);
         if (surface_name != "")
@@ -2750,12 +2750,12 @@ total(std::string total_name)
 		else
 		{
 			t = 0;
-			for (i = master_ptr->number + 1;
-                 (i < count_master && (master[i].elt.primary == master_ptr));
-				 i++)
-			{
-                t += master[i].total / mass_water_aq_x;
-			}
+//			for (i = master_ptr->number + 1;
+//                 (i < count_master && (master[i].elt.primary == master_ptr));
+//				 i++)
+//			{
+//                t += master[i].total / mass_water_aq_x;
+//			}
 		}
 	}
 /*
@@ -2820,12 +2820,12 @@ total_mole(std::string total_name)
 		else
 		{
 			t = 0;
-			for (i = master_ptr->number + 1;
-                 (i < count_master && master[i].elt.primary == master_ptr);
-				 i++)
-			{
-                t += master[i].total;
-			}
+//			for (i = master_ptr->number + 1;
+//                 (i < count_master && master[i].elt.primary == master_ptr);
+//				 i++)
+//			{
+//                t += master[i].total;
+//			}
 		}
 	}
 /*
@@ -3190,7 +3190,6 @@ system_total_elements(void)
 	int i, j;
 	LDBLE t;
     std::string name;
-    struct master master_ptr;
 
 	/*
 	 * Include H and O
@@ -3229,7 +3228,7 @@ system_total_elements(void)
 
 	for (i = 0; i < count_master; i++)
 	{
-		master_ptr = master[i];
+        auto& master_ptr = master[i];
         if (master_ptr.primary == TRUE && master_ptr.total_primary <= 0)
 			continue;
         if (master_ptr.in == FALSE
@@ -3280,7 +3279,7 @@ system_total_elements(void)
 		{
             t = master_ptr.total;
 		}
-        name = master[i].elt.name;
+//        name = master[i].elt.name;
         sys[count_sys].name =name;
 		sys[count_sys].moles = t;
 		sys_tot += sys[count_sys].moles;
@@ -3665,8 +3664,8 @@ system_total_elt(std::string total_name)
 			{
                 if (elt_list[j].elt.name == total_name)
 				{
-                    name = x[k]->master[0]->elt.name;
-					replace("_psi", "", name);
+//                    name = x[k]->master[0]->elt.name;
+//					replace("_psi", "", name);
                     sys[count_sys].name = name;
 					sys[count_sys].moles = elt_list[j].coef;
 					sys_tot += sys[count_sys].moles;
@@ -3937,8 +3936,8 @@ system_total_elt_secondary(std::string total_name)
 				}
 				if (l >= count_elts)
 					continue;
-                name = x[k]->master[0]->elt.name;
-				replace("_psi", "", name);
+//                name = x[k]->master[0]->elt.name;
+//				replace("_psi", "", name);
                 sys[count_sys].name = name;
 				sys[count_sys].moles = sum;
 				sys_tot += sys[count_sys].moles;
@@ -4270,7 +4269,7 @@ iso_value(std::string total_name)
 	int j;
     std::string token;
     auto my_total_name = total_name;
-	while (replace(" ","_",my_total_name));
+//	while (replace(" ","_",my_total_name));
 	for (j = 0; j < count_isotope_ratio; j++)
 	{
 		if (isotope_ratio[j]->ratio == MISSING)
@@ -4280,8 +4279,8 @@ iso_value(std::string total_name)
 		return (isotope_ratio[j]->converted_ratio);
 	}
     my_total_name = total_name;
-	while (replace("[","",my_total_name));
-	while (replace("]","",my_total_name));
+//	while (replace("[","",my_total_name));
+//	while (replace("]","",my_total_name));
     token += "R(" + my_total_name + ")";
 	for (j = 0; j < count_isotope_ratio; j++)
 	{
@@ -4301,7 +4300,7 @@ iso_unit(std::string total_name)
 	struct master_isotope *master_isotope_ptr;
     std::string token;
     auto my_total_name = total_name;
-	while (replace(" ","_",my_total_name));
+//	while (replace(" ","_",my_total_name));
     std::string unit = "unknown";
 	for (j = 0; j < count_isotope_ratio; j++)
 	{
@@ -4317,8 +4316,8 @@ iso_unit(std::string total_name)
         return unit;
 	}
     my_total_name = total_name;
-	while (replace("[","",my_total_name));
-	while (replace("]","",my_total_name));
+//	while (replace("[","",my_total_name));
+//	while (replace("]","",my_total_name));
     token += "R(" + my_total_name + ")";
 	for (j = 0; j < count_isotope_ratio; j++)
 	{

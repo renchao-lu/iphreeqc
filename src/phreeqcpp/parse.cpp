@@ -4,7 +4,7 @@
 
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
-parse_eq(char *eqn, struct elt_list **elt_ptr, int association)
+parse_eq(std::string eqn, struct elt_list **elt_ptr, int association)
 /* ---------------------------------------------------------------------- */
 /*
  *   function to break equation up into component species
@@ -127,10 +127,10 @@ parse_eq(char *eqn, struct elt_list **elt_ptr, int association)
  */
 	count_elts = 0;
     token = trxn.token[0].name;
-	replace("(s)", "", token);
-	replace("(S)", "", token);
-	replace("(g)", "", token);
-	replace("(G)", "", token);
+//	replace("(s)", "", token);
+//	replace("(S)", "", token);
+//	replace("(g)", "", token);
+//	replace("(G)", "", token);
     std::string char_ptr = token;
 
     if (get_elts_in_species(char_ptr, trxn.token[0].coef) == ERROR)

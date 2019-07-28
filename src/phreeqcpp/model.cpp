@@ -5218,10 +5218,10 @@ sum_species(void)
 /*
  *   Calculate total element concentrations
  */
-	for (i = 0; i < count_master; i++)
-	{
-        master[i].elt.primary->total_primary += master[i].total;
-	}
+//	for (i = 0; i < count_master; i++)
+//	{
+//        master[i].elt.primary->total_primary += master[i].total;
+//	}
 	/*
 	 *  Calculate isotope ratios
 	 */

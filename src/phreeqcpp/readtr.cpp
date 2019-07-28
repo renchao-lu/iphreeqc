@@ -33,16 +33,16 @@ read_line_LDBLEs(char *next_char, LDBLE ** d, int *count_d, int *count_alloc)
 			break;
 		if (j != DIGIT)
 			return (ERROR);
-		if (replace("*", " ", token) == TRUE)
-		{
+//		if (replace("*", " ", token) == TRUE)
+//		{
 //			if (sscanf(token, "%d" SCANFORMAT, &n, &value) != 2)
 //				return (ERROR);
-		}
-		else
-		{
+//		}
+//		else
+//		{
 //			sscanf(token, SCANFORMAT, &value);
-			n = 1;
-		}
+//			n = 1;
+//		}
 		for (;;)
 		{
 			if ((*count_d) + n > (*count_alloc))

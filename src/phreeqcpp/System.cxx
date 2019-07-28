@@ -57,13 +57,13 @@ cxxSystem::totalize(Phreeqc * phreeqc_ptr)
 	//add solution
 	if (this->solution != NULL)
 	{
-		char token[MAX_LENGTH];
-		strcpy(token, "O");
-		this->totals[token] = this->solution->Get_total_o();
-		strcpy(token, "H");
-		this->totals[token] = this->solution->Get_total_h();
-		strcpy(token, "Charge");
-		this->totals[token] = this->solution->Get_cb();
+        std::string token;
+        token = "O";
+        this->totals[token] = this->solution->Get_total_o();
+        token = "H";
+        this->totals[token] = this->solution->Get_total_h();
+        token = "Charge";
+        this->totals[token] = this->solution->Get_cb();
 		this->totals.add_extensive(this->solution->Get_totals(), 1.0);
 	}
 	if (this->exchange != NULL)

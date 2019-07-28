@@ -152,7 +152,7 @@ size_t Phreeqc::list_components(std::list<std::string> &list_c)
 		struct master *master_ptr = master_bsearch_primary(string);
 		if (master_ptr == NULL) continue;
 		if (master_ptr->type != AQ) continue;
-        accumulator.add(master_ptr->elt.name, 1);
+//        accumulator.add(master_ptr->elt.name, 1);
 	}
 	// print list
 	for (it = accumulator.begin(); it != accumulator.end(); it++)
@@ -428,7 +428,7 @@ Phreeqc::Phreeqc(PHRQ_io *io)
 	basicCallback = NULL;
 #endif
 }
-void Phreeqc::init(void)
+void Phreeqc::init()
 {
 	same_model                      = FALSE;
 	current_tc                      = NAN;
@@ -748,7 +748,6 @@ void Phreeqc::init(void)
 	/*----------------------------------------------------------------------
 	*   Elements
 	*---------------------------------------------------------------------- */
-	elements                 = NULL;
 	count_elements           = 0;
 	max_elements             = MAX_ELEMENTS;
 	element_h_one            = NULL;
@@ -787,8 +786,6 @@ void Phreeqc::init(void)
 	/*----------------------------------------------------------------------
 	*   Master species
 	*---------------------------------------------------------------------- */
-    master;
-	dbg_master              = NULL;
 	count_master            = 0;
 	max_master              = MAX_MASTER;
 	/*----------------------------------------------------------------------
@@ -1009,7 +1006,6 @@ void Phreeqc::init(void)
 	*   ISOTOPES
 	* ---------------------------------------------------------------------- */
 	count_master_isotope	= 0;
-	master_isotope			= NULL;
 	max_master_isotope		= MAX_ELTS;
 	initial_solution_isotopes = FALSE;
 	count_calculate_value	= 0;
@@ -1151,7 +1147,6 @@ void Phreeqc::init(void)
 	error                   = 0;
 	max_pct                 = 0;
 	scaled_error            = 0;
-    master_alk;
 	row_back                = NULL;
 	col_back                = NULL;
 	good                    = NULL;
@@ -1723,9 +1718,9 @@ Phreeqc::InternalCopy(const Phreeqc *pSrc)
 	count_elements = 0;
 	for (int i = 0; i < pSrc->count_elements; i++)
 	{
-		string_hsave(pSrc->elements[i]->name);
-        struct element elt_ptr = element_store(pSrc->elements[i]->name);
-        elt_ptr.gfw = pSrc->elements[i]->gfw;
+        string_hsave(pSrc->elements[i].name);
+        struct element elt_ptr = element_store(pSrc->elements[i].name);
+        elt_ptr.gfw = pSrc->elements[i].gfw;
 	}
     *element_h_one = element_store("H(1)");
 	/*
@@ -2354,15 +2349,15 @@ Phreeqc::InternalCopy(const Phreeqc *pSrc)
 
 	for (int i = 0; i < pSrc->count_master_isotope; i++)
 	{
-		struct master_isotope *master_isotope_ptr = master_isotope_store(pSrc->master_isotope[i]->name, FALSE);
-		memcpy(master_isotope_ptr, pSrc->master_isotope[i], sizeof(struct master_isotope));
-		master_isotope_ptr->name = string_hsave(pSrc->master_isotope[i]->name);
+        struct master_isotope *master_isotope_ptr = master_isotope_store(pSrc->master_isotope[i].name, FALSE);
+//		memcpy(master_isotope_ptr, pSrc->master_isotope[i], sizeof(struct master_isotope));
+        master_isotope_ptr->name = string_hsave(pSrc->master_isotope[i].name);
 		int n;
-		master_isotope_ptr->master = NULL;
-		if (pSrc->master_isotope[i]->master)
+        master_isotope_ptr->master = NULL;
+        if (pSrc->master_isotope[i].master)
 		{
-            auto name = pSrc->master_isotope[i]->master->elt.name;
-            master_isotope_ptr->master = master_search(name, &n);
+//            auto name = pSrc->master_isotope[i].master->elt.name;
+//            master_isotope_ptr->master = master_search(name, &n);
 //			free_check_null(name);
 		}
 		if (master_isotope_ptr->master == NULL)
@@ -2370,14 +2365,14 @@ Phreeqc::InternalCopy(const Phreeqc *pSrc)
 			//error_msg("Error in copy constructor for master_isotope.", STOP);
 		}
 		master_isotope_ptr->elt = NULL;
-		if (pSrc->master_isotope[i]->elt)
+        if (pSrc->master_isotope[i].elt)
 		{
-            *master_isotope_ptr->elt = element_store(pSrc->master_isotope[i]->elt->name);
+            *master_isotope_ptr->elt = element_store(pSrc->master_isotope[i].elt->name);
 		}
 		master_isotope_ptr->units = NULL;
-		if (pSrc->master_isotope[i]->units)
+        if (pSrc->master_isotope[i].units)
 		{
-			master_isotope_ptr->units = string_hsave(pSrc->master_isotope[i]->units);
+            master_isotope_ptr->units = string_hsave(pSrc->master_isotope[i].units);
 		}
 	}
 	initial_solution_isotopes = pSrc->initial_solution_isotopes;

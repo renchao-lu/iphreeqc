@@ -240,8 +240,7 @@ error_msg(const char *err_str, bool stop)
 	}
 }
 /* ---------------------------------------------------------------------- */
-void PHRQ_io::
-warning_msg(const char *err_str)
+void PHRQ_io::warning_msg(std::string err_str)
 /* ---------------------------------------------------------------------- */
 {
 	if (error_ostream != NULL && error_on)
@@ -260,8 +259,7 @@ warning_msg(const char *err_str)
 	output_flush();
 }
 /* ---------------------------------------------------------------------- */
-void PHRQ_io::
-screen_msg(const char * str)
+void PHRQ_io::screen_msg(std::string str)
 /* ---------------------------------------------------------------------- */
 {
 	if (error_ostream != NULL && screen_on)

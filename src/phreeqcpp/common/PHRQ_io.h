@@ -97,7 +97,7 @@ public:
 	std::ostream *Get_error_ostream(void)			{return this->error_ostream;}
 	void Set_error_on(bool tf)						{this->error_on = tf;}
 	bool Get_error_on(void)							{return this->error_on;}
-	virtual void warning_msg(const char *err_str);
+    virtual void warning_msg(std::string err_str);
 #else
 	virtual bool error_open(const char *file_name, const char * mode = "w");
 	void error_flush(void);
@@ -128,7 +128,7 @@ public:
     static void fpunchf_helper(std::ostream os, const char *format, ...);
     static void fpunchf_helper(std::string str, const char *format, ...);
 
-	virtual void screen_msg(const char * str);
+    virtual void screen_msg(std::string str);
     void Set_screen_on(bool tf)						{this->screen_on = tf;}
     bool Get_screen_on(void)						{return this->screen_on;}
 

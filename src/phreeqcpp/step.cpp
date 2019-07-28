@@ -1344,10 +1344,10 @@ pp_assemblage_check(cxxPPassemblage *pp_assemblage_ptr)
  */
 					for (int k = 0; k < count_master; k++)
 					{
-                        if (master[k].elt.primary == master_ptr)
-						{
-                            master[k].s->la = -9999.999;
-						}
+//                        if (master[k].elt.primary == master_ptr)
+//						{
+//                            master[k].s->la = -9999.999;
+//						}
 					}
 				}
 			}
@@ -1419,10 +1419,10 @@ ss_assemblage_check(cxxSSassemblage *ss_assemblage_ptr)
 					 */
 					for (k = 0; k < count_master; k++)
 					{
-                        if (master[k].elt.primary == master_ptr)
-						{
-                            master[k].s->la = -9999.999;
-						}
+//                        if (master[k].elt.primary == master_ptr)
+//						{
+//                            master[k].s->la = -9999.999;
+//						}
 					}
 				}
 			}
@@ -1472,9 +1472,9 @@ solution_check(void)
 		 */
 		if (state != TRANSPORT)
 		{
-			error_string = sformatf(
-				"Negative moles in solution %d for %s, %e. Recovering...",
-                cell_no, master_ptr->elt.name, (double)master_ptr->total);
+//			error_string = sformatf(
+//				"Negative moles in solution %d for %s, %e. Recovering...",
+//                cell_no, master_ptr->elt.name, (double)master_ptr->total);
 			warning_msg(error_string);
 		}
 		return (MASS_BALANCE);

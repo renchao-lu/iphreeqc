@@ -226,11 +226,11 @@ public:
 		std::istream **input_cookie, int log);
 
 	/* PHRQ_io_output.cpp */
-	void screen_msg(const char * str);
+    void screen_msg(std::string str);
 
-	void echo_msg(const char *err_str);
-	int warning_msg(const char *err_str);
-	void set_forward_output_to_log(int value);
+    void echo_msg(const char *err_str);
+    int warning_msg(std::string err_str);
+    void set_forward_output_to_log(int value);
 	int get_forward_output_to_log(void);
 
 	// dump_ostream
@@ -249,9 +249,9 @@ public:
 	bool error_open(const char *file_name);
 	void error_flush(void);
 	void error_close(void);
-	void error_msg(const char * str, bool stop=false);
+    void error_msg(std::string str, bool stop = false);
 
-	// output_ostream
+    // output_ostream
 	bool output_open(const char *file_name);
 	void output_flush(void);
 	void output_close(void);
@@ -390,7 +390,6 @@ public:
 		int replace_if_found);
     struct master_isotope *master_isotope_store(std::string name,
 		int replace_if_found);
-	struct master_isotope *master_isotope_alloc(void);
 	struct master_isotope *master_isotope_search(const char *name);
 	int print_initial_solution_isotopes(void);
 	int print_isotope_ratios(void);
@@ -507,7 +506,7 @@ public:
     int get_elts_in_species(std::string t_ptr, LDBLE coef);
     int get_num(std::string t_ptr, LDBLE * num);
     int get_secondary_in_species(std::string t_ptr, LDBLE coef);
-	int parse_eq(char *eqn, struct elt_list **elt_ptr, int association);
+    int parse_eq(std::string eqn, struct elt_list **elt_ptr, int association);
     int get_coef(LDBLE * coef, std::string eqnaddr);
 	int get_secondary(char **t_ptr, char *element, int *i);
     int get_species(std::string ptr);
@@ -759,7 +758,7 @@ public:
 	int read_save(void);
 	int read_selected_output(void);
 	int read_solution(void);
-	int read_species(void);
+    void read_species(void);
 	int read_surface(void);
 	int read_surface_master_species(void);
 	int read_surface_species(void);
@@ -1110,10 +1109,9 @@ protected:
 public:
 	void malloc_error(void);
 protected:
-	int parse_couple(char *token);
+    int parse_couple(std::string token);
     int print_centered(std::string string);
 public:
-    static bool replace(std::string str1, std::string str2, std::string & str);
     static int strcmp_nocase(std::string str1, std::string str2);
     static int strcmp_nocase_arg1(std::string str1, const char *str2);
 protected:
@@ -1173,7 +1171,7 @@ public:
 	std::map<int, cxxPressure> & Get_Rxn_pressure_map() {return this->Rxn_pressure_map;}
 
 public:
-    void init(void);
+    void init();
 
 	//
 	//Data members
@@ -1459,7 +1457,7 @@ protected:
 	*   Elements
 	*---------------------------------------------------------------------- */
 
-	struct element **elements;
+    std::vector<struct element> elements;
 	int count_elements;
 	int max_elements;
 	struct element *element_h_one;
@@ -1731,7 +1729,7 @@ protected:
 	//struct name_coef match_tokens[50];
 	//int count_match_tokens;
 	int count_master_isotope;
-	struct master_isotope **master_isotope;
+    std::vector<struct master_isotope> master_isotope;
 	int max_master_isotope;
 	int initial_solution_isotopes;
 	int count_calculate_value;

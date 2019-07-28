@@ -878,13 +878,13 @@ calc_all_donnan(void)
 		}
 		if (debug_diffuse_layer == TRUE)
 		{
-            std::string name =  x[j]->master[0]->elt.name;
-			Utilities::replace("_psi", "", name);
-			output_msg(sformatf(
-					   "\nDonnan all on %s (%d): charge, \tg, \tdg, Psi_surface = %8f V. \n",
-					   name.c_str(), (int) charge_ptr->Get_g_map().size(),
-					   x[j]->master[0]->s->la * 2 * LOG_10 * R_KJ_DEG_MOL *
-					   tk_x / F_KJ_V_EQ));
+//            std::string name =  x[j]->master[0]->elt.name;
+//			Utilities::replace("_psi", "", name);
+//			output_msg(sformatf(
+//					   "\nDonnan all on %s (%d): charge, \tg, \tdg, Psi_surface = %8f V. \n",
+//					   name.c_str(), (int) charge_ptr->Get_g_map().size(),
+//					   x[j]->master[0]->s->la * 2 * LOG_10 * R_KJ_DEG_MOL *
+//					   tk_x / F_KJ_V_EQ));
 			for (std::map<LDBLE, cxxSurfDL>::iterator i_it = charge_ptr->Get_g_map().begin();
 				i_it != charge_ptr->Get_g_map().end(); i_it++)
 			{
@@ -1000,13 +1000,13 @@ calc_init_donnan(void)
 		}
 		if (debug_diffuse_layer == TRUE)
 		{
-            std::string name = x[j]->master[0]->elt.name;
-			Utilities::replace("_psi", "", name);
-			output_msg(sformatf(
-					   "\nDonnan init on %s : charge, \tg, \tdg, Psi_surface = %8f V. \n",
-					   name.c_str(),
-					   x[j]->master[0]->s->la * 2 * LOG_10 * R_KJ_DEG_MOL *
-					   tk_x / F_KJ_V_EQ));
+//            std::string name = x[j]->master[0]->elt.name;
+//			Utilities::replace("_psi", "", name);
+//			output_msg(sformatf(
+//					   "\nDonnan init on %s : charge, \tg, \tdg, Psi_surface = %8f V. \n",
+//					   name.c_str(),
+//					   x[j]->master[0]->s->la * 2 * LOG_10 * R_KJ_DEG_MOL *
+//					   tk_x / F_KJ_V_EQ));
 			for (std::map<LDBLE, cxxSurfDL>::iterator i_it = charge_ptr->Get_g_map().begin();
 				i_it != charge_ptr->Get_g_map().end(); i_it++)
 			{

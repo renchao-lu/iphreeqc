@@ -481,7 +481,7 @@ add_isotopes(cxxSolution &solution_ref)
 	 */
 	for (i = 0; i < count_master_isotope; i++)
 	{
-		master_isotope[i]->moles = 0;
+        master_isotope[i].moles = 0;
 	}
 	master_isotope_ptr = master_isotope_search("H");
 	if (master_isotope_ptr != NULL)
@@ -516,8 +516,8 @@ add_isotopes(cxxSolution &solution_ref)
 	initial_solution_isotopes = FALSE;
 	for (i = 0; i < count_master_isotope; i++)
 	{
-		if (master_isotope[i]->minor_isotope == TRUE
-			&& master_isotope[i]->moles > 0)
+        if (master_isotope[i].minor_isotope == TRUE
+            && master_isotope[i].moles > 0)
 		{
 			initial_solution_isotopes = TRUE;
 		}
@@ -667,10 +667,10 @@ calculate_isotope_moles(struct element *elt_ptr,
 	{
 		for (i = 0; i < count_isotopes; i++)
 		{
-			if (list[i].name == master_isotope[j]->name)
+            if (list[i].name == master_isotope[j].name)
 			{
-				memcpy(master_isotope[j], &(list[i]),
-					   sizeof(struct master_isotope));
+//				memcpy(master_isotope[j], &(list[i]),
+//					   sizeof(struct master_isotope));
 			}
 		}
 	}
@@ -773,14 +773,14 @@ print_initial_solution_isotopes(void)
 			   "Molality", "Moles", "Ratio", "Units"));
 	for (i = 0; i < count_master_isotope; i++)
 	{
-		if (master_isotope[i]->minor_isotope == FALSE)
+        if (master_isotope[i].minor_isotope == FALSE)
 		{
 			print_isotope = FALSE;
 			for (j = 0; j < count_master_isotope; j++)
 			{
-				if ((master_isotope[j]->elt == master_isotope[i]->elt) &&
-					(master_isotope[j]->minor_isotope == TRUE) &&
-					(master_isotope[j]->moles > 0))
+                if ((master_isotope[j].elt == master_isotope[i].elt) &&
+                    (master_isotope[j].minor_isotope == TRUE) &&
+                    (master_isotope[j].moles > 0))
 				{
 					print_isotope = TRUE;
 					break;
@@ -792,24 +792,24 @@ print_initial_solution_isotopes(void)
 			 *  Print isotope values
 			 */
 			output_msg(sformatf( "%10s\t%12.5e\t%12.5e\n",
-					   master_isotope[i]->name,
-					   (double) (master_isotope[i]->moles / mass_water_aq_x),
-					   (double) master_isotope[i]->moles));
+                       master_isotope[i].name,
+                       (double) (master_isotope[i].moles / mass_water_aq_x),
+                       (double) master_isotope[i].moles));
 			for (j = 0; j < count_master_isotope; j++)
 			{
 				if (i == j)
 					continue;
-				if ((master_isotope[j]->elt == master_isotope[i]->elt) &&
-					(master_isotope[j]->minor_isotope == TRUE))
+                if ((master_isotope[j].elt == master_isotope[i].elt) &&
+                    (master_isotope[j].minor_isotope == TRUE))
 				{
 					output_msg(sformatf(
 							   "%10s\t%12.5e\t%12.5e\t%12.5e\t%12s\n",
-							   master_isotope[j]->name,
-							   (double) (master_isotope[j]->moles /
+                               master_isotope[j].name,
+                               (double) (master_isotope[j].moles /
 										 mass_water_aq_x),
-							   (double) master_isotope[j]->moles,
-							   (double) master_isotope[j]->ratio,
-							   master_isotope[j]->units));
+                               (double) master_isotope[j].moles,
+                               (double) master_isotope[j].ratio,
+                               master_isotope[j].units));
 				}
 			}
 			output_msg(sformatf( "\n"));
@@ -998,9 +998,9 @@ print_isotope_ratios(void)
 	print_isotope = FALSE;
 	for (i = 0; i < count_master_isotope; i++)
 	{
-		if (master_isotope[i]->minor_isotope == FALSE)
+        if (master_isotope[i].minor_isotope == FALSE)
 			continue;
-		master_ptr = master_bsearch(master_isotope[i]->name);
+        master_ptr = master_bsearch(master_isotope[i].name);
 		if (master_ptr == NULL)
 			continue;
 		if (master_ptr->total > 0 || master_ptr->s->moles > 0)
@@ -1026,7 +1026,7 @@ print_isotope_ratios(void)
 		 *  Print isotope ratio
 		 */
         token = isotope_ratio[j]->name;
-		while (replace("_", " ", token) == TRUE);
+//		while (replace("_", " ", token) == TRUE);
 		output_msg(sformatf( "     %-20s\t%12.5e\t%15.5g  %-10s\n",
 				   token, (double) isotope_ratio[j]->ratio,
 				   (double) isotope_ratio[j]->converted_ratio,
@@ -1060,9 +1060,9 @@ print_isotope_alphas(void)
 	print_isotope = FALSE;
 	for (i = 0; i < count_master_isotope; i++)
 	{
-		if (master_isotope[i]->minor_isotope == FALSE)
+        if (master_isotope[i].minor_isotope == FALSE)
 			continue;
-		master_ptr = master_bsearch(master_isotope[i]->name);
+        master_ptr = master_bsearch(master_isotope[i].name);
 		if (master_ptr == NULL)
 			continue;
 		if (master_ptr->total > 0 || master_ptr->s->moles > 0)
@@ -1089,7 +1089,7 @@ print_isotope_alphas(void)
 		 *  Print isotope ratio
 		 */
         token = isotope_alpha[j]->name;
-		while (replace("_", " ", token) == TRUE);
+//		while (replace("_", " ", token) == TRUE);
 		if (isotope_alpha[j]->named_logk != NULL)
 		{
 			if (isotope_alpha[j]->value <= 0)
@@ -1501,8 +1501,8 @@ master_isotope_store(std::string name, int replace_if_found)
 				  &max_master_isotope, sizeof(struct master_isotope *));
 		}
 		/* Make new master_isotope structure */
-		master_isotope[n] = master_isotope_alloc();
-		master_isotope_ptr = master_isotope[n];
+//		master_isotope[n] = master_isotope_alloc();
+//		master_isotope_ptr = master_isotope[n];
 	}
 	/* set name and z in pointer in master_isotope structure */
     master_isotope_ptr->name = string_hsave(name);
@@ -1517,29 +1517,6 @@ master_isotope_store(std::string name, int replace_if_found)
 		error_string = sformatf( "Hash table error in master_isotope_store.");
 		error_msg(error_string, CONTINUE);
 	}
-
-	return (master_isotope_ptr);
-}
-
-/* ---------------------------------------------------------------------- */
-struct master_isotope * Phreeqc::
-master_isotope_alloc(void)
-/* ---------------------------------------------------------------------- */
-/*
- *   Allocates space to a master_isotope structure, initializes
- *      arguments: void
- *      return: pointer to a master_isotope structure
- */
-{
-	struct master_isotope *master_isotope_ptr;
-	master_isotope_ptr =
-		(struct master_isotope *) PHRQ_malloc(sizeof(struct master_isotope));
-	if (master_isotope_ptr == NULL)
-		malloc_error();
-/*
- *   set pointers in structure to NULL, variables to zero
- */
-	master_isotope_init(master_isotope_ptr);
 
 	return (master_isotope_ptr);
 }

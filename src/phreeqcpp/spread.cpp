@@ -517,11 +517,11 @@ read_solution_spread(void)
             heading = string_to_spread_row(const_cast<char*>(line.c_str()));
 			{
 				int i;
-				for (i = 0; i < heading->count; i++)
-				{
-					while (replace(" ", "", heading->char_vector[i]) == TRUE);
-					while (replace(",", "_", heading->char_vector[i]) == TRUE);
-				}
+//				for (i = 0; i < heading->count; i++)
+//				{
+//					while (replace(" ", "", heading->char_vector[i]) == TRUE);
+//					while (replace(",", "_", heading->char_vector[i]) == TRUE);
+//				}
 			}
 			break;
 		}

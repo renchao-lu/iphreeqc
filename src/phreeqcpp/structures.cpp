@@ -81,11 +81,11 @@ clean_up(void)
 
 /* elements */
 
-	for (j = 0; j < count_elements; j++)
-	{
-		elements[j] = (struct element *) free_check_null(elements[j]);
-	}
-	elements = (struct element **) free_check_null(elements);
+//	for (j = 0; j < count_elements; j++)
+//	{
+//		elements[j] = (struct element *) free_check_null(elements[j]);
+//	}
+//	elements = (struct element **) free_check_null(elements);
 
 /* solutions */
 	Rxn_solution_map.clear();
@@ -250,13 +250,13 @@ clean_up(void)
 	user_graph_headings = (char **) free_check_null(user_graph_headings);
 #endif
 	/* master_isotope */
-	for (i = 0; i < count_master_isotope; i++)
-	{
-		master_isotope[i] =
-			(struct master_isotope *) free_check_null(master_isotope[i]);
-	}
-	master_isotope =
-		(struct master_isotope **) free_check_null(master_isotope);
+//	for (i = 0; i < count_master_isotope; i++)
+//	{
+//		master_isotope[i] =
+//			(struct master_isotope *) free_check_null(master_isotope[i]);
+//	}
+//	master_isotope =
+//		(struct master_isotope **) free_check_null(master_isotope);
 	hdestroy_multi(master_isotope_hash_table);
 	master_isotope_hash_table = NULL;
 
@@ -470,44 +470,30 @@ element_store(std::string element)
  */
     item.key = element;
 	item.data = NULL;
-	found_item = hsearch_multi(elements_hash_table, item, FIND);
-	if (found_item != NULL)
-	{
-		elts_ptr = (struct element *) (found_item->data);
-        return (*elts_ptr);
-	}
+//	found_item = hsearch_multi(elements_hash_table, item, FIND);
+//	if (found_item != NULL)
+//	{
+//		elts_ptr = (struct element *) (found_item->data);
+//        return (*elts_ptr);
+//	}
 /*
  *   Save new elt structure and return pointer to it
  */
-	/* make sure there is space in elements */
-	elements[count_elements] =
-		(struct element *) PHRQ_malloc((size_t) sizeof(struct element));
-	if (elements[count_elements] == NULL)
-		malloc_error();
-	/* set name pointer in elements structure */
-    elements[count_elements]->name = string_hsave(element);
-	/* set return value */
-	elements[count_elements]->master = NULL;
-	elements[count_elements]->primary = NULL;
-	elements[count_elements]->gfw = 0.0;
-	n = count_elements++;
-	if (count_elements >= max_elements)
-	{
-		space((void **) ((void *) &elements), count_elements, &max_elements,
-			  sizeof(struct element *));
-	}
+    /* initilization object element */
+    elements.emplace_back(element, nullptr, nullptr, 0.0);
+
 /*
  *   Update hash table
  */
-	item.key = elements[n]->name;
-	item.data = (void *) elements[n];
-	found_item = hsearch_multi(elements_hash_table, item, ENTER);
-	if (found_item == NULL)
-	{
-		error_string = sformatf( "Hash table error in element_store.");
-		error_msg(error_string, CONTINUE);
-	}
-    return (*elements[n]);
+//	item.key = elements[n]->name;
+//	item.data = (void *) elements[n];
+//	found_item = hsearch_multi(elements_hash_table, item, ENTER);
+//	if (found_item == NULL)
+//	{
+//		error_string = sformatf( "Hash table error in element_store.");
+//		error_msg(error_string, CONTINUE);
+//	}
+    return elements[n];
 }
 
 /* **********************************************************************
@@ -1078,7 +1064,7 @@ master_bsearch(std::string ptr)
 	if (void_ptr == NULL)
 	{
         auto dup = ptr;
-		replace("(+","(", dup);
+//		replace("(+","(", dup);
 //		void_ptr = bsearch((const char *) dup,
 //			(char *) master,
 //			(unsigned) count_master,
@@ -1105,7 +1091,7 @@ master_compare_string(const void *ptr1, const void *ptr2)
 
 	string_ptr = (const char *) ptr1;
 	master_ptr = *(const struct master **) ptr2;
-    return (strcmp_nocase(string_ptr, master_ptr->elt.name));
+//    return (strcmp_nocase(string_ptr, master_ptr->elt.name));
 }
 
 /* ---------------------------------------------------------------------- */
@@ -1116,7 +1102,7 @@ master_compare(const void *ptr1, const void *ptr2)
 	const struct master *master_ptr1, *master_ptr2;
 	master_ptr1 = *(const struct master **) ptr1;
 	master_ptr2 = *(const struct master **) ptr2;
-    return (strcmp_nocase(master_ptr1->elt.name, master_ptr2->elt.name));
+//    return (strcmp_nocase(master_ptr1->elt.name, master_ptr2->elt.name));
 }
 
 struct master * Phreeqc::
@@ -1183,11 +1169,11 @@ master_bsearch_secondary(std::string ptr)
 */
 	if (master_ptr_primary)
 	{
-		if ((master_ptr_primary->number >= count_master - 1) || 
-            (master[master_ptr_primary->number + 1].elt.primary != master_ptr_primary))
-		{
-			return(master_ptr_primary);
-		}
+//		if ((master_ptr_primary->number >= count_master - 1) ||
+//            (master[master_ptr_primary->number + 1].elt.primary != master_ptr_primary))
+//		{
+//			return(master_ptr_primary);
+//		}
 		/*
 		*  Find secondary master with same species as primary
 		*/
@@ -1236,12 +1222,12 @@ master_search(std::string ptr, int *n)
 	*n = -999;
 	for (i = 0; i < count_master; i++)
 	{
-        if (ptr == master[i].elt.name)
-		{
-			*n = i;
-//			master_ptr = master[i];
-			return (master_ptr);
-		}
+//        if (ptr == master[i].elt.name)
+//		{
+//			*n = i;
+////			master_ptr = master[i];
+//			return (master_ptr);
+//		}
 	}
 	return (NULL);
 }
@@ -2386,22 +2372,22 @@ species_list_compare(const void *ptr1, const void *ptr2)
 /*
  *   Other element valence states
  */
-	if (nptr1->master_s->secondary != NULL)
-	{
-        name1 = nptr1->master_s->secondary->elt.name;
-	}
-	else
-	{
-        name1 = nptr1->master_s->primary->elt.name;
-	}
-	if (nptr2->master_s->secondary != NULL)
-	{
-        name2 = nptr2->master_s->secondary->elt.name;
-	}
-	else
-	{
-        name2 = nptr2->master_s->primary->elt.name;
-	}
+//	if (nptr1->master_s->secondary != NULL)
+//	{
+//        name1 = nptr1->master_s->secondary->elt.name;
+//	}
+//	else
+//	{
+//        name1 = nptr1->master_s->primary->elt.name;
+//	}
+//	if (nptr2->master_s->secondary != NULL)
+//	{
+//        name2 = nptr2->master_s->secondary->elt.name;
+//	}
+//	else
+//	{
+//        name2 = nptr2->master_s->primary->elt.name;
+//	}
 /*
  *   Compare name of primary or secondary master species; log molality
  */
@@ -2490,22 +2476,22 @@ species_list_compare_master(const void *ptr1, const void *ptr2)
 /*
  *   Other element valence states
  */
-	if (nptr1->master_s->secondary != NULL)
-	{
-        name1 = nptr1->master_s->secondary->elt.name;
-	}
-	else
-	{
-        name1 = nptr1->master_s->primary->elt.name;
-	}
-	if (nptr2->master_s->secondary != NULL)
-	{
-        name2 = nptr2->master_s->secondary->elt.name;
-	}
-	else
-	{
-        name2 = nptr2->master_s->primary->elt.name;
-	}
+//	if (nptr1->master_s->secondary != NULL)
+//	{
+//        name1 = nptr1->master_s->secondary->elt.name;
+//	}
+//	else
+//	{
+//        name1 = nptr1->master_s->primary->elt.name;
+//	}
+//	if (nptr2->master_s->secondary != NULL)
+//	{
+//        name2 = nptr2->master_s->secondary->elt.name;
+//	}
+//	else
+//	{
+//        name2 = nptr2->master_s->primary->elt.name;
+//	}
 /*
  *   Compare name of primary or secondary master species; log molality
  */

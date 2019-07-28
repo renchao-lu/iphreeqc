@@ -3,8 +3,7 @@
 #include "phqalloc.h"
 
 /* ---------------------------------------------------------------------- */
-int Phreeqc::
-warning_msg(const char *err_str)
+int Phreeqc::warning_msg(std::string err_str)
 /* ---------------------------------------------------------------------- */
 {
 	if (state == TRANSPORT && transport_warnings == FALSE)
@@ -189,8 +188,7 @@ fpunchf_end_row(const char *format)
 	return OK;
 }
 /* ---------------------------------------------------------------------- */
-void Phreeqc::
-screen_msg(const char *err_str)
+void Phreeqc::screen_msg(std::string err_str)
 /* ---------------------------------------------------------------------- */
 {
 	if (phrq_io) phrq_io->screen_msg(err_str);
@@ -259,8 +257,7 @@ error_close(void)
 }
 
 /* ---------------------------------------------------------------------- */
-void Phreeqc::
-error_msg(const char *err_str, bool stop)
+void Phreeqc::error_msg(std::string err_str, bool stop)
 /* ---------------------------------------------------------------------- */
 {
 	if (get_input_errors() <= 0)

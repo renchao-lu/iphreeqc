@@ -1697,8 +1697,8 @@ parseinput(tokenrec ** l_buf)
 {
 	linerec *l, *l0, *l1;
 
-	while (PhreeqcPtr->replace("\t", " ", inbuf));
-	while (PhreeqcPtr->replace("\r", " ", inbuf));
+//	while (PhreeqcPtr->replace("\t", " ", inbuf));
+//	while (PhreeqcPtr->replace("\r", " ", inbuf));
 	PhreeqcPtr->string_trim(inbuf);
 	curline = 0;
 //	while (*inbuf != '\0' && isdigit((int) inbuf[0]))
@@ -2517,7 +2517,7 @@ factor(struct LOC_exec * LINK)
                 n.UU.sval = "Unknown";
 			}
 		}
-		while (PhreeqcPtr->replace("\t", " ", n.UU.sval));
+//		while (PhreeqcPtr->replace("\t", " ", n.UU.sval));
 		break;
 
 	case toktitle:
@@ -2527,7 +2527,7 @@ factor(struct LOC_exec * LINK)
 			PhreeqcPtr->last_title_x = " ";
 		}
         n.UU.sval = PhreeqcPtr->last_title_x;
-		while (PhreeqcPtr->replace("\t", " ", n.UU.sval));
+//		while (PhreeqcPtr->replace("\t", " ", n.UU.sval));
 		break;
 
 	case tokinstr:

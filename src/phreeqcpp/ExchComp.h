@@ -26,11 +26,11 @@ class cxxExchComp: public PHRQ_base
 	{
 		return this->formula;
 	}
-	void Set_formula(const char *cstring)
-	{
-		if (cstring != NULL)
-			this->formula = std::string(cstring);
-		else
+    void Set_formula(std::string cstring)
+    {
+        if (!cstring.empty())
+            this->formula = cstring;
+        else
 			this->formula.clear();
 	}
 	LDBLE Get_la() const

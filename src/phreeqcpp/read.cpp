@@ -35,6 +35,10 @@ inline Keywords convertStringToKeywords(std::string const& inString)
     {
         return Keywords::KEY_SOLUTION_MASTER_SPECIES;
     }
+    if (boost::iequals(inString, "SOLUTION_SPECIES"))
+    {
+        return Keywords::KEY_SOLUTION_SPECIES;
+    }
 }
 
 /* ---------------------------------------------------------------------- */
@@ -1134,7 +1138,7 @@ read_exchange_master_species(void)
 	int j, l;
     std::string ptr; std::string ptr1;
 	LDBLE l_z;
-    struct element elts_ptr;
+//    struct element elts_ptr;
 	struct species *s_ptr;
     std::string token, token1;
 	for (;;)
@@ -1165,7 +1169,7 @@ read_exchange_master_species(void)
 		   strcpy(token, element);
 		   }
 		 */
-		replace("(+", "(", token);
+//		replace("(+", "(", token);
 /*
  *   Delete master if it exists
  */
@@ -1213,11 +1217,11 @@ read_exchange_master_species(void)
  *   MAKE LISTS OF PRIMARY AND SECONDARY MASTER SPECIES
  */
         master[count_master].primary = TRUE;
-        if (master[count_master].elt.name != "E")
-		{
-            elts_ptr = element_store(master[count_master].elt.name);
-            elts_ptr.gfw = 0.0;
-		}
+//        if (master[count_master].elt.name != "E")
+//		{
+//            elts_ptr = element_store(master[count_master].elt.name);
+//            elts_ptr.gfw = 0.0;
+//		}
 
 		count_master++;
 		if (count_master >= max_master)
@@ -1718,7 +1722,7 @@ read_inv_balances(struct inverse *inverse_ptr, std::string ptr)
 											 sizeof(struct inv_elts));
 		if (inverse_ptr->elts == NULL)
 			malloc_error();
-		replace("(+", "(", token);
+//		replace("(+", "(", token);
 		inverse_ptr->elts[inverse_ptr->count_elts].name = string_hsave(token);
 /*
  *   Read element uncertainties
@@ -1786,7 +1790,7 @@ read_inv_isotopes(struct inverse *inverse_ptr, std::string ptr)
     redox_name = string_hsave(ptr2.c_str());
 
     copy_token(token, ptr2, &l1);
-	replace("(", " ", token);
+//	replace("(", " ", token);
 	ptr2 = token;
 
 	/* element name, without parentheses */
@@ -2783,7 +2787,7 @@ read_log_k_only(std::string ptr, LDBLE * log_k)
  *   Read log k
  */
 	*log_k = 0.0;
-	replace("=", " ", ptr);
+//	replace("=", " ", ptr);
 //	if (sscanf(ptr, SCANFORMAT, log_k) < 1)
 //	{
 //		input_error++;
@@ -3221,14 +3225,6 @@ read_master_species()
 /*
  *   Reads master species data from data file or input file
  */
-	int j, i, l;
-    std::string ptr; std::string ptr1;
-	LDBLE l_z;
-	struct element *elts_ptr;
-	struct species *s_ptr;
-    std::string token, token1;
-
-	elts_ptr = NULL;
     auto in = phrq_io->get_istream();
     while (std::getline(*in, line))
 	{
@@ -3244,7 +3240,6 @@ read_master_species()
 /*
  *   Get element name with valence, allocate space, store
  */
-		ptr = line;
         std::vector<std::string> items;
         boost::trim_if(line, boost::is_any_of("\t "));
         boost::algorithm::split(items, line,
@@ -3253,7 +3248,7 @@ read_master_species()
 /*
  *   Get element name and save pointer to character string
  */
-//		replace("(+", "(", token);
+
 /*
  *   Delete master if it exists
  */
@@ -3262,101 +3257,84 @@ read_master_species()
 /*
  *   Set type to AQ
  */
-        struct master master_data;
 /*
  *   Save element name
  */
         auto& element_name = items[0];
-        struct element elt = element_store(element_name);
-		std::string ename = token;
+        assert(items.size() == 4 || items.size() == 5);
+        double gfw = items.size() == 5 ? std::stod(items[4]) : 0.0;
+
+        elements.emplace_back(element_name, nullptr, nullptr, gfw);
 /*
  *   Save pointer to species data for master species
  */
-        if ((copy_token(token, ptr, &l) != UPPER) &&
-			token[0] != '[' && (strcmp_nocase_arg1(token, "e-") != 0))
-		{
-			parse_error++;
-			error_msg("Reading master species name.", CONTINUE);
-            error_msg(line_save.c_str(), CONTINUE);
-			continue;
-		}
+//        if ((copy_token(token, ptr, &l) != UPPER) &&
+//			token[0] != '[' && (strcmp_nocase_arg1(token, "e-") != 0))
+//		{
+//			parse_error++;
+//			error_msg("Reading master species name.", CONTINUE);
+//            error_msg(line_save.c_str(), CONTINUE);
+//			continue;
+//		}
 
-		s_ptr = s_search(token);
-		if (s_ptr != NULL)
-		{
-            master[count_master-1].s = s_ptr;
-		}
-		else
-		{
-			ptr1 = token;
-            get_token(ptr1, token1, &l_z, &l);
-            master[count_master-1].s = s_store(token1, l_z, FALSE);
-		}
+//		s_ptr = s_search(token);
+//		if (s_ptr != NULL)
+//		{
+//            master[count_master-1].s = s_ptr;
+//		}
+//		else
+//		{
+//			ptr1 = token;
+//            get_token(ptr1, token1, &l_z, &l);
+//            master[count_master-1].s = s_store(token1, l_z, FALSE);
+//		}
 		
-		std::string sname = token;
-		replace("("," ", ename);
-		std::istringstream iss(ename);
-		iss >> ename;
-		if (ename != "e" && ename != "E" && ename != "Alkalinity" && std::string::npos == sname.find(ename))
-		{
-			input_error++;
-			std::ostringstream oss;
-			oss << "Master species, " << sname << " must contain the element, " << ename;
-			error_msg(oss.str().c_str(), CONTINUE);
-			continue;
-		}
+//		std::string sname = token;
+//		replace("("," ", ename);
+//		std::istringstream iss(ename);
+//		iss >> ename;
+//		if (ename != "e" && ename != "E" && ename != "Alkalinity" && std::string::npos == sname.find(ename))
+//		{
+//			input_error++;
+//			std::ostringstream oss;
+//			oss << "Master species, " << sname << " must contain the element, " << ename;
+//			error_msg(oss.str().c_str(), CONTINUE);
+//			continue;
+//		}
 
 /*
  *   Read alkalinity for species
  */
-        copy_token(token, ptr, &l);
-//        i = sscanf(token, SCANFORMAT, &master[count_master-1].alk);
-		if (i != 1)
-		{
-			input_error++;
-			if (elts_ptr != NULL)
-			{
-				error_string = sformatf(
-						"Expected alkalinity for master species, %s, in master species input.",
-						elts_ptr->name);
-			}
-			else
-			{
-				error_string = sformatf(
-						"Expected alkalinity for master species in master species input.");
-			}
-			error_msg(error_string, CONTINUE);
-			continue;
-		}
+
 /*
  *   Read default gfw for species
  */
-        i = copy_token(token, ptr, &l);
-		if (i == DIGIT)
-		{
+//        i = copy_token(token, ptr, &l);
+//		if (i == DIGIT)
+//		{
 //            sscanf(token, SCANFORMAT, &master[count_master-1].gfw);
-		}
-		else if (i == UPPER)
-		{
-            master[count_master-1].gfw_formula = string_hsave(token);
-		}
-		else
-		{
-			input_error++;
-			if (elts_ptr != NULL)
-			{
-				error_string = sformatf(
-						"Expected gram formula weight for master species, %s, in master species input.",
-						elts_ptr->name);
-			}
-			else
-			{
-				error_string = sformatf(
-						"Expected gram formula weight for master species in master species input.");
-			}
-			error_msg(error_string, CONTINUE);
-			continue;
-		}
+//		}
+//		else if (i == UPPER)
+//		{
+//            master[count_master-1].gfw_formula = string_hsave(token);
+//		}
+//		else
+//		{
+//			input_error++;
+//			if (elts_ptr != NULL)
+//			{
+//				error_string = sformatf(
+//						"Expected gram formula weight for master species, %s, in master species input.",
+//						elts_ptr->name);
+//			}
+//			else
+//			{
+//				error_string = sformatf(
+//						"Expected gram formula weight for master species in master species input.");
+//			}
+//			error_msg(error_string, CONTINUE);
+//			continue;
+//		}
 /*
  *   MAKE LISTS OF PRIMARY AND SECONDARY MASTER SPECIES
  */
@@ -3366,7 +3344,7 @@ read_master_species()
 //			/* Read gram formula weight for primary */
 //            if (master[count_master-1].elt.name != "E")
 //			{
-////                elts_ptr = master[count_master-1].elt;
+//                elts_ptr = master[count_master-1].elt;
 //                i = copy_token(token, ptr, &l);
 //				if (i == DIGIT)
 //				{
@@ -3396,11 +3374,6 @@ read_master_species()
 //		{
 //            master[count_master-1].primary = FALSE;
 //		}
-		if (count_master >= max_master)
-		{
-			space((void **) ((void *) &master), count_master, &max_master,
-				  sizeof(struct master *));
-		}
 
 	}
 	gfw_map.clear();
@@ -4006,10 +3979,10 @@ read_phases(void)
  *   Get pointer to each species in the reaction, store new species if necessary
  */
             token1 = trxn.token[0].name;
-			replace("(g)", "", token1);
-			replace("(s)", "", token1);
-			replace("(G)", "", token1);
-			replace("(S)", "", token1);
+//			replace("(g)", "", token1);
+//			replace("(s)", "", token1);
+//			replace("(G)", "", token1);
+//			replace("(S)", "", token1);
 			phase_ptr->formula = string_hsave(token1);
 			for (i = 1; i < count_trxn; i++)
 			{
@@ -4019,10 +3992,10 @@ read_phases(void)
 					(strstr(trxn.token[i].name, "(G)") == NULL))
 				{
                     token1 = trxn.token[i].name;
-					replace("(aq)", "", token1);
-					replace("(AQ)", "", token1);
-					replace("H2O(l)", "H2O", token1);
-					replace("(H2O(L)", "H2O", token1);
+//					replace("(aq)", "", token1);
+//					replace("(AQ)", "", token1);
+//					replace("H2O(l)", "H2O", token1);
+//					replace("(H2O(L)", "H2O", token1);
 					trxn.token[i].s = s_store(token1, trxn.token[i].z, FALSE);
 				}
 				else
@@ -4454,38 +4427,38 @@ read_reaction_steps(cxxReaction *reaction_ptr)
  *   Read next step increment
  */
 /* begin modif 29 july 2005... */
-		if (replace("*", " ", token))
-		{
-			int n;
-			LDBLE value;
-			if (sscanf(token.c_str(), "%d" SCANFORMAT, &n, &value) == 2)
-			{
-				for (int i = 0; i < n; i++)
-				{
-					reaction_ptr->Get_steps().push_back(value);
-				}
-			}
-			else
-			{
-				input_error++;
-				error_msg
-					("Format error in multiple, equal REACTION steps.\nCorrect is (for example): 0.2 4*0.1 2*0.5 0.3\n",
-					 CONTINUE);
-			}
-		}
-		else
-		{
-			LDBLE step;
-			int j = sscanf(token.c_str(), SCANFORMAT, &step);
-			if (j == 1)
-			{
-				reaction_ptr->Get_steps().push_back(step);
-			}
-			else
-			{
-				break;
-			}
-		}
+//		if (replace("*", " ", token))
+//		{
+//			int n;
+//			LDBLE value;
+//			if (sscanf(token.c_str(), "%d" SCANFORMAT, &n, &value) == 2)
+//			{
+//				for (int i = 0; i < n; i++)
+//				{
+//					reaction_ptr->Get_steps().push_back(value);
+//				}
+//			}
+//			else
+//			{
+//				input_error++;
+//				error_msg
+//					("Format error in multiple, equal REACTION steps.\nCorrect is (for example): 0.2 4*0.1 2*0.5 0.3\n",
+//					 CONTINUE);
+//			}
+//		}
+//		else
+//		{
+//			LDBLE step;
+//			int j = sscanf(token.c_str(), SCANFORMAT, &step);
+//			if (j == 1)
+//			{
+//				reaction_ptr->Get_steps().push_back(step);
+//			}
+//			else
+//			{
+//				break;
+//			}
+//		}
 /* ...end modif 29 july 2005 */
 	}
 /*
@@ -4496,7 +4469,7 @@ read_reaction_steps(cxxReaction *reaction_ptr)
 	std::string t1 = token1;
 	if (check_units(t1, false, false, NULL, false) == OK)
 	{
-		replace("/l", "", t1);
+//		replace("/l", "", t1);
 		if (strstr(t1.c_str(), "Mol") == NULL)
 		{
 			error_string = sformatf( "Units of steps not in moles, %s.", token.c_str());
@@ -4576,7 +4549,7 @@ read_save(void)
         i = copy_token(token, ptr, &l);
 		if (i == DIGIT)
 		{
-			replace("-", " ", token);
+//			replace("-", " ", token);
 //			n = sscanf(token, "%d%d", &n_user, &n_user_end);
 			if (n == 1)
 			{
@@ -5972,10 +5945,27 @@ read_solution(void)
 	Rxn_new_solution.insert(n_user);
 	return (return_value);
 }
-/* ---------------------------------------------------------------------- */
-int Phreeqc::
+
+enum class SolutionSpeciesKeywords
+{
+    llnl_gamma,
+    equation
+};
+
+inline SolutionSpeciesKeywords convertStringToSolutionSpeciesKeywords(std::string const& inString)
+{
+    if (boost::iequals(inString, "-llnl_gamma"))
+    {
+        return SolutionSpeciesKeywords::llnl_gamma;
+    }
+    else
+    {
+        return SolutionSpeciesKeywords::equation;
+    }
+}
+
+void Phreeqc::
 read_species(void)
-/* ---------------------------------------------------------------------- */
 {
 /*
  *   Read data for aqueous species, parse equations
@@ -6022,389 +6012,358 @@ read_species(void)
 /*
  *   Read eqn from file and call parser
  */
-	opt_save = OPTION_DEFAULT;
-	return_value = UNKNOWN;
-	for (;;)
-	{
-        opt = get_option(opt_list, count_opt_list, next_char);
-		if (opt == OPTION_DEFAULT)
-		{
-			opt = opt_save;
-			//vm_read = false;
-		}
-		opt_save = OPTION_DEFAULT;
+    auto in = phrq_io->get_istream();
+    while (std::getline(*in, line))
+    {
+        if (line.empty())
+            continue;
+
+        if (line.at(0) == '#')
+        {
+            if (line == "#ende")
+                break;
+            continue;
+        }
+
+        auto opt = convertStringToSolutionSpeciesKeywords(line);
 		switch (opt)
 		{
-		case OPTION_EOF:		/* end of file */
-			return_value = EOF;
-			break;
-		case OPTION_KEYWORD:	/* keyword */
-			return_value = KEYWORD;
-			break;
-		case OPTION_ERROR:
-			input_error++;
-			error_msg("Unknown input in SOLUTION_SPECIES keyword.", CONTINUE);
-            error_msg(line_save.c_str(), CONTINUE);
-			break;
-		case 0:				/* no_check */
-			if (s_ptr == NULL)
-			{
-				error_string = sformatf(
-						"No reaction defined before option, %s.",
-						opt_list[opt]);
-				error_msg(error_string, CONTINUE);
-				input_error++;
-				break;
-			}
-			s_ptr->check_equation = FALSE;
-			break;
-		case 1:				/* check */
-			if (s_ptr == NULL)
-			{
-				error_string = sformatf(
-						"No reaction defined before option, %s.",
-						opt_list[opt]);
-				error_msg(error_string, CONTINUE);
-				input_error++;
-				break;
-			}
-			s_ptr->check_equation = TRUE;
-			break;
-		case 2:				/* gamma data */
-			if (s_ptr == NULL)
-			{
-				error_string = sformatf(
-						"No reaction defined before option, %s.",
-						opt_list[opt]);
-				error_msg(error_string, CONTINUE);
-				input_error++;
-				break;
-			}
-			s_ptr->gflag = 2;	/* Wateq D-H */
-            i = sscanf(next_char.c_str(), SCANFORMAT SCANFORMAT, &s_ptr->dha,
-					   &s_ptr->dhb);
-			if (i < 2)
-			{
-				error_string = sformatf( "Expecting 2 activity-"
-						"coefficient parameters, a and b.");
-				warning_msg(error_string);
-			}
-			opt_save = OPTION_DEFAULT;
-			break;
-		case 3:				/* mb */
-		case 4:				/* mass_balance */
-		case 12:				/* mole_balance */
-			if (s_ptr == NULL)
-			{
-				error_string = sformatf(
-						"No reaction defined before option, %s.",
-						opt_list[opt]);
-				error_msg(error_string, CONTINUE);
-				input_error++;
-				break;
-			}
-			count_elts = 0;
-			paren_count = 0;
-            copy_token(token, next_char, &i);
-            s_ptr->mole_balance = string_hsave(token.c_str());
-			ptr = token;
-			s_ptr->next_secondary =
-				(struct elt_list *) free_check_null(s_ptr->next_secondary);
-            get_secondary_in_species(ptr, 1.0);
-			s_ptr->next_secondary = elt_list_save();
-/* debug
-			for (i = 0; i < count_elts; i++) {
-				output_msg(sformatf("%s\t%f\n", elt_list[i].elt->name,
-					elt_list[i].coef));
-			}
- */
-			opt_save = OPTION_DEFAULT;
-			break;
-		case 5:				/* log_k */
-		case 6:				/* logk */
-			if (s_ptr == NULL)
-			{
-				error_string = sformatf(
-						"No reaction defined before option, %s.",
-						opt_list[opt]);
-				error_msg(error_string, CONTINUE);
-				input_error++;
-				break;
-			}
-            read_log_k_only(const_cast<char*>(next_char.c_str()), &s_ptr->logk[0]);
-			opt_save = OPTION_DEFAULT;
-			break;
-		case 7:				/* delta_h */
-		case 8:				/* deltah */
-			if (s_ptr == NULL)
-			{
-				error_string = sformatf(
-						"No reaction defined before option, %s.",
-						opt_list[opt]);
-				error_msg(error_string, CONTINUE);
-				input_error++;
-				break;
-			}
-            read_delta_h_only(const_cast<char*>(next_char.c_str()), &s_ptr->logk[1],
-							  &s_ptr->original_units);
-			opt_save = OPTION_DEFAULT;
-			break;
-		case 9:				/* analytical_expression */
-		case 10:				/* a_e */
-		case 11:				/* ae */
-			if (s_ptr == NULL)
-			{
-				error_string = sformatf(
-						"No reaction defined before option, %s.",
-						opt_list[opt]);
-				error_msg(error_string, CONTINUE);
-				input_error++;
-				break;
-			}
-            read_analytical_expression_only(const_cast<char*>(next_char.c_str()), &(s_ptr->logk[T_A1]));
-			opt_save = OPTION_DEFAULT;
-			break;
-		case 13:				/* llnl_gamma */
-			if (s_ptr == NULL)
-			{
-				error_string = sformatf(
-						"No reaction defined before option, %s.",
-						opt_list[opt]);
-				error_msg(error_string, CONTINUE);
-				input_error++;
-				break;
-			}
-			s_ptr->gflag = 7;	/* llnl D-H */
-            i = sscanf(next_char.c_str(), SCANFORMAT, &s_ptr->dha);
-			if (i < 1)
-			{
-				error_string = sformatf(
-						"Expecting activity-coefficient parameter, a.");
-				warning_msg(error_string);
-			}
-			opt_save = OPTION_DEFAULT;
-			break;
-		case 14:				/* co2_llnl_gamma */
-			if (s_ptr == NULL)
-			{
-				error_string = sformatf(
-						"No reaction defined before option, %s.",
-						opt_list[opt]);
-				error_msg(error_string, CONTINUE);
-				input_error++;
-				break;
-			}
-			s_ptr->gflag = 8;	/* llnl CO2 D-H */
-			opt_save = OPTION_DEFAULT;
-			break;
-		case 15:				/* activity water */
-			if (s_ptr == NULL)
-			{
-				error_string = sformatf(
-						"No reaction defined before option, %s.",
-						opt_list[opt]);
-				error_msg(error_string, CONTINUE);
-				input_error++;
-				break;
-			}
-			s_ptr->gflag = 9;	/* activity_water/55.5 for HDO, D2O, H2[O18], etc */
-			opt_save = OPTION_DEFAULT;
-			break;
-		case 16:				/* add_logk */
-		case 17:				/* add_log_k */
-			if (s_ptr == NULL)
-			{
-				error_string = sformatf(
-						"No reaction defined before option, %s.",
-						opt_list[opt]);
-				error_msg(error_string, CONTINUE);
-				input_error++;
-				break;
-			}
-			if (s_ptr->count_add_logk == 0)
-			{
-				s_ptr->add_logk =
-					(struct name_coef *)
-					PHRQ_malloc(sizeof(struct name_coef));
-				if (s_ptr->add_logk == NULL)
-					malloc_error();
-			}
-			else
-			{
-				s_ptr->add_logk =
-					(struct name_coef *) PHRQ_realloc(s_ptr->add_logk,
-													  (size_t) ((s_ptr->
-																 count_add_logk
-																 +
-																 1) *
-																sizeof
-																(struct
-																 name_coef)));
-				if (s_ptr->add_logk == NULL)
-					malloc_error();
-			}
-			/* read name */
-            if (copy_token(token, next_char, &i) == EMPTY)
-			{
-				input_error++;
-				error_string = sformatf(
-						"Expected the name of a NAMED_EXPRESSION.");
-				error_msg(error_string, CONTINUE);
-				break;
-			}
-            s_ptr->add_logk[s_ptr->count_add_logk].name = string_hsave(token.c_str());
-			/* read coef */
-            i = sscanf(next_char.c_str(), SCANFORMAT,
-					   &s_ptr->add_logk[s_ptr->count_add_logk].coef);
-			if (i <= 0)
-			{
-				s_ptr->add_logk[s_ptr->count_add_logk].coef = 1;
-			}
-			s_ptr->count_add_logk++;
-			opt_save = OPTION_DEFAULT;
-			break;
-		case 18:				/* add_constant */
-			if (s_ptr == NULL)
-			{
-				error_string = sformatf(
-						"No reaction defined before option, %s.",
-						opt_list[opt]);
-				error_msg(error_string, CONTINUE);
-				input_error++;
-				break;
-			}
-			if (s_ptr->count_add_logk == 0)
-			{
-				s_ptr->add_logk =
-					(struct name_coef *)
-					PHRQ_malloc(sizeof(struct name_coef));
-				if (s_ptr->add_logk == NULL)
-					malloc_error();
-			}
-			else
-			{
-				s_ptr->add_logk =
-					(struct name_coef *) PHRQ_realloc(s_ptr->add_logk,
-													  (size_t) ((s_ptr->
-																 count_add_logk
-																 +
-																 1) *
-																sizeof
-																(struct
-																 name_coef)));
-				if (s_ptr->add_logk == NULL)
-					malloc_error();
-			}
-            i = sscanf(next_char.c_str(), SCANFORMAT,
-					   &s_ptr->add_logk[s_ptr->count_add_logk].coef);
-			if (i <= 0)
-			{
-				input_error++;
-				error_string = sformatf(
-						"Expected the constant to add for log_K definition.");
-				error_msg(error_string, CONTINUE);
-				break;
-			}
-			/* set name */
-			s_ptr->add_logk[s_ptr->count_add_logk].name =
-				string_hsave("XconstantX");
-			/* read coef */
-			s_ptr->count_add_logk++;
-			opt_save = OPTION_DEFAULT;
-			break;
-		case 19:				/* tracer diffusion coefficient */
-			if (s_ptr == NULL)
-			{
-				error_string = sformatf(
-						"No reaction defined before option, %s.",
-						opt_list[opt]);
-				error_msg(error_string, CONTINUE);
-				input_error++;
-				break;
-			}
-			s_ptr->dw_t = 0;  s_ptr->dw_a = 0; s_ptr->dw_a2 = 0; s_ptr->dw_a_visc = 0;
-            i = sscanf(next_char.c_str(), SCANFORMAT SCANFORMAT SCANFORMAT SCANFORMAT SCANFORMAT, &s_ptr->dw, &s_ptr->dw_t,
-				&s_ptr->dw_a, &s_ptr->dw_a2, &s_ptr->dw_a_visc);
-			s_ptr->dw_corr = s_ptr->dw;
-			opt_save = OPTION_DEFAULT;
-			break;
-		case 20:				/* enrichment factor in the DDL */
-			if (s_ptr == NULL)
-			{
-				error_string = sformatf(
-						"No reaction defined before option, %s.",
-						opt_list[opt]);
-				error_msg(error_string, CONTINUE);
-				input_error++;
-				break;
-			}
-            i = sscanf(next_char.c_str(), SCANFORMAT, &s_ptr->erm_ddl);
-			if (s_ptr->erm_ddl < 0)
-			{
-				error_string = sformatf( "Expecting enrichment factor > 0, "
-						"resetting to erm_ddl = 1.");
-				warning_msg(error_string);
-				s_ptr->erm_ddl = 1.0;
-			}
-			opt_save = OPTION_DEFAULT;
-			break;
-/* VP: Density Start */
-		case 21:			/* Millero a, b, c, d, e and f coefficients */
-			if (s_ptr == NULL)
-			{
-				error_string = sformatf(
-						"No reaction defined before option, %s.",
-						opt_list[opt]);
-				error_msg(error_string, CONTINUE);
-				input_error++;
-				break;
-			}
-            print_density = read_millero_abcdef (const_cast<char*>(next_char.c_str()), &(s_ptr->millero[0]));
-			//if (!vm_read)
-			//{
-			///* copy millero parms into logk, for calculating pressure dependency... */
-			//	for (i = 0; i < 7; i++)
-			//		s_ptr->logk[vm0 + i] = s_ptr->millero[i];
-			//	s_ptr->logk[vm0 + i] = 0;
-			//}
-			opt_save = OPTION_DEFAULT;
-			break;
-/* VP: Density End */
-		case 22:            /* vm, supcrt parms + Ionic strength terms */
-			if (s_ptr == NULL)
-			{
-				error_string = sformatf(
-					"No reaction defined before option, %s.",
-				opt_list[opt]);
-				error_msg(error_string, CONTINUE);
-				input_error++;
-				break;
-			}
-            read_aq_species_vm_parms(const_cast<char*>(next_char.c_str()), &s_ptr->logk[vma1]);
-			//vm_read = true;
-			print_density = OK;
-			opt_save = OPTION_DEFAULT;
-			break;
-		case 23:            /* viscosity parms for the Jones-Dole eqn */
-			if (s_ptr == NULL)
-			{
-				error_string = sformatf(
-					"No reaction defined before option, %s.",
-				opt_list[opt]);
-				error_msg(error_string, CONTINUE);
-				input_error++;
-				break;
-			}
-            read_viscosity_parms(const_cast<char*>(next_char.c_str()), &s_ptr->Jones_Dole[0]);
-			print_viscosity = OK;
-			opt_save = OPTION_DEFAULT;
-			break;
-		case OPTION_DEFAULT:
+//		case 2:				/* gamma data */
+//			if (s_ptr == NULL)
+//			{
+//				error_string = sformatf(
+//						"No reaction defined before option, %s.",
+//						opt_list[opt]);
+//				error_msg(error_string, CONTINUE);
+//				input_error++;
+//				break;
+//			}
+//			s_ptr->gflag = 2;	/* Wateq D-H */
+//            i = sscanf(next_char.c_str(), SCANFORMAT SCANFORMAT, &s_ptr->dha,
+//					   &s_ptr->dhb);
+//			if (i < 2)
+//			{
+//				error_string = sformatf( "Expecting 2 activity-"
+//						"coefficient parameters, a and b.");
+//				warning_msg(error_string);
+//			}
+//			opt_save = OPTION_DEFAULT;
+//			break;
+//		case 3:				/* mb */
+//		case 4:				/* mass_balance */
+//		case 12:				/* mole_balance */
+//			if (s_ptr == NULL)
+//			{
+//				error_string = sformatf(
+//						"No reaction defined before option, %s.",
+//						opt_list[opt]);
+//				error_msg(error_string, CONTINUE);
+//				input_error++;
+//				break;
+//			}
+//			count_elts = 0;
+//			paren_count = 0;
+//            copy_token(token, next_char, &i);
+//            s_ptr->mole_balance = string_hsave(token.c_str());
+//			ptr = token;
+//			s_ptr->next_secondary =
+//				(struct elt_list *) free_check_null(s_ptr->next_secondary);
+//            get_secondary_in_species(ptr, 1.0);
+//			s_ptr->next_secondary = elt_list_save();
+///* debug
+//			for (i = 0; i < count_elts; i++) {
+//				output_msg(sformatf("%s\t%f\n", elt_list[i].elt->name,
+//					elt_list[i].coef));
+//			}
+// */
+//			opt_save = OPTION_DEFAULT;
+//			break;
+//		case 5:				/* log_k */
+//		case 6:				/* logk */
+//			if (s_ptr == NULL)
+//			{
+//				error_string = sformatf(
+//						"No reaction defined before option, %s.",
+//						opt_list[opt]);
+//				error_msg(error_string, CONTINUE);
+//				input_error++;
+//				break;
+//			}
+//            read_log_k_only(const_cast<char*>(next_char.c_str()), &s_ptr->logk[0]);
+//			opt_save = OPTION_DEFAULT;
+//			break;
+//		case 7:				/* delta_h */
+//		case 8:				/* deltah */
+//			if (s_ptr == NULL)
+//			{
+//				error_string = sformatf(
+//						"No reaction defined before option, %s.",
+//						opt_list[opt]);
+//				error_msg(error_string, CONTINUE);
+//				input_error++;
+//				break;
+//			}
+//            read_delta_h_only(const_cast<char*>(next_char.c_str()), &s_ptr->logk[1],
+//							  &s_ptr->original_units);
+//			opt_save = OPTION_DEFAULT;
+//			break;
+//		case 9:				/* analytical_expression */
+//		case 10:				/* a_e */
+//		case 11:				/* ae */
+//			if (s_ptr == NULL)
+//			{
+//				error_string = sformatf(
+//						"No reaction defined before option, %s.",
+//						opt_list[opt]);
+//				error_msg(error_string, CONTINUE);
+//				input_error++;
+//				break;
+//			}
+//            read_analytical_expression_only(const_cast<char*>(next_char.c_str()), &(s_ptr->logk[T_A1]));
+//			opt_save = OPTION_DEFAULT;
+//			break;
+//		case 13:				/* llnl_gamma */
+//			if (s_ptr == NULL)
+//			{
+//				error_string = sformatf(
+//						"No reaction defined before option, %s.",
+//						opt_list[opt]);
+//				error_msg(error_string, CONTINUE);
+//				input_error++;
+//				break;
+//			}
+//			s_ptr->gflag = 7;	/* llnl D-H */
+//            i = sscanf(next_char.c_str(), SCANFORMAT, &s_ptr->dha);
+//			if (i < 1)
+//			{
+//				error_string = sformatf(
+//						"Expecting activity-coefficient parameter, a.");
+//				warning_msg(error_string);
+//			}
+//			opt_save = OPTION_DEFAULT;
+//			break;
+//		case 14:				/* co2_llnl_gamma */
+//			if (s_ptr == NULL)
+//			{
+//				error_string = sformatf(
+//						"No reaction defined before option, %s.",
+//						opt_list[opt]);
+//				error_msg(error_string, CONTINUE);
+//				input_error++;
+//				break;
+//			}
+//			s_ptr->gflag = 8;	/* llnl CO2 D-H */
+//			opt_save = OPTION_DEFAULT;
+//			break;
+//		case 15:				/* activity water */
+//			if (s_ptr == NULL)
+//			{
+//				error_string = sformatf(
+//						"No reaction defined before option, %s.",
+//						opt_list[opt]);
+//				error_msg(error_string, CONTINUE);
+//				input_error++;
+//				break;
+//			}
+//			s_ptr->gflag = 9;	/* activity_water/55.5 for HDO, D2O, H2[O18], etc */
+//			opt_save = OPTION_DEFAULT;
+//			break;
+//		case 16:				/* add_logk */
+//		case 17:				/* add_log_k */
+//			if (s_ptr == NULL)
+//			{
+//				error_string = sformatf(
+//						"No reaction defined before option, %s.",
+//						opt_list[opt]);
+//				error_msg(error_string, CONTINUE);
+//				input_error++;
+//				break;
+//			}
+//			if (s_ptr->count_add_logk == 0)
+//			{
+//				s_ptr->add_logk =
+//					(struct name_coef *)
+//					PHRQ_malloc(sizeof(struct name_coef));
+//				if (s_ptr->add_logk == NULL)
+//					malloc_error();
+//			}
+//			else
+//			{
+//				s_ptr->add_logk =
+//					(struct name_coef *) PHRQ_realloc(s_ptr->add_logk,
+//													  (size_t) ((s_ptr->
+//																 count_add_logk
+//																 +
+//																 1) *
+//																sizeof
+//																(struct
+//																 name_coef)));
+//				if (s_ptr->add_logk == NULL)
+//					malloc_error();
+//			}
+//			/* read name */
+//            if (copy_token(token, next_char, &i) == EMPTY)
+//			{
+//				input_error++;
+//				error_string = sformatf(
+//						"Expected the name of a NAMED_EXPRESSION.");
+//				error_msg(error_string, CONTINUE);
+//				break;
+//			}
+//            s_ptr->add_logk[s_ptr->count_add_logk].name = string_hsave(token.c_str());
+//			/* read coef */
+//            i = sscanf(next_char.c_str(), SCANFORMAT,
+//					   &s_ptr->add_logk[s_ptr->count_add_logk].coef);
+//			if (i <= 0)
+//			{
+//				s_ptr->add_logk[s_ptr->count_add_logk].coef = 1;
+//			}
+//			s_ptr->count_add_logk++;
+//			opt_save = OPTION_DEFAULT;
+//			break;
+//		case 18:				/* add_constant */
+//			if (s_ptr == NULL)
+//			{
+//				error_string = sformatf(
+//						"No reaction defined before option, %s.",
+//						opt_list[opt]);
+//				error_msg(error_string, CONTINUE);
+//				input_error++;
+//				break;
+//			}
+//			if (s_ptr->count_add_logk == 0)
+//			{
+//				s_ptr->add_logk =
+//					(struct name_coef *)
+//					PHRQ_malloc(sizeof(struct name_coef));
+//				if (s_ptr->add_logk == NULL)
+//					malloc_error();
+//			}
+//			else
+//			{
+//				s_ptr->add_logk =
+//					(struct name_coef *) PHRQ_realloc(s_ptr->add_logk,
+//													  (size_t) ((s_ptr->
+//																 count_add_logk
+//																 +
+//																 1) *
+//																sizeof
+//																(struct
+//																 name_coef)));
+//				if (s_ptr->add_logk == NULL)
+//					malloc_error();
+//			}
+//            i = sscanf(next_char.c_str(), SCANFORMAT,
+//					   &s_ptr->add_logk[s_ptr->count_add_logk].coef);
+//			if (i <= 0)
+//			{
+//				input_error++;
+//				error_string = sformatf(
+//						"Expected the constant to add for log_K definition.");
+//				error_msg(error_string, CONTINUE);
+//				break;
+//			}
+//			/* set name */
+//			s_ptr->add_logk[s_ptr->count_add_logk].name =
+//				string_hsave("XconstantX");
+//			/* read coef */
+//			s_ptr->count_add_logk++;
+//			opt_save = OPTION_DEFAULT;
+//			break;
+//		case 19:				/* tracer diffusion coefficient */
+//			if (s_ptr == NULL)
+//			{
+//				error_string = sformatf(
+//						"No reaction defined before option, %s.",
+//						opt_list[opt]);
+//				error_msg(error_string, CONTINUE);
+//				input_error++;
+//				break;
+//			}
+//			s_ptr->dw_t = 0;  s_ptr->dw_a = 0; s_ptr->dw_a2 = 0; s_ptr->dw_a_visc = 0;
+//            i = sscanf(next_char.c_str(), SCANFORMAT SCANFORMAT SCANFORMAT SCANFORMAT SCANFORMAT, &s_ptr->dw, &s_ptr->dw_t,
+//				&s_ptr->dw_a, &s_ptr->dw_a2, &s_ptr->dw_a_visc);
+//			s_ptr->dw_corr = s_ptr->dw;
+//			opt_save = OPTION_DEFAULT;
+//			break;
+//		case 20:				/* enrichment factor in the DDL */
+//			if (s_ptr == NULL)
+//			{
+//				error_string = sformatf(
+//						"No reaction defined before option, %s.",
+//						opt_list[opt]);
+//				error_msg(error_string, CONTINUE);
+//				input_error++;
+//				break;
+//			}
+//            i = sscanf(next_char.c_str(), SCANFORMAT, &s_ptr->erm_ddl);
+//			if (s_ptr->erm_ddl < 0)
+//			{
+//				error_string = sformatf( "Expecting enrichment factor > 0, "
+//						"resetting to erm_ddl = 1.");
+//				warning_msg(error_string);
+//				s_ptr->erm_ddl = 1.0;
+//			}
+//			opt_save = OPTION_DEFAULT;
+//			break;
+///* VP: Density Start */
+//		case 21:			/* Millero a, b, c, d, e and f coefficients */
+//			if (s_ptr == NULL)
+//			{
+//				error_string = sformatf(
+//						"No reaction defined before option, %s.",
+//						opt_list[opt]);
+//				error_msg(error_string, CONTINUE);
+//				input_error++;
+//				break;
+//			}
+//            print_density = read_millero_abcdef (const_cast<char*>(next_char.c_str()), &(s_ptr->millero[0]));
+//			//if (!vm_read)
+//			//{
+//			///* copy millero parms into logk, for calculating pressure dependency... */
+//			//	for (i = 0; i < 7; i++)
+//			//		s_ptr->logk[vm0 + i] = s_ptr->millero[i];
+//			//	s_ptr->logk[vm0 + i] = 0;
+//			//}
+//			opt_save = OPTION_DEFAULT;
+//			break;
+///* VP: Density End */
+//		case 22:            /* vm, supcrt parms + Ionic strength terms */
+//			if (s_ptr == NULL)
+//			{
+//				error_string = sformatf(
+//					"No reaction defined before option, %s.",
+//				opt_list[opt]);
+//				error_msg(error_string, CONTINUE);
+//				input_error++;
+//				break;
+//			}
+//            read_aq_species_vm_parms(const_cast<char*>(next_char.c_str()), &s_ptr->logk[vma1]);
+//			//vm_read = true;
+//			print_density = OK;
+//			opt_save = OPTION_DEFAULT;
+//			break;
+//		case 23:            /* viscosity parms for the Jones-Dole eqn */
+//			if (s_ptr == NULL)
+//			{
+//				error_string = sformatf(
+//					"No reaction defined before option, %s.",
+//				opt_list[opt]);
+//				error_msg(error_string, CONTINUE);
+//				input_error++;
+//				break;
+//			}
+//            read_viscosity_parms(const_cast<char*>(next_char.c_str()), &s_ptr->Jones_Dole[0]);
+//			print_viscosity = OK;
+//			opt_save = OPTION_DEFAULT;
+//			break;
+        case SolutionSpeciesKeywords::equation:
+        {
 /*
  *   Get space for species information and parse equation
  */
 			s_ptr = NULL;
-            if (parse_eq(const_cast<char*>(line.c_str()), &next_elt, association) == ERROR)
+            if (parse_eq(line, &next_elt, association) == ERROR)
 			{
 				parse_error++;
 				error_msg("Parsing equation.", CONTINUE);
@@ -6510,10 +6469,10 @@ read_species(void)
 			opt_save = OPTION_DEFAULT;
 			break;
 		}
+        }
 		if (return_value == EOF || return_value == KEYWORD)
 			break;
 	}
-	return (return_value);
 }
 
 /* ---------------------------------------------------------------------- */
@@ -7837,7 +7796,7 @@ read_surface_master_species(void)
                 error_msg(line_save.c_str(), CONTINUE);
 				continue;
 			}
-			replace("(+", "(", token);
+//			replace("(+", "(", token);
 			/*
 			 *   Delete master if it exists
 			 */
@@ -7875,13 +7834,13 @@ read_surface_master_species(void)
                 master[count_master].s = s_store(token1, l_z, FALSE);
 			}
             master[count_master].primary = TRUE;
-            token = master[count_master].elt.name;
+//            token = master[count_master].elt.name;
 			count_master++;
 			/*
 			 *   Save values in master and species structure for surface psi
 			 */
             token1 = token;
-			replace("_", " ", token1);
+//			replace("_", " ", token1);
 			ptr1 = token1;
             copy_token(token, ptr1, &l);
             token += "_psi";
@@ -8541,21 +8500,21 @@ check_units(std::string &tot_units, bool alkalinity, bool check_compatibility,
 	};
 	Utilities::squeeze_white(tot_units);
 	Utilities::str_tolower(tot_units);
-	replace("milli", "m", tot_units);
-	replace("micro", "u", tot_units);
-	replace("grams", "g", tot_units);
-	replace("gram", "g", tot_units);
-	replace("moles", "Mol", tot_units);
-	replace("mole", "Mol", tot_units);
-	replace("mol", "Mol", tot_units);
-	replace("liter", "l", tot_units);
-	replace("kgh", "kgw", tot_units);
-	replace("ppt", "g/kgs", tot_units);
-	replace("ppm", "mg/kgs", tot_units);
-	replace("ppb", "ug/kgs", tot_units);
-	replace("equivalents", "eq", tot_units);
-	replace("equivalent", "eq", tot_units);
-	replace("equiv", "eq", tot_units);
+//	replace("milli", "m", tot_units);
+//	replace("micro", "u", tot_units);
+//	replace("grams", "g", tot_units);
+//	replace("gram", "g", tot_units);
+//	replace("moles", "Mol", tot_units);
+//	replace("mole", "Mol", tot_units);
+//	replace("mol", "Mol", tot_units);
+//	replace("liter", "l", tot_units);
+//	replace("kgh", "kgw", tot_units);
+//	replace("ppt", "g/kgs", tot_units);
+//	replace("ppm", "mg/kgs", tot_units);
+//	replace("ppb", "ug/kgs", tot_units);
+//	replace("equivalents", "eq", tot_units);
+//	replace("equivalent", "eq", tot_units);
+//	replace("equiv", "eq", tot_units);
 
 	size_t pos;
 	if ((pos = tot_units.find("/l")) != std::string::npos)
@@ -8609,7 +8568,7 @@ check_units(std::string &tot_units, bool alkalinity, bool check_compatibility,
 					"Alkalinity given in moles, assumed to be equivalents.");
 			warning_msg(error_string);
 		}
-		replace("Mol", "eq", tot_units);
+//		replace("Mol", "eq", tot_units);
 	}
 	if (!alkalinity && strstr(tot_units.c_str(), "eq") != NULL)
 	{
@@ -8915,8 +8874,8 @@ get_option(const char **opt_list, int count_opt_list, std::string next_char)
 		if (find_option(&(stdoption.c_str()[1]), &opt, opt_list, count_opt_list, FALSE) == OK)
 		{
 			j = opt;
-			replace(stdoption.c_str(), opt_list[j], line_save);
-			replace(stdoption.c_str(), opt_list[j], line);
+//			replace(stdoption.c_str(), opt_list[j], line_save);
+//			replace(stdoption.c_str(), opt_list[j], line);
 			opt_ptr = line;
             copy_token(stdoption, opt_ptr);
             next_char = opt_ptr;
@@ -10540,18 +10499,18 @@ read_line_doubles(char *next_char, LDBLE ** d, int *count_d, int *count_alloc)
 		{
 			return (ERROR);
 		}
-		if (replace("*", " ", token) == TRUE)
-		{
+//		if (replace("*", " ", token) == TRUE)
+//		{
 //			if (sscanf(token, "%d" SCANFORMAT, &n, &value) != 2)
 //			{
 //				return (ERROR);
 //			}
-		}
-		else
-		{
+//		}
+//		else
+//		{
 //			sscanf(token, SCANFORMAT, &value);
-			n = 1;
-		}
+//			n = 1;
+//		}
 		for (;;)
 		{
 			if ((*count_d) + n > (*count_alloc))

@@ -742,13 +742,13 @@ get_token(std::string eqnaddr, std::string string, LDBLE * l_z, int *l)
  */
     //	if (c == '=' || c == '\0')
     //	{
-    ////		*eqnaddr = ptr;
+    //		*eqnaddr = ptr;
     //		lcharge = 0;
     //		*l_z = 0.0;
     //	}
     //	else
     //	{
-    ///*
+    /*
     // *   Copy characters into charge until next species or end is detected
     // */
     //		j = 0;
@@ -768,7 +768,7 @@ get_token(std::string eqnaddr, std::string string, LDBLE * l_z, int *l)
     //			}
     //			ptr1++;
     //		}
-    ///*
+    /*
     // *   Go back to last + or - if not end of side,
     // *   everything before the last + or - in charge is part of the charge
     // */
@@ -782,8 +782,8 @@ get_token(std::string eqnaddr, std::string string, LDBLE * l_z, int *l)
     //		}
     //		charge[j] = '\0';
     //		lcharge = j;
-    ////		*eqnaddr = ptr1;
-    ///*
+    //		*eqnaddr = ptr1;
+    /*
     // *   Charge has been written, now need to check if charge has legal format
     // */
     //		if (get_charge(charge, l_z) == OK)
@@ -1079,31 +1079,6 @@ space(void **ptr, int i, int *max, int struct_size)
 	return;
 }
 
-/* ---------------------------------------------------------------------- */
-void Phreeqc::
-squeeze_white(std::string s_l)
-/* ---------------------------------------------------------------------- */
-/*
- *   Delete all white space from string s
- *
- *   Argument:
- *      *s_l input, character string, possibly containing white space
- *           output, character string with all white space removed
- *
- *   Return: void
- */
-{
-	int i, j;
-
-	for (i = j = 0; s_l[i] != '\0'; i++)
-	{
-		if (!isspace((int) s_l[i]))
-			s_l[j++] = s_l[i];
-	}
-	s_l[j] = '\0';
-}
-
-/* ---------------------------------------------------------------------- */
 void Phreeqc::
 str_toupper(char *str)
 /* ---------------------------------------------------------------------- */

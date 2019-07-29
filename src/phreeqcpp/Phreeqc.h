@@ -506,12 +506,13 @@ public:
     int get_elts_in_species(std::string t_ptr, LDBLE coef);
     int get_num(std::string t_ptr, LDBLE * num);
     int get_secondary_in_species(std::string t_ptr, LDBLE coef);
-    int parse_eq(std::string eqn, struct elt_list **elt_ptr, int association);
+    void parse_eq(std::string eqn, struct elt_list** elt_ptr, int association);
     int get_coef(LDBLE * coef, std::string eqnaddr);
 	int get_secondary(char **t_ptr, char *element, int *i);
-    int get_species(std::string ptr);
+    template <bool IsEquationRhs>
+    void get_species(std::string& expression);
 
-	// phqalloc.cpp -------------------------------
+    // phqalloc.cpp -------------------------------
 public:
 #if !defined(NDEBUG)
 	void *PHRQ_malloc(size_t, const char *, int);
@@ -690,10 +691,10 @@ public:
 	int read_conc(cxxSolution *solution_ptr, int count_mass_balance, char *str);
     int *read_list_ints_range(std::string ptr, int *count_ints, int positive,
 		int *int_list);
-    int read_log_k_only(std::string ptr, LDBLE * log_k);
-	int read_t_c_only(char *ptr, LDBLE *t_c);
-	int read_p_c_only(char *ptr, LDBLE * p_c);
-	int read_omega_only(char *ptr, LDBLE *omega);
+    void read_log_k(std::string ptr, LDBLE* log_k);
+    int read_t_c_only(char* ptr, LDBLE* t_c);
+    int read_p_c_only(char* ptr, LDBLE* p_c);
+    int read_omega_only(char* ptr, LDBLE* omega);
     int read_number_description(std::string ptr, int *n_user, int *n_user_end,
         std::string description, int allow_negative=FALSE);
     int check_key(std::string str);
@@ -1116,7 +1117,6 @@ public:
     static int strcmp_nocase_arg1(std::string str1, const char *str2);
 protected:
 	void space(void **ptr, int i, int *max, int struct_size);
-    void squeeze_white(std::string s_l);
     int status(int count, std::string str, bool kinetics = false);
 	void str_toupper(char *str);
 public:

@@ -1886,7 +1886,6 @@ match_elts_in_species(std::string name, std::string mytemplate)
 	char str[2];
 
     auto token = name;
-	squeeze_white(token);
 //	replace("(+", "(", token);
 	if (strstr("token", "++") != NULL)
 	{
@@ -1942,7 +1941,6 @@ match_elts_in_species(std::string name, std::string mytemplate)
 	 *  Replace elements with first of equivalent elements
 	 */
     template1 = mytemplate;
-	squeeze_white(template1);
 	ptr = template1;
     while (extract_bracket(ptr, equal_list) == TRUE)
 	{
@@ -2013,7 +2011,6 @@ match_elts_in_species(std::string name, std::string mytemplate)
 	 *  Write a template name using first of equivalent elements
 	 */
     template1 = mytemplate;
-	squeeze_white(template1);
 	ptr = template1;
     while (extract_bracket(ptr, equal_list) == TRUE)
 	{
@@ -2035,7 +2032,6 @@ match_elts_in_species(std::string name, std::string mytemplate)
 			return (ERROR);
 		}
 //		replace(equal_list1, elt_name.c_str(), template1);
-		squeeze_white(template1);
 		ptr = template1;
 	}
 	/*

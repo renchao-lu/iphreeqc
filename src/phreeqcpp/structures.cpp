@@ -328,13 +328,13 @@ clean_up(void)
 /* miscellaneous work space */
 
 	elt_list = (struct elt_list *) free_check_null(elt_list);
-	trxn.token = (struct rxn_token_temp *) free_check_null(trxn.token);
-	mb_unknowns = (struct unknown_list *) free_check_null(mb_unknowns);
-//	line = (char *) free_check_null(line);
-//	line_save = (char *) free_check_null(line_save);
+    //	trxn.token = (struct rxn_token_temp *) free_check_null(trxn.token);
+    mb_unknowns = (struct unknown_list*)free_check_null(mb_unknowns);
+    //	line = (char *) free_check_null(line);
+    //	line_save = (char *) free_check_null(line_save);
 
-	zeros = (LDBLE *) free_check_null(zeros);
-	scratch = (LDBLE *) free_check_null(scratch);
+    zeros = (LDBLE*)free_check_null(zeros);
+    scratch = (LDBLE *) free_check_null(scratch);
 	x_arg = (LDBLE *) free_check_null(x_arg);
 	res_arg = (LDBLE *) free_check_null(res_arg);
 
@@ -1715,12 +1715,12 @@ rxn_alloc(int ntokens)
 	for (i = 0; i < ntokens; i++)
 	{
 		rxn_ptr->token[i].s = NULL;
-		rxn_ptr->token[i].name = NULL;
-		rxn_ptr->token[i].coef = 0.0;
-	}
+        rxn_ptr->token[i].name = "";
+        rxn_ptr->token[i].coef = 0.0;
+    }
 
-	if (rxn_ptr->token == NULL)
-		malloc_error();
+    if (rxn_ptr->token == NULL)
+        malloc_error();
 	return (rxn_ptr);
 }
 
@@ -1775,11 +1775,11 @@ cxxChemRxn2rxn(cxxChemRxn &cr)
 		{
 			cr.Get_tokens()[i].s = s_store(cr.Get_tokens()[i].s->name, cr.Get_tokens()[i].s->z, FALSE);
 		}
-		if (cr.Get_tokens()[i].name != NULL)
-		{
-			cr.Get_tokens()[i].name = string_hsave(cr.Get_tokens()[i].name);
-		}
-		else
+        if (!cr.Get_tokens()[i].name.empty())
+        {
+            cr.Get_tokens()[i].name = string_hsave(cr.Get_tokens()[i].name);
+        }
+        else
 		{
 			if (cr.Get_tokens()[i].s != NULL)
 			{
@@ -1787,12 +1787,12 @@ cxxChemRxn2rxn(cxxChemRxn &cr)
 			}
 			else
 			{
-				cr.Get_tokens()[i].name=NULL;
-			}
-		}
-	}
+                cr.Get_tokens()[i].name = "";
+            }
+        }
+    }
 
-	count_trxn = 0;
+    count_trxn = 0;
 	trxn_add(cr, 1.0, 1);
 
 	struct reaction *rxn_ptr_new = rxn_alloc(count_trxn + 1);
@@ -1878,19 +1878,19 @@ rxn_print(struct reaction *rxn_ptr)
 		output_msg(sformatf( "\t%f\n", (double) rxn_ptr->logk[i]));
 	}
 	output_msg(sformatf( "Reaction definition\n"));
-	while (next_token->s != NULL || next_token->name != NULL)
-	{
-		output_msg(sformatf( "\tcoef %f ", next_token->coef));
-		if (next_token->s != NULL)
-		{
+    while (next_token->s != NULL || !next_token->name.empty())
+    {
+        output_msg(sformatf("\tcoef %f ", next_token->coef));
+        if (next_token->s != NULL)
+        {
 			output_msg(sformatf( "\tspecies token: %s ",
 					   next_token->s->name));
 		}
-		if (next_token->name != NULL)
-		{
-			output_msg(sformatf( "\tname token: %s", next_token->name));
-		}
-		output_msg(sformatf( "\n"));
+        if (!next_token->name.empty())
+        {
+            output_msg(sformatf("\tname token: %s", next_token->name));
+        }
+        output_msg(sformatf( "\n"));
 		next_token++;
 	}
 	output_msg(sformatf( "dz data\n"));
@@ -2581,7 +2581,7 @@ rxn_token_temp_compare(const void *ptr1, const void *ptr2)
 	const struct rxn_token_temp *rxn_token_temp_ptr1, *rxn_token_temp_ptr2;
 	rxn_token_temp_ptr1 = (const struct rxn_token_temp *) ptr1;
 	rxn_token_temp_ptr2 = (const struct rxn_token_temp *) ptr2;
-	return (strcmp(rxn_token_temp_ptr1->name, rxn_token_temp_ptr2->name));
+    return (rxn_token_temp_ptr1->name == rxn_token_temp_ptr2->name);
 }
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
@@ -2753,11 +2753,11 @@ trxn_add_phase(struct reaction *r_ptr, LDBLE coef, int combine)
  *   Copy  equation into work space
  */
 	next_token = r_ptr->token;
-	while (next_token->s != NULL || next_token->name != NULL)
-	{
-		if (count_trxn + 1 >= max_trxn)
-		{
-			space((void **) ((void *) &(trxn.token)), count_trxn + 1,
+    while (next_token->s != NULL || !next_token->name.empty())
+    {
+        if (count_trxn + 1 >= max_trxn)
+        {
+            space((void **) ((void *) &(trxn.token)), count_trxn + 1,
 				  &max_trxn, sizeof(struct rxn_token_temp));
 		}
 		if (next_token->s != NULL)

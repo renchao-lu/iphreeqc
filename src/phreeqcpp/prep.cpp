@@ -5512,20 +5512,22 @@ calc_delta_v(reaction *r_ptr, bool phase)
 		}
 	}
 	else
-	{	
-		for (size_t i = 0; r_ptr->token[i].name /*|| r_ptr->token[i].s*/ ; i++)
-		{
-			if (!r_ptr->token[i].s)
-				continue;
-			//if (!strcmp(r_ptr->token[i].s->name, "H+"))
-			//	continue;
-			//if (!strcmp(r_ptr->token[i].s->name, "e-"))
-			//	continue;
-			//else if (r_ptr->token[i].s->logk[vm_tc])
-			d_v -= r_ptr->token[i].coef * r_ptr->token[i].s->logk[vm_tc];
-		}
-	}
-	return d_v;
+    {
+        //		for (size_t i = 0; r_ptr->token[i].name /*|| r_ptr->token[i].s*/
+        //; i++)
+        //		{
+        //			if (!r_ptr->token[i].s)
+        //				continue;
+        // if (!strcmp(r_ptr->token[i].s->name, "H+"))
+        //	continue;
+        // if (!strcmp(r_ptr->token[i].s->name, "e-"))
+        //	continue;
+        // else if (r_ptr->token[i].s->logk[vm_tc])
+        //            d_v -= r_ptr->token[i].coef *
+        //            r_ptr->token[i].s->logk[vm_tc];
+        //		}
+    }
+    return d_v;
 }
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
@@ -5549,79 +5551,83 @@ calc_lk_phase(phase *p_ptr, LDBLE TK, LDBLE pa)
 	LDBLE d_v = 0.0;
 	species * s_ptr;
 
-	for (size_t i = 0; r_ptr->token[i].name; i++)
-	{
-		if (!r_ptr->token[i].s)
-			continue;
-		s_ptr = r_ptr->token[i].s;
-		//if (!strcmp(s_ptr->name, "H+"))
-		if (s_ptr == s_hplus)
-			continue;
-		//if (!strcmp(s_ptr->name, "e-"))
-		if (s_ptr == s_eminus)
-			continue;
-		//if (!strcmp(s_ptr->name, "H2O"))
-		if (s_ptr == s_h2o)
-		{
-			d_v += r_ptr->token[i].coef * 18.016 / calc_rho_0(tc, pa);
-			continue;
-		}
-		else if (s_ptr->logk[vma1])
-		{
-		/* supcrt volume at I = 0... */
-			d_v += r_ptr->token[i].coef *
-				(s_ptr->logk[vma1] + s_ptr->logk[vma2] / pb_s +
-				(s_ptr->logk[vma3] + s_ptr->logk[vma4] / pb_s) / TK_s -
-				s_ptr->logk[wref] * QBrn);
-			//if (dgdP && s_ptr->z)
-			//{
-			//	LDBLE re = s_ptr->z * s_ptr->z / (s_ptr->logk[wref] / 1.66027e5 + s_ptr->z / 3.082);
-			//	LDBLE Z3 = fabs(pow(s_ptr->z, 3)) / re / re - s_ptr->z / 9.498724;
-			//	d_v += r_ptr->token[i].coef * ZBrn * 1.66027e5 * Z3 * dgdP;
-			//}
-			if (s_ptr->z)
-				{
-			/* the ionic strength term * I^0.5... */
-				if (s_ptr->logk[b_Av] < 1e-5)
-					d_v += s_ptr->z * s_ptr->z * 0.5 * DH_Av * sqrt_mu;
-				else
-				{
-					/* limit the Debye-Hueckel slope by b... */
-					d_v += s_ptr->z * s_ptr->z * 0.5 * DH_Av *
-						sqrt_mu / (1 + s_ptr->logk[b_Av] * DH_B * sqrt_mu);
-				}
-				/* plus the volume terms * I... */
-				if (s_ptr->logk[vmi1] != 0.0 || s_ptr->logk[vmi2] != 0.0 || s_ptr->logk[vmi3] != 0.0)
-				{
-					LDBLE bi = s_ptr->logk[vmi1] + s_ptr->logk[vmi2] / TK_s + s_ptr->logk[vmi3] * TK_s;
-					if (s_ptr->logk[vmi4] == 1.0)
-						d_v += bi * mu_x;
-					else
-						d_v +=  bi * pow(mu_x, s_ptr->logk[vmi4]);
-				}
-			}
-		}
-		//else if (s_x[i]->millero[0])
-		else if (s_ptr->millero[0])
-		{
-		/* Millero volume at I = 0... */
-			d_v += s_ptr->millero[0] + tc * (s_ptr->millero[1] + tc * s_ptr->millero[2]);
-			if (s_ptr->z)
-			{
-			/* the ionic strength terms... */
-				d_v += s_ptr->z * s_ptr->z * 0.5 * DH_Av * sqrt_mu +
-					(s_ptr->millero[3] + tc * (s_ptr->millero[4] + tc * s_ptr->millero[5])) * mu_x;
-			}
-		}
-		else
-			continue;
-	}
-	d_v -= p_ptr->logk[vm0];
-	r_ptr->logk[delta_v] = d_v;
-	if (r_ptr->token[0].name && !strcmp(r_ptr->token[0].name, "H2O(g)"))
-		r_ptr->logk[delta_v] = 0.0;
+    //	for (size_t i = 0; r_ptr->token[i].name; i++)
+    //	{
+    //		if (!r_ptr->token[i].s)
+    //			continue;
+    //		s_ptr = r_ptr->token[i].s;
+    // if (!strcmp(s_ptr->name, "H+"))
+    //		if (s_ptr == s_hplus)
+    //			continue;
+    // if (!strcmp(s_ptr->name, "e-"))
+    //		if (s_ptr == s_eminus)
+    //			continue;
+    // if (!strcmp(s_ptr->name, "H2O"))
+    //		if (s_ptr == s_h2o)
+    //		{
+    //			d_v += r_ptr->token[i].coef * 18.016 / calc_rho_0(tc, pa);
+    //			continue;
+    //		}
+    //		else if (s_ptr->logk[vma1])
+    //		{
+    /* supcrt volume at I = 0... */
+    //			d_v += r_ptr->token[i].coef *
+    //				(s_ptr->logk[vma1] + s_ptr->logk[vma2] / pb_s +
+    //				(s_ptr->logk[vma3] + s_ptr->logk[vma4] / pb_s) / TK_s -
+    //				s_ptr->logk[wref] * QBrn);
+    // if (dgdP && s_ptr->z)
+    //{
+    //	LDBLE re = s_ptr->z * s_ptr->z / (s_ptr->logk[wref] / 1.66027e5 +
+    // s_ptr->z / 3.082); 	LDBLE Z3 = fabs(pow(s_ptr->z, 3)) / re / re -
+    // s_ptr->z
+    /// 9.498724; 	d_v += r_ptr->token[i].coef * ZBrn * 1.66027e5 * Z3 * dgdP;
+    //}
+    //			if (s_ptr->z)
+    //				{
+    /* the ionic strength term * I^0.5... */
+    //				if (s_ptr->logk[b_Av] < 1e-5)
+    //					d_v += s_ptr->z * s_ptr->z * 0.5 * DH_Av * sqrt_mu;
+    //				else
+    //				{
+    //					/* limit the Debye-Hueckel slope by b... */
+    //					d_v += s_ptr->z * s_ptr->z * 0.5 * DH_Av *
+    //						sqrt_mu / (1 + s_ptr->logk[b_Av] * DH_B * sqrt_mu);
+    //				}
+    //				/* plus the volume terms * I... */
+    //				if (s_ptr->logk[vmi1] != 0.0 || s_ptr->logk[vmi2] != 0.0 ||
+    // s_ptr->logk[vmi3] != 0.0)
+    //				{
+    //					LDBLE bi = s_ptr->logk[vmi1] + s_ptr->logk[vmi2] / TK_s
+    //+ s_ptr->logk[vmi3] * TK_s; 					if (s_ptr->logk[vmi4]
+    // == 1.0) 						d_v += bi * mu_x; 					else 						d_v +=
+    // bi
+    // *
+    // pow(mu_x, s_ptr->logk[vmi4]);
+    //				}
+    //			}
+    //		}
+    // else if (s_x[i]->millero[0])
+    //		else if (s_ptr->millero[0])
+    //		{
+    /* Millero volume at I = 0... */
+    //			d_v += s_ptr->millero[0] + tc * (s_ptr->millero[1] + tc *
+    // s_ptr->millero[2]); 			if (s_ptr->z)
+    //			{
+    /* the ionic strength terms... */
+    //				d_v += s_ptr->z * s_ptr->z * 0.5 * DH_Av * sqrt_mu +
+    //					(s_ptr->millero[3] + tc * (s_ptr->millero[4] + tc *
+    // s_ptr->millero[5])) * mu_x;
+    //			}
+    //		}
+    //		else
+    //			continue;
+    //	}
+    d_v -= p_ptr->logk[vm0];
+    r_ptr->logk[delta_v] = d_v;
+    //	if (r_ptr->token[0].name && !strcmp(r_ptr->token[0].name, "H2O(g)"))
+    //		r_ptr->logk[delta_v] = 0.0;
 
-	return k_calc(r_ptr->logk, TK, pa * PASCAL_PER_ATM);
+    return k_calc(r_ptr->logk, TK, pa * PASCAL_PER_ATM);
 }
 
 /* ---------------------------------------------------------------------- */

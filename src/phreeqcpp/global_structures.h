@@ -602,7 +602,7 @@ struct rxn_token
 {
 	struct species *s;
 	LDBLE coef;
-	const char *name;
+    std::string name;
 };
 class cxxChemRxn
 {
@@ -631,11 +631,11 @@ public:
 		struct rxn_token *next_token;
 		next_token = rxn->token;
 		this->tokens.push_back(*next_token++);
-		while (next_token->s != NULL || next_token->name != NULL)
-		{
-			this->tokens.push_back(*next_token++);
-		}
-	}
+        while (next_token->s != NULL || !next_token->name.empty())
+        {
+            this->tokens.push_back(*next_token++);
+        }
+    }
 	~cxxChemRxn(void) {}
 	LDBLE *Get_logk(void) {return this->logk;}
 	void   Set_logk(LDBLE *d)
@@ -859,16 +859,20 @@ struct unknown
 struct reaction_temp
 {
 	LDBLE logk[MAX_LOG_K_INDICES];
-	LDBLE dz[3];
-	struct rxn_token_temp *token;
+    std::array<double, 3> dz = {0.0, 0.0, 0.0};
+    std::vector<struct rxn_token_temp> token;
 };
 struct rxn_token_temp
-{								/* data for equations, aq. species or minerals */
-	const char *name;					/* pointer to a species name (formula) */
-	LDBLE z;					/* charge on species */
-	struct species *s;
-	struct unknown *unknown;
-	LDBLE coef;					/* coefficient of species name */
+{
+    rxn_token_temp(std::string name_, double coef_) : name(name_), coef(coef_)
+    {
+    }
+    /* data for equations, aq. species or minerals */
+    std::string name; /* pointer to a species name (formula) */
+    double z;         /* charge on species */
+    struct species* s;
+    struct unknown* unknown;
+    double coef; /* coefficient of species name */
 };
 struct unknown_list
 {

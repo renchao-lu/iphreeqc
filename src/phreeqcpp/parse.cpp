@@ -1,10 +1,13 @@
+#include <boost/algorithm/string/erase.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/find_iterator.hpp>
 #include "Phreeqc.h"
 #include "phqalloc.h"
 
 
 /* ---------------------------------------------------------------------- */
-int Phreeqc::
-parse_eq(std::string eqn, struct elt_list **elt_ptr, int association)
+void Phreeqc::parse_eq(std::string eqn, struct elt_list** elt_ptr,
+                       int association)
 /* ---------------------------------------------------------------------- */
 /*
  *   function to break equation up into component species
@@ -33,141 +36,109 @@ parse_eq(std::string eqn, struct elt_list **elt_ptr, int association)
 /*
  *   Remove white space
  */
-	squeeze_white(eqn);
 /*
  *   Check for illegal characters
  */
-	for (i = 0; (c = eqn[i]) != '\0'; i++)
-	{
-		if (islegit(c) == FALSE)
-		{
-			error_string = sformatf( "Character is not allowed,\
- %c (octal: %o).", c, c);
-			error_msg(error_string, CONTINUE);
-			return (ERROR);
-		}
-	}
+    //	for (i = 0; (c = eqn[i]) != '\0'; i++)
+    //	{
+    //		if (islegit(c) == FALSE)
+    //		{
+    //			error_string = sformatf( "Character is not allowed,\
+// %c (octal: %o).", c, c);
+    //			error_msg(error_string, CONTINUE);
+    //			return (ERROR);
+    //		}
+    //	}
+    std::string delimiter = "=";
+    std::string reaction_equation_lhs = eqn.substr(0, eqn.find(delimiter));
+    std::string reaction_equation_rhs = eqn.substr(eqn.find(delimiter) + 1);
+    /*
+     *   Find coefficients, name, and charge for each species for lhs
+     */
+    get_species<0>(reaction_equation_lhs);
 
-/*
- *   Find coefficients, name, and charge for each species for lhs
- */
-	count_trxn = 0;
-	trxn.dz[0] = trxn.dz[1] = trxn.dz[2] = 0.0;
-	ptr = eqn;
-	c = ptr[0];
-	for (;;)
-	{
-		if (c == '=')
-			break;
-		if (c == '\0')
-		{
-			error_string = sformatf( "Equation has no equal sign.\n\t%s", eqn);
-			error_msg(error_string, CONTINUE);
-			return (ERROR);
-		}
-        if (get_species(ptr) == ERROR)
-		{
-			return (ERROR);
-		}
-		c = ptr[0];
-		if (association == FALSE)
-		{
-			trxn.token[count_trxn].coef *= -1.0;
-		}
-		count_trxn++;
-	}
-/*
- *   Get coefficient, name, and charge of species for dissociation reaction
- */
-//	ptr++;
-	if (association == TRUE)
-	{
-        if (get_species(ptr) == ERROR)
-		{
-			return (ERROR);
-		}
-		trxn.token[count_trxn].coef *= -1.0;
-		/*   Swap species into first structure position */
-		const char * char_ptr = trxn.token[0].name;
-		coef = trxn.token[0].coef;
-		l_z = trxn.token[0].z;
-		trxn.token[0].name = trxn.token[count_trxn].name;
-		trxn.token[0].coef = trxn.token[count_trxn].coef;
-		trxn.token[0].z = trxn.token[count_trxn].z;
-		trxn.token[count_trxn].name = char_ptr;
-		trxn.token[count_trxn].coef = coef;
-		trxn.token[count_trxn].z = l_z;
-		count_trxn++;
-	}
-/*
- *   Get reaction species from rhs of equation
- */
-	c = ptr[0];
-	for (;;)
-	{
-		if (c == '\0')
-			break;
-        if (get_species(ptr) == ERROR)
-		{
-			return (ERROR);
-		}
-		c = ptr[0];
-		if (association == TRUE)
-		{
-			trxn.token[count_trxn].coef *= -1.0;
-		}
-		count_trxn++;
-	}
-/*
- *   Sort list of reaction species
- */
-	trxn_sort();
-/*
- *   Get elements in species or mineral formula
- */
-	count_elts = 0;
-    token = trxn.token[0].name;
-//	replace("(s)", "", token);
-//	replace("(S)", "", token);
-//	replace("(g)", "", token);
-//	replace("(G)", "", token);
-    std::string char_ptr = token;
+    //        if (association == FALSE)
+    //        {
+    //            trxn.token[count_trxn].coef *= -1.0;
+    //        }
+    /*
+     *   Get coefficient, name, and charge of species for dissociation reaction
+     */
+    //	ptr++;
+    //	if (association == TRUE)
+    //	{
+    //        if (get_species(ptr) == ERROR)
+    //		{
+    //			return (ERROR);
+    //		}
+    //		trxn.token[count_trxn].coef *= -1.0;
+    //		/*   Swap species into first structure position */
+    //        std::string char_ptr = trxn.token[0].name;
+    //		coef = trxn.token[0].coef;
+    //		l_z = trxn.token[0].z;
+    //		trxn.token[0].name = trxn.token[count_trxn].name;
+    //		trxn.token[0].coef = trxn.token[count_trxn].coef;
+    //		trxn.token[0].z = trxn.token[count_trxn].z;
+    //		trxn.token[count_trxn].name = char_ptr;
+    //		trxn.token[count_trxn].coef = coef;
+    //		trxn.token[count_trxn].z = l_z;
+    //		count_trxn++;
+    //	}
+    /*
+     *   Get reaction species from rhs of equation
+     */
+    get_species<1>(reaction_equation_rhs);
+    //		if (association == TRUE)
+    //		{
+    //			trxn.token[count_trxn].coef *= -1.0;
+    //		}
+    /*
+     *   Sort list of reaction species
+     */
+    //	trxn_sort();
+    /*
+     *   Get elements in species or mineral formula
+     */
+    //	count_elts = 0;
+    //    token = trxn.token[0].name;
+    //	replace("(s)", "", token);
+    //	replace("(S)", "", token);
+    //	replace("(g)", "", token);
+    //	replace("(G)", "", token);
+    //    std::string char_ptr = token;
 
-    if (get_elts_in_species(char_ptr, trxn.token[0].coef) == ERROR)
-	{
-		return (ERROR);
-	}
-/*
- *   Sort elements in reaction and combine
- */
-	qsort(elt_list, (size_t) count_elts, (size_t) sizeof(struct elt_list),
-		  elt_list_compare);
-	if (elt_list_combine() == ERROR)
-		return (ERROR);
-/*
- *   Malloc space and store element data for return
- */
-	*elt_ptr =
-		(struct elt_list *) PHRQ_malloc((size_t) (count_elts + 1) *
-										sizeof(struct elt_list));
-	if (*elt_ptr == NULL)
-	{
-		malloc_error();
-	}
-	else
-	{
-		for (i = 0; i < count_elts; i++)
-		{
-			(*elt_ptr)[i].elt = elt_list[i].elt;
-			(*elt_ptr)[i].coef = -elt_list[i].coef;
-		}
-//		(*elt_ptr)[count_elts].elt = NULL;
-	}
-/*
- *   Debugging print of parsed equation
-	trxn_print();
- */
-	return (OK);
+    //    get_elts_in_species(char_ptr, trxn.token[0].coef);
+
+    /*
+     *   Sort elements in reaction and combine
+     */
+    //	qsort(elt_list, (size_t) count_elts, (size_t) sizeof(struct elt_list),
+    //		  elt_list_compare);
+    //	if (elt_list_combine() == ERROR)
+    //		return (ERROR);
+    /*
+     *   Malloc space and store element data for return
+     */
+    //	*elt_ptr =
+    //		(struct elt_list *) PHRQ_malloc((size_t) (count_elts + 1) *
+    //										sizeof(struct elt_list));
+    //	if (*elt_ptr == NULL)
+    //	{
+    //		malloc_error();
+    //	}
+    //	else
+    //	{
+    //		for (i = 0; i < count_elts; i++)
+    //		{
+    //			(*elt_ptr)[i].elt = elt_list[i].elt;
+    //			(*elt_ptr)[i].coef = -elt_list[i].coef;
+    //		}
+    //		(*elt_ptr)[count_elts].elt = NULL;
+    //	}
+    /*
+     *   Debugging print of parsed equation
+        trxn_print();
+     */
 }
 
 /* ---------------------------------------------------------------------- */
@@ -1011,10 +982,53 @@ get_num(std::string t_ptr, LDBLE * num)
 	return (OK);
 }
 
-/* ---------------------------------------------------------------------- */
-int Phreeqc::
-get_species(std::string ptr)
-/* ---------------------------------------------------------------------- */
+std::string parseSpeciesName(std::string term)
+{
+    std::string::size_type last_index = term.find_first_not_of("0123456789.");
+    double coefficient;
+    if (last_index == 0)
+        coefficient = 1.0;
+    else
+        coefficient = std::stod(term.substr(0, last_index));
+    term.erase(0, last_index);
+
+    std::array<std::string, 2> identifiers = {"+", "-"};
+    int occurrences = 0;
+    for (auto const& identifier : identifiers)
+    {
+        std::string::size_type start = 0;
+        while ((start = term.find(identifier, start)) != std::string::npos)
+        {
+            ++occurrences;
+            start += identifier.length();
+        }
+
+        if (occurrences == 0)
+            continue;
+        else if (occurrences == 1 &&
+                 (std::isdigit(term.back()) || term.back() == identifier[0]))
+        {
+            assert(term.find_last_of(identifier) -
+                       term.find_first_of(identifier) + 1 ==
+                   occurrences);
+            return term;
+        }
+        else
+        {
+            assert(term.find_last_of(identifier) -
+                       term.find_first_of(identifier) + 1 ==
+                   occurrences);
+            return term.substr(0, term.find(identifier) + 1) +
+                      std::to_string(occurrences);
+        }
+    }
+
+    if (occurrences == 0)
+        return term;
+}
+
+template <bool IsEquationRhs>
+void Phreeqc::get_species(std::string& expression)
 {
 /*   Function reads next species out of the equation, including optional
  *   preceding coefficient and optional trailing charge. Data are
@@ -1025,29 +1039,48 @@ get_species(std::string ptr)
  *                output, points to the next character after the species charge.
  *
  */
-    std::string string;
-	int l;
+    std::vector<std::string> terms;
+    typedef boost::split_iterator<std::string::iterator> string_split_iterator;
+    for(string_split_iterator It=
+        boost::make_split_iterator(expression, boost::first_finder(" + ", boost::is_iequal()));
+        It!=string_split_iterator();
+        ++It)
+    {
+        auto term = boost::copy_range<std::string>(*It);
+        boost::erase_all(term, " ");
+        terms.push_back(term);
+    }
 
-	if (count_trxn + 1 >= max_trxn)
-	{
-		space((void **) ((void *) &(trxn.token)), count_trxn + 1, &max_trxn,
-			  sizeof(struct rxn_token_temp));
-	}
-	/* coefficient */
-	if (get_coef(&(trxn.token[count_trxn].coef), ptr) == ERROR)
-	{
-		return (ERROR);
-	}
-	/* name and charge */
-	if (get_token(ptr, string, &trxn.token[count_trxn].z, &l) == ERROR)
-	{
-		return (ERROR);
-	}
-	trxn.token[count_trxn].name = string_hsave(string);
-	/*
-	   trxn.token[count_trxn].z = 0;
-	   trxn.token[count_trxn].s = NULL;
-	   trxn.token[count_trxn].unknown = NULL;
-	 */
-	return (OK);
+    // single term
+    for(auto& term : terms)
+    {
+        std::string::size_type last_index = term.find_first_not_of("0123456789.");
+        double coefficient;
+        if (last_index == 0)
+            coefficient = 1.0;
+        else
+            coefficient = std::stod(term.substr(0, last_index));
+        term.erase(0, last_index);
+
+        auto species = parseSpeciesName(term);
+
+//        double coefficient = IsEquationRhs ? -1.0 : 1.0;
+        trxn.token.emplace_back(species, coefficient);
+    }
+
+
+//	if (get_coef(&(trxn.token[count_trxn].coef), ptr) == ERROR)
+//	{
+//		return (ERROR);
+//	}
+/* name and charge */
+//    if (get_token(ptr, string, &trxn.token[count_trxn].z, &l) == ERROR)
+//	{
+//		return (ERROR);
+//	}
+/*
+   trxn.token[count_trxn].z = 0;
+   trxn.token[count_trxn].s = NULL;
+   trxn.token[count_trxn].unknown = NULL;
+ */
 }

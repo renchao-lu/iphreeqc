@@ -815,7 +815,6 @@ void Phreeqc::init()
 	*   Reaction work space
 	*---------------------------------------------------------------------- */
 	// struct trxn;	
-	trxn.token				= 0;
 	for (int i = 0; i < MAX_LOG_K_INDICES; i++)
 	{
 		trxn.logk[i] = 0;

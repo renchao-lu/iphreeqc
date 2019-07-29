@@ -268,12 +268,12 @@ initialize(void)
 	 */
     logk_ptr = logk_store("XconstantX", TRUE);
     token = "1.0";
-	read_log_k_only(token, &logk_ptr->log_k[0]);
+    read_log_k(token, &logk_ptr->log_k[0]);
 
-	// allocate space for copier
-	copier_init(&copy_solution);
-	copier_init(&copy_pp_assemblage);
-	copier_init(&copy_exchange);
+    // allocate space for copier
+    copier_init(&copy_solution);
+    copier_init(&copy_pp_assemblage);
+    copier_init(&copy_exchange);
 	copier_init(&copy_surface);
 	copier_init(&copy_ss_assemblage);
 	copier_init(&copy_gas_phase);

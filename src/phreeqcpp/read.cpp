@@ -508,11 +508,11 @@ read_exchange_species()
 				input_error++;
 				break;
 			}
-			read_log_k_only(next_char, &s_ptr->logk[0]);
-			opt_save = OPTION_DEFAULT;
-			break;
-		case 6:				/* delta_h */
-		case 7:				/* deltah */
+            read_log_k(next_char, &s_ptr->logk[0]);
+            opt_save = OPTION_DEFAULT;
+            break;
+        case 6:             /* delta_h */
+        case 7:				/* deltah */
 			if (s_ptr == NULL)
 			{
 				error_string = sformatf(
@@ -754,20 +754,15 @@ read_exchange_species()
  *   Get exchange species information and parse equation
  */
 			s_ptr = NULL;
-            if (parse_eq(const_cast<char*>(line.c_str()), &next_elt, association) == ERROR)
-			{
-				parse_error++;
-				error_msg("Parsing equation.", CONTINUE);
-                error_msg(line_save.c_str(), CONTINUE);
-				break;
-			}
-/*
- *   Get pointer to each species in the reaction, store new species if necessary
- */
-			trxn.token[0].s =
-				s_store(trxn.token[0].name, trxn.token[0].z, TRUE);
-			for (i = 1; i < count_trxn; i++)
-			{
+            parse_eq(const_cast<char*>(line.c_str()), &next_elt, association);
+            /*
+             *   Get pointer to each species in the reaction, store new species
+             * if necessary
+             */
+            trxn.token[0].s =
+                s_store(trxn.token[0].name, trxn.token[0].z, TRUE);
+            for (i = 1; i < count_trxn; i++)
+            {
 				trxn.token[i].s =
 					s_store(trxn.token[i].name, trxn.token[i].z, FALSE);
 			}
@@ -2779,22 +2774,20 @@ read_list_t_f(std::string ptr, int *count_ints)
 }
 
 /* ---------------------------------------------------------------------- */
-int Phreeqc::
-read_log_k_only(std::string ptr, LDBLE * log_k)
+void Phreeqc::read_log_k(std::string ptr, LDBLE* log_k)
 /* ---------------------------------------------------------------------- */
 {
 /*
  *   Read log k
  */
 	*log_k = 0.0;
-//	replace("=", " ", ptr);
-//	if (sscanf(ptr, SCANFORMAT, log_k) < 1)
-//	{
-//		input_error++;
-//		error_msg("Expecting log k.", CONTINUE);
-//		return (ERROR);
-//	}
-	return (OK);
+    //    replace("=", " ", ptr);
+    //	if (sscanf(ptr, SCANFORMAT, log_k) < 1)
+    //	{
+    //		input_error++;
+    //		error_msg("Expecting log k.", CONTINUE);
+    //		return (ERROR);
+    //	}
 }
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
@@ -3808,11 +3801,11 @@ read_phases(void)
 		case 3:				/* logk */
 			if (phase_ptr == NULL)
 				break;
-			read_log_k_only(next_char, &phase_ptr->logk[0]);
-			opt_save = OPTION_DEFAULT;
-			break;
-		case 4:				/* delta_h */
-		case 5:				/* deltah */
+            read_log_k(next_char, &phase_ptr->logk[0]);
+            opt_save = OPTION_DEFAULT;
+            break;
+        case 4:             /* delta_h */
+        case 5:				/* deltah */
 			if (phase_ptr == NULL)
 				break;
 			read_delta_h_only(next_char, &phase_ptr->logk[1],
@@ -3967,17 +3960,12 @@ read_phases(void)
                 error_msg(line_save.c_str(), CONTINUE);
 				break;
 			}
-            if (parse_eq(const_cast<char*>(line.c_str()), &next_elt, association) == ERROR)
-			{
-				parse_error++;
-				error_msg("Parsing equation.", CONTINUE);
-                error_msg(line_save.c_str(), CONTINUE);
-				break;
-			}
-			phase_ptr = phase_store(token);
-/*
- *   Get pointer to each species in the reaction, store new species if necessary
- */
+            parse_eq(const_cast<char*>(line.c_str()), &next_elt, association);
+            phase_ptr = phase_store(token);
+            /*
+             *   Get pointer to each species in the reaction, store new species
+             * if necessary
+             */
             token1 = trxn.token[0].name;
 //			replace("(g)", "", token1);
 //			replace("(s)", "", token1);
@@ -3986,11 +3974,11 @@ read_phases(void)
 			phase_ptr->formula = string_hsave(token1);
 			for (i = 1; i < count_trxn; i++)
 			{
-				if ((strstr(trxn.token[i].name, "(s)") == NULL) &&
-					(strstr(trxn.token[i].name, "(g)") == NULL) &&
-					(strstr(trxn.token[i].name, "(S)") == NULL) &&
-					(strstr(trxn.token[i].name, "(G)") == NULL))
-				{
+                if (trxn.token[i].name.find("(s)") == std::string::npos &&
+                    trxn.token[i].name.find("(g)") == std::string::npos &&
+                    trxn.token[i].name.find("(S)") == std::string::npos &&
+                    trxn.token[i].name.find("(G)") == std::string::npos)
+                {
                     token1 = trxn.token[i].name;
 //					replace("(aq)", "", token1);
 //					replace("(AQ)", "", token1);
@@ -4021,11 +4009,11 @@ read_phases(void)
 			token_ptr[0].s = trxn.token[1].s;
 			for (i = 1; i < count_trxn; i++)
 			{
-				token_ptr[i].name = NULL;
-				token_ptr[i].s = trxn.token[i].s;
-				token_ptr[i].coef = trxn.token[i].coef;
-				if (token_ptr[i].s == NULL)
-				{
+                token_ptr[i].name = "";
+                token_ptr[i].s = trxn.token[i].s;
+                token_ptr[i].coef = trxn.token[i].coef;
+                if (token_ptr[i].s == NULL)
+                {
 					token_ptr[i].name = trxn.token[i].name;
 				}
 			}
@@ -4035,13 +4023,13 @@ read_phases(void)
 			   token_ptr[0].s=NULL;
 			 */
 			token_ptr[i].s = NULL;
-			token_ptr[i].name = NULL;
-/*
- *   Set type for phase
- */
-			phase_ptr->type = SOLID;
-			opt_save = OPTION_DEFAULT;
-			break;
+            token_ptr[i].name = "";
+            /*
+             *   Set type for phase
+             */
+            phase_ptr->type = SOLID;
+            opt_save = OPTION_DEFAULT;
+            break;
 		}
 		if (return_value == EOF || return_value == KEYWORD)
 			break;
@@ -5949,14 +5937,19 @@ read_solution(void)
 enum class SolutionSpeciesKeywords
 {
     llnl_gamma,
+    log_k,
     equation
 };
 
 inline SolutionSpeciesKeywords convertStringToSolutionSpeciesKeywords(std::string const& inString)
 {
-    if (boost::iequals(inString, "-llnl_gamma"))
+    if (inString.find("-llnl_gamma") != std::string::npos)
     {
         return SolutionSpeciesKeywords::llnl_gamma;
+    }
+    else if (inString.find("log_k") != std::string::npos)
+    {
+        return SolutionSpeciesKeywords::log_k;
     }
     else
     {
@@ -5965,7 +5958,8 @@ inline SolutionSpeciesKeywords convertStringToSolutionSpeciesKeywords(std::strin
 }
 
 void Phreeqc::
-read_species(void)
+
+    read_species(void)
 {
 /*
  *   Read data for aqueous species, parse equations
@@ -6028,450 +6022,449 @@ read_species(void)
         auto opt = convertStringToSolutionSpeciesKeywords(line);
 		switch (opt)
 		{
-//		case 2:				/* gamma data */
-//			if (s_ptr == NULL)
-//			{
-//				error_string = sformatf(
-//						"No reaction defined before option, %s.",
-//						opt_list[opt]);
-//				error_msg(error_string, CONTINUE);
-//				input_error++;
-//				break;
-//			}
-//			s_ptr->gflag = 2;	/* Wateq D-H */
-//            i = sscanf(next_char.c_str(), SCANFORMAT SCANFORMAT, &s_ptr->dha,
-//					   &s_ptr->dhb);
-//			if (i < 2)
-//			{
-//				error_string = sformatf( "Expecting 2 activity-"
-//						"coefficient parameters, a and b.");
-//				warning_msg(error_string);
-//			}
-//			opt_save = OPTION_DEFAULT;
-//			break;
-//		case 3:				/* mb */
-//		case 4:				/* mass_balance */
-//		case 12:				/* mole_balance */
-//			if (s_ptr == NULL)
-//			{
-//				error_string = sformatf(
-//						"No reaction defined before option, %s.",
-//						opt_list[opt]);
-//				error_msg(error_string, CONTINUE);
-//				input_error++;
-//				break;
-//			}
-//			count_elts = 0;
-//			paren_count = 0;
-//            copy_token(token, next_char, &i);
-//            s_ptr->mole_balance = string_hsave(token.c_str());
-//			ptr = token;
-//			s_ptr->next_secondary =
-//				(struct elt_list *) free_check_null(s_ptr->next_secondary);
-//            get_secondary_in_species(ptr, 1.0);
-//			s_ptr->next_secondary = elt_list_save();
-///* debug
-//			for (i = 0; i < count_elts; i++) {
-//				output_msg(sformatf("%s\t%f\n", elt_list[i].elt->name,
-//					elt_list[i].coef));
-//			}
-// */
-//			opt_save = OPTION_DEFAULT;
-//			break;
-//		case 5:				/* log_k */
-//		case 6:				/* logk */
-//			if (s_ptr == NULL)
-//			{
-//				error_string = sformatf(
-//						"No reaction defined before option, %s.",
-//						opt_list[opt]);
-//				error_msg(error_string, CONTINUE);
-//				input_error++;
-//				break;
-//			}
-//            read_log_k_only(const_cast<char*>(next_char.c_str()), &s_ptr->logk[0]);
-//			opt_save = OPTION_DEFAULT;
-//			break;
-//		case 7:				/* delta_h */
-//		case 8:				/* deltah */
-//			if (s_ptr == NULL)
-//			{
-//				error_string = sformatf(
-//						"No reaction defined before option, %s.",
-//						opt_list[opt]);
-//				error_msg(error_string, CONTINUE);
-//				input_error++;
-//				break;
-//			}
-//            read_delta_h_only(const_cast<char*>(next_char.c_str()), &s_ptr->logk[1],
-//							  &s_ptr->original_units);
-//			opt_save = OPTION_DEFAULT;
-//			break;
-//		case 9:				/* analytical_expression */
-//		case 10:				/* a_e */
-//		case 11:				/* ae */
-//			if (s_ptr == NULL)
-//			{
-//				error_string = sformatf(
-//						"No reaction defined before option, %s.",
-//						opt_list[opt]);
-//				error_msg(error_string, CONTINUE);
-//				input_error++;
-//				break;
-//			}
-//            read_analytical_expression_only(const_cast<char*>(next_char.c_str()), &(s_ptr->logk[T_A1]));
-//			opt_save = OPTION_DEFAULT;
-//			break;
-//		case 13:				/* llnl_gamma */
-//			if (s_ptr == NULL)
-//			{
-//				error_string = sformatf(
-//						"No reaction defined before option, %s.",
-//						opt_list[opt]);
-//				error_msg(error_string, CONTINUE);
-//				input_error++;
-//				break;
-//			}
-//			s_ptr->gflag = 7;	/* llnl D-H */
-//            i = sscanf(next_char.c_str(), SCANFORMAT, &s_ptr->dha);
-//			if (i < 1)
-//			{
-//				error_string = sformatf(
-//						"Expecting activity-coefficient parameter, a.");
-//				warning_msg(error_string);
-//			}
-//			opt_save = OPTION_DEFAULT;
-//			break;
-//		case 14:				/* co2_llnl_gamma */
-//			if (s_ptr == NULL)
-//			{
-//				error_string = sformatf(
-//						"No reaction defined before option, %s.",
-//						opt_list[opt]);
-//				error_msg(error_string, CONTINUE);
-//				input_error++;
-//				break;
-//			}
-//			s_ptr->gflag = 8;	/* llnl CO2 D-H */
-//			opt_save = OPTION_DEFAULT;
-//			break;
-//		case 15:				/* activity water */
-//			if (s_ptr == NULL)
-//			{
-//				error_string = sformatf(
-//						"No reaction defined before option, %s.",
-//						opt_list[opt]);
-//				error_msg(error_string, CONTINUE);
-//				input_error++;
-//				break;
-//			}
-//			s_ptr->gflag = 9;	/* activity_water/55.5 for HDO, D2O, H2[O18], etc */
-//			opt_save = OPTION_DEFAULT;
-//			break;
-//		case 16:				/* add_logk */
-//		case 17:				/* add_log_k */
-//			if (s_ptr == NULL)
-//			{
-//				error_string = sformatf(
-//						"No reaction defined before option, %s.",
-//						opt_list[opt]);
-//				error_msg(error_string, CONTINUE);
-//				input_error++;
-//				break;
-//			}
-//			if (s_ptr->count_add_logk == 0)
-//			{
-//				s_ptr->add_logk =
-//					(struct name_coef *)
-//					PHRQ_malloc(sizeof(struct name_coef));
-//				if (s_ptr->add_logk == NULL)
-//					malloc_error();
-//			}
-//			else
-//			{
-//				s_ptr->add_logk =
-//					(struct name_coef *) PHRQ_realloc(s_ptr->add_logk,
-//													  (size_t) ((s_ptr->
-//																 count_add_logk
-//																 +
-//																 1) *
-//																sizeof
-//																(struct
-//																 name_coef)));
-//				if (s_ptr->add_logk == NULL)
-//					malloc_error();
-//			}
-//			/* read name */
-//            if (copy_token(token, next_char, &i) == EMPTY)
-//			{
-//				input_error++;
-//				error_string = sformatf(
-//						"Expected the name of a NAMED_EXPRESSION.");
-//				error_msg(error_string, CONTINUE);
-//				break;
-//			}
-//            s_ptr->add_logk[s_ptr->count_add_logk].name = string_hsave(token.c_str());
-//			/* read coef */
-//            i = sscanf(next_char.c_str(), SCANFORMAT,
-//					   &s_ptr->add_logk[s_ptr->count_add_logk].coef);
-//			if (i <= 0)
-//			{
-//				s_ptr->add_logk[s_ptr->count_add_logk].coef = 1;
-//			}
-//			s_ptr->count_add_logk++;
-//			opt_save = OPTION_DEFAULT;
-//			break;
-//		case 18:				/* add_constant */
-//			if (s_ptr == NULL)
-//			{
-//				error_string = sformatf(
-//						"No reaction defined before option, %s.",
-//						opt_list[opt]);
-//				error_msg(error_string, CONTINUE);
-//				input_error++;
-//				break;
-//			}
-//			if (s_ptr->count_add_logk == 0)
-//			{
-//				s_ptr->add_logk =
-//					(struct name_coef *)
-//					PHRQ_malloc(sizeof(struct name_coef));
-//				if (s_ptr->add_logk == NULL)
-//					malloc_error();
-//			}
-//			else
-//			{
-//				s_ptr->add_logk =
-//					(struct name_coef *) PHRQ_realloc(s_ptr->add_logk,
-//													  (size_t) ((s_ptr->
-//																 count_add_logk
-//																 +
-//																 1) *
-//																sizeof
-//																(struct
-//																 name_coef)));
-//				if (s_ptr->add_logk == NULL)
-//					malloc_error();
-//			}
-//            i = sscanf(next_char.c_str(), SCANFORMAT,
-//					   &s_ptr->add_logk[s_ptr->count_add_logk].coef);
-//			if (i <= 0)
-//			{
-//				input_error++;
-//				error_string = sformatf(
-//						"Expected the constant to add for log_K definition.");
-//				error_msg(error_string, CONTINUE);
-//				break;
-//			}
-//			/* set name */
-//			s_ptr->add_logk[s_ptr->count_add_logk].name =
-//				string_hsave("XconstantX");
-//			/* read coef */
-//			s_ptr->count_add_logk++;
-//			opt_save = OPTION_DEFAULT;
-//			break;
-//		case 19:				/* tracer diffusion coefficient */
-//			if (s_ptr == NULL)
-//			{
-//				error_string = sformatf(
-//						"No reaction defined before option, %s.",
-//						opt_list[opt]);
-//				error_msg(error_string, CONTINUE);
-//				input_error++;
-//				break;
-//			}
-//			s_ptr->dw_t = 0;  s_ptr->dw_a = 0; s_ptr->dw_a2 = 0; s_ptr->dw_a_visc = 0;
-//            i = sscanf(next_char.c_str(), SCANFORMAT SCANFORMAT SCANFORMAT SCANFORMAT SCANFORMAT, &s_ptr->dw, &s_ptr->dw_t,
-//				&s_ptr->dw_a, &s_ptr->dw_a2, &s_ptr->dw_a_visc);
-//			s_ptr->dw_corr = s_ptr->dw;
-//			opt_save = OPTION_DEFAULT;
-//			break;
-//		case 20:				/* enrichment factor in the DDL */
-//			if (s_ptr == NULL)
-//			{
-//				error_string = sformatf(
-//						"No reaction defined before option, %s.",
-//						opt_list[opt]);
-//				error_msg(error_string, CONTINUE);
-//				input_error++;
-//				break;
-//			}
-//            i = sscanf(next_char.c_str(), SCANFORMAT, &s_ptr->erm_ddl);
-//			if (s_ptr->erm_ddl < 0)
-//			{
-//				error_string = sformatf( "Expecting enrichment factor > 0, "
-//						"resetting to erm_ddl = 1.");
-//				warning_msg(error_string);
-//				s_ptr->erm_ddl = 1.0;
-//			}
-//			opt_save = OPTION_DEFAULT;
-//			break;
-///* VP: Density Start */
-//		case 21:			/* Millero a, b, c, d, e and f coefficients */
-//			if (s_ptr == NULL)
-//			{
-//				error_string = sformatf(
-//						"No reaction defined before option, %s.",
-//						opt_list[opt]);
-//				error_msg(error_string, CONTINUE);
-//				input_error++;
-//				break;
-//			}
-//            print_density = read_millero_abcdef (const_cast<char*>(next_char.c_str()), &(s_ptr->millero[0]));
-//			//if (!vm_read)
-//			//{
-//			///* copy millero parms into logk, for calculating pressure dependency... */
-//			//	for (i = 0; i < 7; i++)
-//			//		s_ptr->logk[vm0 + i] = s_ptr->millero[i];
-//			//	s_ptr->logk[vm0 + i] = 0;
-//			//}
-//			opt_save = OPTION_DEFAULT;
-//			break;
-///* VP: Density End */
-//		case 22:            /* vm, supcrt parms + Ionic strength terms */
-//			if (s_ptr == NULL)
-//			{
-//				error_string = sformatf(
-//					"No reaction defined before option, %s.",
-//				opt_list[opt]);
-//				error_msg(error_string, CONTINUE);
-//				input_error++;
-//				break;
-//			}
-//            read_aq_species_vm_parms(const_cast<char*>(next_char.c_str()), &s_ptr->logk[vma1]);
-//			//vm_read = true;
-//			print_density = OK;
-//			opt_save = OPTION_DEFAULT;
-//			break;
-//		case 23:            /* viscosity parms for the Jones-Dole eqn */
-//			if (s_ptr == NULL)
-//			{
-//				error_string = sformatf(
-//					"No reaction defined before option, %s.",
-//				opt_list[opt]);
-//				error_msg(error_string, CONTINUE);
-//				input_error++;
-//				break;
-//			}
-//            read_viscosity_parms(const_cast<char*>(next_char.c_str()), &s_ptr->Jones_Dole[0]);
-//			print_viscosity = OK;
-//			opt_save = OPTION_DEFAULT;
-//			break;
-        case SolutionSpeciesKeywords::equation:
-        {
-/*
- *   Get space for species information and parse equation
- */
-			s_ptr = NULL;
-            if (parse_eq(line, &next_elt, association) == ERROR)
-			{
-				parse_error++;
-				error_msg("Parsing equation.", CONTINUE);
-                error_msg(line_save.c_str(), CONTINUE);
-				break;
-			}
-/*
- *   Get pointer to each species in the reaction, store new species if necessary
- */
-			trxn.token[0].s =
-				s_store(trxn.token[0].name, trxn.token[0].z, TRUE);
-			for (i = 1; i < count_trxn; i++)
-			{
-				trxn.token[i].s =
-					s_store(trxn.token[i].name, trxn.token[i].z, FALSE);
-			}
-/*
- *   Save element list and carbon, hydrogen, and oxygen in species
- */
-			trxn.token[0].s->next_elt = next_elt;
-			trxn.token[0].s->next_secondary = NULL;
-//			for (; next_elt->elt != NULL; next_elt++)
-//			{
-//				if (strcmp(next_elt->elt->name, "C") == 0)
-//				{
-//					trxn.token[0].s->carbon = next_elt->coef;
-//				}
-//				if (strcmp(next_elt->elt->name, "H") == 0)
-//				{
-//					trxn.token[0].s->h = next_elt->coef;
-//				}
-//				if (strcmp(next_elt->elt->name, "O") == 0)
-//				{
-//					trxn.token[0].s->o = next_elt->coef;
-//				}
-//			}
-/*
- *   Malloc space for species reaction
- */
-			trxn.token[0].s->rxn = rxn_alloc(count_trxn + 1);
-/*
- *   Copy reaction to reaction for species
- */
-			trxn_copy(trxn.token[0].s->rxn);
-			s_ptr = trxn.token[0].s;
-/*
- *   Default gamma data
- */
-			s_ptr->dha = 0.0;
-			s_ptr->dhb = 0.0;
-			if (equal(s_ptr->z, 0.0, TOL) == TRUE)
-			{
-				s_ptr->gflag = 0;	/* Uncharged */
-				s_ptr->dhb = 0.1;
-			}
-			else
-			{
-				s_ptr->gflag = 1;	/* Davies */
-			}
-/*
- *   Set type for species
- */
-			if (strcmp(trxn.token[0].s->name, "H+") == 0)
-			{
-				s_hplus = trxn.token[0].s;
-				s_hplus->type = HPLUS;
-			}
-			else if (strcmp(trxn.token[0].s->name, "H3O+") == 0)
-			{
-				s_h3oplus = trxn.token[0].s;
-				s_h3oplus->type = HPLUS;
-			}
-			else if (strcmp(trxn.token[0].s->name, "e-") == 0)
-			{
-				s_eminus = trxn.token[0].s;
-				s_eminus->type = EMINUS;
-				s_eminus->gflag = 3;	/* Always 1 */
-			}
-			else if (strcmp(trxn.token[0].s->name, "H2O") == 0)
-			{
-				s_h2o = trxn.token[0].s;
-				s_h2o->type = H2O;
-				s_h2o->gflag = 3;	/* Always 1 */
-			}
-			else if (strstr(trxn.token[0].s->name, "(s)") != NULL)
-			{
-				trxn.token[0].s->type = SOLID;
-			}
-			else if (strcmp(trxn.token[0].s->name, "H2") == 0)
-			{
-				trxn.token[0].s->type = AQ;
-				s_h2 = trxn.token[0].s;
-			}
-			else if (strcmp(trxn.token[0].s->name, "O2") == 0)
-			{
-				trxn.token[0].s->type = AQ;
-				s_o2 = trxn.token[0].s;
-			}
-			else
-			{
-				trxn.token[0].s->type = AQ;
-			}
-			opt_save = OPTION_DEFAULT;
-			break;
-		}
+                //        case SolutionSpeciesKeywords::gamma:				/*
+                //        gamma data */
+                //        {
+                //            if (s_ptr == NULL)
+                //            {
+                //                error_string = sformatf(
+                //                        "No reaction defined before option,
+                //                        %s.", opt_list[opt]);
+                //                error_msg(error_string, CONTINUE);
+                //                input_error++;
+                //                break;
+                //            }
+                //            s_ptr->gflag = 2;	/* Wateq D-H */
+                //            i = sscanf(next_char.c_str(), SCANFORMAT
+                //            SCANFORMAT, &s_ptr->dha,
+                //                       &s_ptr->dhb);
+                //            if (i < 2)
+                //            {
+                //                error_string = sformatf( "Expecting 2
+                //                activity-"
+                //                        "coefficient parameters, a and b.");
+                //                warning_msg(error_string);
+                //            }
+                //            opt_save = OPTION_DEFAULT;
+                //            break;
+                //        }
+                //		case 3:				/* mb */
+                //		case 4:				/* mass_balance */
+                //		case 12:				/* mole_balance */
+                //			if (s_ptr == NULL)
+                //			{
+                //				error_string = sformatf(
+                //						"No reaction defined before option,
+                //%s.", 						opt_list[opt]);
+                // error_msg(error_string, CONTINUE); input_error++; break;
+                //			}
+                //			count_elts = 0;
+                //			paren_count = 0;
+                //            copy_token(token, next_char, &i);
+                //            s_ptr->mole_balance = string_hsave(token.c_str());
+                //			ptr = token;
+                //			s_ptr->next_secondary =
+                //				(struct elt_list *)
+                // free_check_null(s_ptr->next_secondary);
+                //            get_secondary_in_species(ptr, 1.0);
+                //			s_ptr->next_secondary = elt_list_save();
+                ///* debug
+                //			for (i = 0; i < count_elts; i++) {
+                //				output_msg(sformatf("%s\t%f\n",
+                // elt_list[i].elt->name, 					elt_list[i].coef));
+                //			}
+                // */
+                //			opt_save = OPTION_DEFAULT;
+                //			break;
+            case SolutionSpeciesKeywords::log_k: /* log_k */
+                                                 //        case 6:				/* logk */
+                {
+                    //            if (s_ptr == NULL)
+                    //            {
+                    //                error_string = sformatf(
+                    //                        "No reaction defined before
+                    //                        option, %s.", opt_list[opt]);
+                    //                error_msg(error_string, CONTINUE);
+                    //                input_error++;
+                    //                break;
+                    //            }
+                    read_log_k(next_char, &s_ptr->logk[0]);
+                    break;
+                }
+                //		case 7:				/* delta_h */
+                //		case 8:				/* deltah */
+                //			if (s_ptr == NULL)
+                //			{
+                //				error_string = sformatf(
+                //						"No reaction defined before option,
+                //%s.", 						opt_list[opt]);
+                // error_msg(error_string, CONTINUE); input_error++; break;
+                //			}
+                //            read_delta_h_only(const_cast<char*>(next_char.c_str()),
+                //            &s_ptr->logk[1],
+                //							  &s_ptr->original_units);
+                //			opt_save = OPTION_DEFAULT;
+                //			break;
+                //		case 9:				/* analytical_expression */
+                //		case 10:				/* a_e */
+                //		case 11:				/* ae */
+                //			if (s_ptr == NULL)
+                //			{
+                //				error_string = sformatf(
+                //						"No reaction defined before option,
+                //%s.", 						opt_list[opt]);
+                // error_msg(error_string, CONTINUE); input_error++; break;
+                //			}
+                //            read_analytical_expression_only(const_cast<char*>(next_char.c_str()),
+                //            &(s_ptr->logk[T_A1]));
+                //			opt_save = OPTION_DEFAULT;
+                //			break;
+            case SolutionSpeciesKeywords::llnl_gamma: /* llnl_gamma */
+            {
+                //            if (s_ptr == NULL)
+                //            {
+                //                error_string = sformatf(
+                //                        "No reaction defined before option,
+                //                        %s.", opt_list[opt]);
+                //                error_msg(error_string, CONTINUE);
+                //                input_error++;
+                //                break;
+                //            }
+                //            s_ptr->gflag = 7;	/* llnl D-H */
+                //            i = sscanf(next_char.c_str(), SCANFORMAT,
+                //            &s_ptr->dha); if (i < 1)
+                //            {
+                //                error_string = sformatf(
+                //                        "Expecting activity-coefficient
+                //                        parameter, a.");
+                //                warning_msg(error_string);
+                //            }
+                break;
+            }
+                //		case 14:				/* co2_llnl_gamma */
+                //			if (s_ptr == NULL)
+                //			{
+                //				error_string = sformatf(
+                //						"No reaction defined before option,
+                //%s.", 						opt_list[opt]);
+                // error_msg(error_string, CONTINUE); input_error++; break;
+                //			}
+                //			s_ptr->gflag = 8;	/* llnl CO2 D-H */
+                //			opt_save = OPTION_DEFAULT;
+                //			break;
+                //		case 15:				/* activity water */
+                //			if (s_ptr == NULL)
+                //			{
+                //				error_string = sformatf(
+                //						"No reaction defined before option,
+                //%s.", 						opt_list[opt]);
+                // error_msg(error_string, CONTINUE); input_error++; break;
+                //			}
+                //			s_ptr->gflag = 9;	/* activity_water/55.5 for HDO,
+                // D2O,
+                // H2[O18], etc */ 			opt_save = OPTION_DEFAULT;
+                // break; case 16:
+                ///* add_logk */ 		case 17:				/* add_log_k */
+                /// if
+                //(s_ptr == NULL)
+                //			{
+                //				error_string = sformatf(
+                //						"No reaction defined before option,
+                //%s.", 						opt_list[opt]);
+                // error_msg(error_string, CONTINUE); input_error++; break;
+                //			}
+                //			if (s_ptr->count_add_logk == 0)
+                //			{
+                //				s_ptr->add_logk =
+                //					(struct name_coef *)
+                //					PHRQ_malloc(sizeof(struct name_coef));
+                //				if (s_ptr->add_logk == NULL)
+                //					malloc_error();
+                //			}
+                //			else
+                //			{
+                //				s_ptr->add_logk =
+                //					(struct name_coef *)
+                // PHRQ_realloc(s_ptr->add_logk,
+                // (size_t)
+                // ((s_ptr->
+                // count_add_logk
+                //																 +
+                //																 1)
+                //* sizeof (struct
+                // name_coef))); if (s_ptr->add_logk == NULL)
+                // malloc_error();
+                //			}
+                //			/* read name */
+                //            if (copy_token(token, next_char, &i) == EMPTY)
+                //			{
+                //				input_error++;
+                //				error_string = sformatf(
+                //						"Expected the name of a
+                // NAMED_EXPRESSION."); 				error_msg(error_string,
+                // CONTINUE); break;
+                //			}
+                //            s_ptr->add_logk[s_ptr->count_add_logk].name =
+                //            string_hsave(token.c_str());
+                //			/* read coef */
+                //            i = sscanf(next_char.c_str(), SCANFORMAT,
+                //					   &s_ptr->add_logk[s_ptr->count_add_logk].coef);
+                //			if (i <= 0)
+                //			{
+                //				s_ptr->add_logk[s_ptr->count_add_logk].coef = 1;
+                //			}
+                //			s_ptr->count_add_logk++;
+                //			opt_save = OPTION_DEFAULT;
+                //			break;
+                //		case 18:				/* add_constant */
+                //			if (s_ptr == NULL)
+                //			{
+                //				error_string = sformatf(
+                //						"No reaction defined before option,
+                //%s.", 						opt_list[opt]);
+                // error_msg(error_string, CONTINUE); input_error++; break;
+                //			}
+                //			if (s_ptr->count_add_logk == 0)
+                //			{
+                //				s_ptr->add_logk =
+                //					(struct name_coef *)
+                //					PHRQ_malloc(sizeof(struct name_coef));
+                //				if (s_ptr->add_logk == NULL)
+                //					malloc_error();
+                //			}
+                //			else
+                //			{
+                //				s_ptr->add_logk =
+                //					(struct name_coef *)
+                // PHRQ_realloc(s_ptr->add_logk,
+                // (size_t)
+                // ((s_ptr->
+                // count_add_logk
+                //																 +
+                //																 1)
+                //* sizeof (struct
+                // name_coef))); if (s_ptr->add_logk == NULL)
+                // malloc_error();
+                //			}
+                //            i = sscanf(next_char.c_str(), SCANFORMAT,
+                //					   &s_ptr->add_logk[s_ptr->count_add_logk].coef);
+                //			if (i <= 0)
+                //			{
+                //				input_error++;
+                //				error_string = sformatf(
+                //						"Expected the constant to add for log_K
+                // definition."); 				error_msg(error_string,
+                // CONTINUE); break;
+                //			}
+                //			/* set name */
+                //			s_ptr->add_logk[s_ptr->count_add_logk].name =
+                //				string_hsave("XconstantX");
+                //			/* read coef */
+                //			s_ptr->count_add_logk++;
+                //			opt_save = OPTION_DEFAULT;
+                //			break;
+                //		case 19:				/* tracer diffusion coefficient
+                //*/ 			if (s_ptr == NULL)
+                //			{
+                //				error_string = sformatf(
+                //						"No reaction defined before option,
+                //%s.", 						opt_list[opt]);
+                // error_msg(error_string, CONTINUE); input_error++; break;
+                //			}
+                //			s_ptr->dw_t = 0;  s_ptr->dw_a = 0; s_ptr->dw_a2 = 0;
+                // s_ptr->dw_a_visc = 0;
+                //            i = sscanf(next_char.c_str(), SCANFORMAT
+                //            SCANFORMAT SCANFORMAT SCANFORMAT SCANFORMAT,
+                //            &s_ptr->dw, &s_ptr->dw_t,
+                //				&s_ptr->dw_a, &s_ptr->dw_a2, &s_ptr->dw_a_visc);
+                //			s_ptr->dw_corr = s_ptr->dw;
+                //			opt_save = OPTION_DEFAULT;
+                //			break;
+                //		case 20:				/* enrichment factor in the DDL
+                //*/ 			if (s_ptr == NULL)
+                //			{
+                //				error_string = sformatf(
+                //						"No reaction defined before option,
+                //%s.", 						opt_list[opt]);
+                // error_msg(error_string, CONTINUE); input_error++; break;
+                //			}
+                //            i = sscanf(next_char.c_str(), SCANFORMAT,
+                //            &s_ptr->erm_ddl);
+                //			if (s_ptr->erm_ddl < 0)
+                //			{
+                //				error_string = sformatf( "Expecting enrichment
+                // factor > 0, " 						"resetting to erm_ddl
+                //= 1."); 				warning_msg(error_string);
+                // s_ptr->erm_ddl = 1.0;
+                //			}
+                //			opt_save = OPTION_DEFAULT;
+                //			break;
+                ///* VP: Density Start */
+                //		case 21:			/* Millero a, b, c, d, e and f
+                // coefficients
+                //*/ 			if (s_ptr == NULL)
+                //			{
+                //				error_string = sformatf(
+                //						"No reaction defined before option,
+                //%s.", 						opt_list[opt]);
+                // error_msg(error_string, CONTINUE); input_error++; break;
+                //			}
+                //            print_density = read_millero_abcdef
+                //            (const_cast<char*>(next_char.c_str()),
+                //            &(s_ptr->millero[0]));
+                //			//if (!vm_read)
+                //			//{
+                //			///* copy millero parms into logk, for calculating
+                // pressure dependency... */
+                //			//	for (i = 0; i < 7; i++)
+                //			//		s_ptr->logk[vm0 + i] = s_ptr->millero[i];
+                //			//	s_ptr->logk[vm0 + i] = 0;
+                //			//}
+                //			opt_save = OPTION_DEFAULT;
+                //			break;
+                ///* VP: Density End */
+                //		case 22:            /* vm, supcrt parms + Ionic strength
+                // terms */ 			if (s_ptr == NULL)
+                //			{
+                //				error_string = sformatf(
+                //					"No reaction defined before option, %s.",
+                //				opt_list[opt]);
+                //				error_msg(error_string, CONTINUE);
+                //				input_error++;
+                //				break;
+                //			}
+                //            read_aq_species_vm_parms(const_cast<char*>(next_char.c_str()),
+                //            &s_ptr->logk[vma1]);
+                //			//vm_read = true;
+                //			print_density = OK;
+                //			opt_save = OPTION_DEFAULT;
+                //			break;
+                //		case 23:            /* viscosity parms for the
+                // Jones-Dole eqn */ 			if (s_ptr == NULL)
+                //			{
+                //				error_string = sformatf(
+                //					"No reaction defined before option, %s.",
+                //				opt_list[opt]);
+                //				error_msg(error_string, CONTINUE);
+                //				input_error++;
+                //				break;
+                //			}
+                //            read_viscosity_parms(const_cast<char*>(next_char.c_str()),
+                //            &s_ptr->Jones_Dole[0]);
+                //			print_viscosity = OK;
+                //			opt_save = OPTION_DEFAULT;
+                //			break;
+            case SolutionSpeciesKeywords::equation:
+            {
+                /*
+                 *   Get space for species information and parse equation
+                 */
+                s_ptr = NULL;
+                parse_eq(line, &next_elt, association);
+
+                /*
+                 *   Get pointer to each species in the reaction, store new
+                 * species if necessary
+                 */
+                //			trxn.token[0].s =
+                //				s_store(trxn.token[0].name, trxn.token[0].z,
+                // TRUE); 			for (i = 1; i < count_trxn; i++)
+                //			{
+                //				trxn.token[i].s =
+                //					s_store(trxn.token[i].name, trxn.token[i].z,
+                // FALSE);
+                //			}
+                /*
+                 *   Save element list and carbon, hydrogen, and oxygen in
+                 * species
+                 */
+                //			trxn.token[0].s->next_elt = next_elt;
+                //			trxn.token[0].s->next_secondary = NULL;
+                //			for (; next_elt->elt != NULL; next_elt++)
+                //			{
+                //				if (strcmp(next_elt->elt->name, "C") == 0)
+                //				{
+                //					trxn.token[0].s->carbon = next_elt->coef;
+                //				}
+                //				if (strcmp(next_elt->elt->name, "H") == 0)
+                //				{
+                //					trxn.token[0].s->h = next_elt->coef;
+                //				}
+                //				if (strcmp(next_elt->elt->name, "O") == 0)
+                //				{
+                //					trxn.token[0].s->o = next_elt->coef;
+                //				}
+                //			}
+                /*
+                 *   Malloc space for species reaction
+                 */
+                //			trxn.token[0].s->rxn = rxn_alloc(count_trxn + 1);
+                /*
+                 *   Copy reaction to reaction for species
+                 */
+                //			trxn_copy(trxn.token[0].s->rxn);
+                //			s_ptr = trxn.token[0].s;
+                /*
+                 *   Default gamma data
+                 */
+                //			s_ptr->dha = 0.0;
+                //			s_ptr->dhb = 0.0;
+                //			if (equal(s_ptr->z, 0.0, TOL) == TRUE)
+                //			{
+                //				s_ptr->gflag = 0;	/* Uncharged */
+                //				s_ptr->dhb = 0.1;
+                //			}
+                //			else
+                //			{
+                //				s_ptr->gflag = 1;	/* Davies */
+                //			}
+                /*
+                 *   Set type for species
+                 */
+                //			if (strcmp(trxn.token[0].s->name, "H+") == 0)
+                //			{
+                //				s_hplus = trxn.token[0].s;
+                //				s_hplus->type = HPLUS;
+                //			}
+                //			else if (strcmp(trxn.token[0].s->name, "H3O+") == 0)
+                //			{
+                //				s_h3oplus = trxn.token[0].s;
+                //				s_h3oplus->type = HPLUS;
+                //			}
+                //			else if (strcmp(trxn.token[0].s->name, "e-") == 0)
+                //			{
+                //				s_eminus = trxn.token[0].s;
+                //				s_eminus->type = EMINUS;
+                //				s_eminus->gflag = 3;	/* Always 1 */
+                //			}
+                //			else if (strcmp(trxn.token[0].s->name, "H2O") == 0)
+                //			{
+                //				s_h2o = trxn.token[0].s;
+                //				s_h2o->type = H2O;
+                //				s_h2o->gflag = 3;	/* Always 1 */
+                //			}
+                //			else if (strstr(trxn.token[0].s->name, "(s)") !=
+                // NULL)
+                //			{
+                //				trxn.token[0].s->type = SOLID;
+                //			}
+                //			else if (strcmp(trxn.token[0].s->name, "H2") == 0)
+                //			{
+                //				trxn.token[0].s->type = AQ;
+                //				s_h2 = trxn.token[0].s;
+                //			}
+                //			else if (strcmp(trxn.token[0].s->name, "O2") == 0)
+                //			{
+                //				trxn.token[0].s->type = AQ;
+                //				s_o2 = trxn.token[0].s;
+                //			}
+                //			else
+                //			{
+                //				trxn.token[0].s->type = AQ;
+                //			}
+                break;
+            }
         }
-		if (return_value == EOF || return_value == KEYWORD)
-			break;
 	}
 }
 
@@ -6828,11 +6821,11 @@ read_surface_species(void)
 				input_error++;
 				break;
 			}
-			read_log_k_only(next_char, &s_ptr->logk[0]);
-			opt_save = OPTION_DEFAULT;
-			break;
-		case 6:				/* delta_h */
-		case 7:				/* deltah */
+            read_log_k(next_char, &s_ptr->logk[0]);
+            opt_save = OPTION_DEFAULT;
+            break;
+        case 6:             /* delta_h */
+        case 7:				/* deltah */
 			if (s_ptr == NULL)
 			{
 				error_string = sformatf(
@@ -7032,20 +7025,15 @@ read_surface_species(void)
 			 *   Get surface species information and parse equation
 			 */
 			s_ptr = NULL;
-            if (parse_eq(const_cast<char*>(line.c_str()), &next_elt, association) == ERROR)
-			{
-				parse_error++;
-				error_msg("Parsing equation.", CONTINUE);
-                error_msg(line_save.c_str(), CONTINUE);
-				break;
-			}
-			/*
-			 *   Get pointer to each species in the reaction, store new species if necessary
-			 */
-			trxn.token[0].s =
-				s_store(trxn.token[0].name, trxn.token[0].z, TRUE);
-			for (i = 1; i < count_trxn; i++)
-			{
+            parse_eq(const_cast<char*>(line.c_str()), &next_elt, association);
+            /*
+             *   Get pointer to each species in the reaction, store new species
+             * if necessary
+             */
+            trxn.token[0].s =
+                s_store(trxn.token[0].name, trxn.token[0].z, TRUE);
+            for (i = 1; i < count_trxn; i++)
+            {
 				trxn.token[i].s =
 					s_store(trxn.token[i].name, trxn.token[i].z, FALSE);
 			}
@@ -10655,7 +10643,7 @@ read_named_logk()
                     input_error++;
                     break;
                 }
-                read_log_k_only(next_char, &logk_ptr->log_k[0]);
+                read_log_k(next_char, &logk_ptr->log_k[0]);
                 logk_copy2orig(logk_ptr);
                 opt_save = OPTION_DEFAULT;
                 break;

@@ -3308,7 +3308,7 @@ species_rxn_to_trxn(struct species *s_ptr)
 	for (i = 0; s_ptr->rxn->token[i].s != NULL; i++)
 	{
 		trxn.token[i].name = s_ptr->rxn->token[i].s->name;
-		trxn.token[i].z = s_ptr->rxn->token[i].s->z;
+        trxn.token[i].charge = s_ptr->rxn->token[i].s->charge;
 		trxn.token[i].s = s_ptr->rxn->token[i].s;
 		trxn.token[i].unknown = NULL;
 		trxn.token[i].coef = s_ptr->rxn->token[i].coef;
@@ -3341,7 +3341,7 @@ phase_rxn_to_trxn(struct phase *phase_ptr, struct reaction *rxn_ptr)
 	ptr = temp_formula;
     get_token(ptr, token, &l_z, &l);
 //	free_check_null(temp_formula);
-	trxn.token[0].z = l_z;
+    trxn.token[0].charge = l_z;
 	trxn.token[0].s = NULL;
 	trxn.token[0].unknown = NULL;
 	/*trxn.token[0].coef = -1.0; */
@@ -3350,7 +3350,7 @@ phase_rxn_to_trxn(struct phase *phase_ptr, struct reaction *rxn_ptr)
 	for (i = 1; rxn_ptr->token[i].s != NULL; i++)
 	{
 		trxn.token[i].name = rxn_ptr->token[i].s->name;
-		trxn.token[i].z = rxn_ptr->token[i].s->z;
+        trxn.token[i].charge = rxn_ptr->token[i].s->charge;
 		trxn.token[i].s = NULL;
 		trxn.token[i].unknown = NULL;
 		trxn.token[i].coef = rxn_ptr->token[i].coef;
@@ -4012,7 +4012,7 @@ tidy_min_surface(void)
 						//		elt_ptr->master->s->name);
 						//	warning_msg(error_string);
 						//}
-                        if (elt_ptr.master->s->z != 0.0 && surface_ptr->Get_dl_type() != cxxSurface::DONNAN_DL)
+                        if (elt_ptr.master->s->charge != 0.0 && surface_ptr->Get_dl_type() != cxxSurface::DONNAN_DL)
 						{
 							error_string = sformatf(
 								"Use the -donnan option when coupling surface %s to an equilibrium_phase, \n\t and note to give the equilibrium_phase the surface charge.",

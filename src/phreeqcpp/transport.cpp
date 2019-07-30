@@ -1808,7 +1808,7 @@ fill_spec(int l_cell_no)
 					dum = fabs(s_ptr->equiv) / master_ptr->total;
 				else
 				{
-					if (species_list[i].master_s->z == 0)
+                    if (species_list[i].master_s->charge == 0)
 						dum = 1 / master_ptr->total;
 					else
 						dum = 1;
@@ -1851,7 +1851,7 @@ fill_spec(int l_cell_no)
 				/* copy its name and Dw and charge... */
 				sol_D[l_cell_no].spec[count_spec].aq_name = s_ptr2->name;
 				//string_hsave(s_ptr2->name);
-				sol_D[l_cell_no].spec[count_spec].z = s_ptr2->z;
+                sol_D[l_cell_no].spec[count_spec].z = s_ptr2->charge;
 				if (s_ptr2->dw == 0)
 					sol_D[l_cell_no].spec[count_spec].Dwt =
 					default_Dw * viscos_il_f;
@@ -1882,7 +1882,7 @@ fill_spec(int l_cell_no)
 			sol_D[l_cell_no].spec[count_spec].a = under(lm + s_ptr->lg);
 			sol_D[l_cell_no].spec[count_spec].lm = lm;
 			sol_D[l_cell_no].spec[count_spec].lg = s_ptr->lg;
-			sol_D[l_cell_no].spec[count_spec].z = s_ptr->z;
+            sol_D[l_cell_no].spec[count_spec].z = s_ptr->charge;
 			if (s_ptr->dw == 0)
 				sol_D[l_cell_no].spec[count_spec].Dwt = default_Dw * viscos_f;
 			else
@@ -4585,7 +4585,7 @@ viscosity(void)
 		if (s_x[i]->Jones_Dole[0] || s_x[i]->Jones_Dole[1] || s_x[i]->Jones_Dole[3])
 		{
 			t1 = s_x[i]->moles / mass_water_aq_x;
-			l_z = fabs(s_x[i]->z);
+            l_z = fabs(s_x[i]->charge);
 			if (l_z)
 				f_z = (l_z * l_z + l_z) / 2;
 			else
@@ -4614,7 +4614,7 @@ viscosity(void)
 			//output_msg(sformatf("\t%s\t%e\t%e\t%e\n", s_x[i]->name, t1, Bc, Dc ));
 		}
 		// parms for A...
-		if ((l_z = s_x[i]->z) == 0)
+        if ((l_z = s_x[i]->charge) == 0)
 			continue;
 		Dw = s_x[i]->dw;
 		if (Dw)
@@ -4722,7 +4722,7 @@ calc_vm_Cl(void)
 			s_ptr->logk[wref] * QBrn;
 		/* the ionic strength term * I^0.5... */
 		if (s_ptr->logk[b_Av] < 1e-5)
-			V_Cl += s_ptr->z * s_ptr->z * 0.5 * DH_Av * sqrt_mu;
+            V_Cl += s_ptr->charge * s_ptr->charge * 0.5 * DH_Av * sqrt_mu;
 		else
 		{
 			/* limit the Debye-Hueckel slope by b... */
@@ -4730,7 +4730,7 @@ calc_vm_Cl(void)
 			//s_ptr->rxn_x->logk[vm_tc] += s_ptr->z * s_ptr->z * 0.5 * DH_Av *
 			//	log(1 + s_ptr->logk[b_Av] * sqrt(mu_x)) / s_ptr->logk[b_Av];
 			/* extended DH... */
-			V_Cl += s_ptr->z * s_ptr->z * 0.5 * DH_Av *
+            V_Cl += s_ptr->charge * s_ptr->charge * 0.5 * DH_Av *
 				sqrt_mu / (1 + s_ptr->logk[b_Av] * DH_B * sqrt_mu);
 		}
 		/* plus the volume terms * I... */
@@ -4747,10 +4747,10 @@ calc_vm_Cl(void)
 	{
 		/* Millero volume at I = 0... */
 		V_Cl = s_ptr->millero[0] + tc_x * (s_ptr->millero[1] + tc_x * s_ptr->millero[2]);
-		if (s_ptr->z)
+        if (s_ptr->charge)
 		{
 			/* the ionic strength terms... */
-			V_Cl += s_ptr->z * s_ptr->z * 0.5 * DH_Av * sqrt_mu +
+            V_Cl += s_ptr->charge * s_ptr->charge * 0.5 * DH_Av * sqrt_mu +
 				(s_ptr->millero[3] + tc_x * (s_ptr->millero[4] + tc_x * s_ptr->millero[5])) * mu_x;
 		}
 	}

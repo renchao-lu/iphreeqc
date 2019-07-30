@@ -661,14 +661,14 @@ gammas(LDBLE mu)
 			s_x[i]->dg = s_x[i]->dhb * LOG_10 * s_x[i]->moles;
 			break;
 		case 1:				/* Davies */
-			s_x[i]->lg = -s_x[i]->z * s_x[i]->z * a *
+            s_x[i]->lg = -s_x[i]->charge * s_x[i]->charge * a *
 				(muhalf / (1.0 + muhalf) - 0.3 * mu);
-			s_x[i]->dg = c1 * s_x[i]->z * s_x[i]->z * s_x[i]->moles;
+            s_x[i]->dg = c1 * s_x[i]->charge * s_x[i]->charge * s_x[i]->moles;
 			break;
 		case 2:				/* Extended D-H, WATEQ D-H */
-			s_x[i]->lg = -a * muhalf * s_x[i]->z * s_x[i]->z /
+            s_x[i]->lg = -a * muhalf * s_x[i]->charge * s_x[i]->charge /
 				(1.0 + s_x[i]->dha * b * muhalf) + s_x[i]->dhb * mu;
-			s_x[i]->dg = (c2 * s_x[i]->z * s_x[i]->z /
+            s_x[i]->dg = (c2 * s_x[i]->charge * s_x[i]->charge /
 						  ((1.0 + s_x[i]->dha * b * muhalf) * (1.0 +
 															   s_x[i]->dha *
 															   b * muhalf)) +
@@ -699,7 +699,7 @@ gammas(LDBLE mu)
 				else if (s_x[i]->rxn_x->token[j].s->type <= HPLUS)
 				{
 					coef = s_x[i]->rxn_x->token[j].coef;
-					z = s_x[i]->rxn_x->token[j].s->z;
+                    z = s_x[i]->rxn_x->token[j].s->charge;
 				}
 			}
 			if (!use.Get_exchange_ptr()->Get_pitzer_exchange_gammas())
@@ -821,18 +821,18 @@ gammas(LDBLE mu)
 		case 7:				/* LLNL */
 			if (llnl_count_temp > 0)
 			{
-				if (s_x[i]->z == 0)
+                if (s_x[i]->charge == 0)
 				{
 					s_x[i]->lg = 0.0;
 					s_x[i]->dg = 0.0;
 				}
 				else
 				{
-					s_x[i]->lg = -a_llnl * muhalf * s_x[i]->z * s_x[i]->z /
+                    s_x[i]->lg = -a_llnl * muhalf * s_x[i]->charge * s_x[i]->charge /
 						(1.0 + s_x[i]->dha * b_llnl * muhalf) +
 						bdot_llnl * mu;
 					s_x[i]->dg =
-						(c2_llnl * s_x[i]->z * s_x[i]->z /
+                        (c2_llnl * s_x[i]->charge * s_x[i]->charge /
 						 ((1.0 + s_x[i]->dha * b_llnl * muhalf) * (1.0 +
 																   s_x[i]->
 																   dha *
@@ -2464,7 +2464,7 @@ molalities(int allow_overflow)
 			{
 				cxxSurfaceCharge & charge_ref = use.Get_surface_ptr()->Get_surface_charges()[j];
 				cxxSpeciesDL & dl_ref = s_diff_layer[s_ptr->number][charge_ref.Get_name()];
-				cxxSurfDL & surf_dl_ref = charge_ref.Get_g_map()[s_ptr->z];
+                cxxSurfDL & surf_dl_ref = charge_ref.Get_g_map()[s_ptr->charge];
 
 				//s_diff_layer[is][charge_ref.Get_name()] = dl_ref
 				//charge_ref.Get_g_map()[s_ptr->z] = surf_dl
@@ -2523,7 +2523,7 @@ molalities(int allow_overflow)
 				{
 					cxxSurfaceCharge &charge_ref = use.Get_surface_ptr()->Get_surface_charges()[j];
 					output_msg(sformatf( "\t%e",
-							   (double) charge_ref.Get_g_map()[s_ptr->z].Get_g()));
+                               (double) charge_ref.Get_g_map()[s_ptr->charge].Get_g()));
 				}
 				output_msg(sformatf( "\n\tg_moles\n"));
 				for (j = 0; j < (int) use.Get_surface_ptr()->Get_surface_charges().size(); j++)
@@ -2538,7 +2538,7 @@ molalities(int allow_overflow)
 				{
 					cxxSurfaceCharge &charge_ref = use.Get_surface_ptr()->Get_surface_charges()[j];
 					output_msg(sformatf( "\t%e",
-							   (double) charge_ref.Get_g_map()[s_ptr->z].Get_dg()));
+                               (double) charge_ref.Get_g_map()[s_ptr->charge].Get_dg()));
 				}
 				output_msg(sformatf( "\n\tdx_moles\n"));
 				for (j = 0; j < (int) use.Get_surface_ptr()->Get_surface_charges().size(); j++)
@@ -4478,7 +4478,7 @@ residuals(void)
 				{
 					sum +=
 						x[i]->comp_unknowns[j]->moles *
-						x[i]->comp_unknowns[j]->master[0]->s->z;
+                        x[i]->comp_unknowns[j]->master[0]->s->charge;
 				}
 				charge_ptr->Set_sigma0(
 					(x[i]->f +
@@ -4608,7 +4608,7 @@ residuals(void)
 					if (s_x[j]->type < H2O)
 					{
 						int is = s_x[j]->number;
-						sum1 += s_x[j]->z * s_x[j]->z * s_diff_layer[is][charge_ptr->Get_name()].Get_g_moles();
+                        sum1 += s_x[j]->charge * s_x[j]->charge * s_diff_layer[is][charge_ptr->Get_name()].Get_g_moles();
 					}
 				}
 				charge_ptr->Set_sigma2(
@@ -4651,8 +4651,8 @@ residuals(void)
 					{
 						sum +=
 							under(s_x[j]->lm) *
-							(exp(s_x[j]->z * negfpsirt) - 1);
-						sum1 += under(s_x[j]->lm) * s_x[j]->z;
+                            (exp(s_x[j]->charge * negfpsirt) - 1);
+                        sum1 += under(s_x[j]->lm) * s_x[j]->charge;
 					}
 				}
 
@@ -4859,8 +4859,8 @@ initial_guesses(void)
 		if (x[i]->type < CB)
 		{
 			mu_x +=
-				x[i]->moles / mass_water_aq_x * 0.5 * x[i]->master[0]->s->z *
-				x[i]->master[0]->s->z;
+                x[i]->moles / mass_water_aq_x * 0.5 * x[i]->master[0]->s->charge *
+                x[i]->master[0]->s->charge;
 			x[i]->master[0]->s->la = log10(x[i]->moles / mass_water_aq_x);
 		}
 		else if (x[i]->type == CB)
@@ -5154,8 +5154,8 @@ sum_species(void)
 			continue;
 		if (s_x[i]->type == SURF)
 			continue;
-		cb_x += s_x[i]->z * s_x[i]->moles;
-		total_ions_x += fabs(s_x[i]->z * s_x[i]->moles);
+        cb_x += s_x[i]->charge * s_x[i]->moles;
+        total_ions_x += fabs(s_x[i]->charge * s_x[i]->moles);
 		total_alkalinity += s_x[i]->alk * s_x[i]->moles;
 		total_carbon += s_x[i]->carbon * s_x[i]->moles;
 		total_co2 += s_x[i]->co2 * s_x[i]->moles;

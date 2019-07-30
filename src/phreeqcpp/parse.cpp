@@ -1,3 +1,4 @@
+#include <regex>
 #include <boost/algorithm/string/erase.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/find_iterator.hpp>
@@ -6,7 +7,7 @@
 
 
 /* ---------------------------------------------------------------------- */
-void Phreeqc::parse_eq(std::string eqn, struct elt_list** elt_ptr,
+void Phreeqc::parse_eq(std::string reaction_equation, struct elt_list** elt_ptr,
                        int association)
 /* ---------------------------------------------------------------------- */
 /*
@@ -26,88 +27,40 @@ void Phreeqc::parse_eq(std::string eqn, struct elt_list** elt_ptr,
  *       association input, TRUE or FALSE if reaction is an association reaction
  */
 {
-	int i;
-	LDBLE coef, l_z;
-	char c;
+    int i;
+    LDBLE coef, l_z;
+    char c;
     std::string ptr;
     std::string token;
 
-	paren_count = 0;
-/*
- *   Remove white space
- */
-/*
- *   Check for illegal characters
- */
-    //	for (i = 0; (c = eqn[i]) != '\0'; i++)
-    //	{
-    //		if (islegit(c) == FALSE)
-    //		{
-    //			error_string = sformatf( "Character is not allowed,\
-// %c (octal: %o).", c, c);
-    //			error_msg(error_string, CONTINUE);
-    //			return (ERROR);
-    //		}
-    //	}
+    paren_count = 0;
+    // split reaction equation into two parts
     std::string delimiter = "=";
-    std::string reaction_equation_lhs = eqn.substr(0, eqn.find(delimiter));
-    std::string reaction_equation_rhs = eqn.substr(eqn.find(delimiter) + 1);
-    /*
-     *   Find coefficients, name, and charge for each species for lhs
-     */
-    get_species<0>(reaction_equation_lhs);
+    std::string reaction_equation_lhs =
+        reaction_equation.substr(0, reaction_equation.find(delimiter));
+    std::string reaction_equation_rhs =
+        reaction_equation.substr(reaction_equation.find(delimiter) + 1);
 
-    //        if (association == FALSE)
-    //        {
-    //            trxn.token[count_trxn].coef *= -1.0;
-    //        }
-    /*
-     *   Get coefficient, name, and charge of species for dissociation reaction
-     */
-    //	ptr++;
-    //	if (association == TRUE)
-    //	{
-    //        if (get_species(ptr) == ERROR)
-    //		{
-    //			return (ERROR);
-    //		}
-    //		trxn.token[count_trxn].coef *= -1.0;
-    //		/*   Swap species into first structure position */
-    //        std::string char_ptr = trxn.token[0].name;
-    //		coef = trxn.token[0].coef;
-    //		l_z = trxn.token[0].z;
-    //		trxn.token[0].name = trxn.token[count_trxn].name;
-    //		trxn.token[0].coef = trxn.token[count_trxn].coef;
-    //		trxn.token[0].z = trxn.token[count_trxn].z;
-    //		trxn.token[count_trxn].name = char_ptr;
-    //		trxn.token[count_trxn].coef = coef;
-    //		trxn.token[count_trxn].z = l_z;
-    //		count_trxn++;
-    //	}
-    /*
-     *   Get reaction species from rhs of equation
-     */
-    get_species<1>(reaction_equation_rhs);
-    //		if (association == TRUE)
-    //		{
-    //			trxn.token[count_trxn].coef *= -1.0;
-    //		}
+    // Parse stoichiometric coefficients, species names, and electric charges
+    // carried
+    parseExpression<0>(reaction_equation_lhs);
+    parseExpression<1>(reaction_equation_rhs);
+
     /*
      *   Sort list of reaction species
      */
-    //	trxn_sort();
+//    trxn_sort();
     /*
      *   Get elements in species or mineral formula
      */
     //	count_elts = 0;
-    //    token = trxn.token[0].name;
     //	replace("(s)", "", token);
     //	replace("(S)", "", token);
     //	replace("(g)", "", token);
     //	replace("(G)", "", token);
-    //    std::string char_ptr = token;
 
-    //    get_elts_in_species(char_ptr, trxn.token[0].coef);
+    for (auto& token : trxn.token)
+        get_elts_in_species(token.name, token.coef);
 
     /*
      *   Sort elements in reaction and combine
@@ -119,9 +72,9 @@ void Phreeqc::parse_eq(std::string eqn, struct elt_list** elt_ptr,
     /*
      *   Malloc space and store element data for return
      */
-    //	*elt_ptr =
-    //		(struct elt_list *) PHRQ_malloc((size_t) (count_elts + 1) *
-    //										sizeof(struct elt_list));
+//        *elt_ptr =
+//            (struct elt_list *) PHRQ_malloc((size_t) (count_elts + 1) *
+//                                            sizeof(struct elt_list));
     //	if (*elt_ptr == NULL)
     //	{
     //		malloc_error();
@@ -155,86 +108,86 @@ check_eqn(int association)
  *      association  input, TRUE or FALSE if reaction is an association reaction.
  */
 {
-	int i;
-	int oops = 0;
-	LDBLE sumcharge;
+    int i;
+    int oops = 0;
+    LDBLE sumcharge;
 
-	paren_count = 0;
-	count_elts = 0;
+    paren_count = 0;
+    count_elts = 0;
 /*
  *   Check that coefficient of first species is -1.0
  */
-	if (equal(trxn.token[0].coef, -1.0, TOL) == FALSE)
-	{
-		if (association == TRUE)
-		{
-			error_string = sformatf(
-					"Coefficient of first species on rhs is not equal to 1.0.");
-			error_msg(error_string, CONTINUE);
-		}
-		else
-		{
-			error_string = sformatf(
-					"Coefficient of mineral (first on lhs) is not equal to 1.0.");
-			error_msg(error_string, CONTINUE);
-		}
-		return (ERROR);
-	}
+    if (equal(trxn.token[0].coef, -1.0, TOL) == FALSE)
+    {
+        if (association == TRUE)
+        {
+            error_string = sformatf(
+                    "Coefficient of first species on rhs is not equal to 1.0.");
+            error_msg(error_string, CONTINUE);
+        }
+        else
+        {
+            error_string = sformatf(
+                    "Coefficient of mineral (first on lhs) is not equal to 1.0.");
+            error_msg(error_string, CONTINUE);
+        }
+        return (ERROR);
+    }
 /*
  *   Go through all species in the reaction; sum the charge and store elements
  */
-	sumcharge = 0.0;
-	for (i = 0; i < count_trxn; i++)
-	{
-		sumcharge += (trxn.token[i].coef) * (trxn.token[i].z);
+    sumcharge = 0.0;
+    for (i = 0; i < count_trxn; i++)
+    {
+        sumcharge += (trxn.token[i].coef) * (trxn.token[i].charge);
         std::string temp_name = trxn.token[i].name;
         std::string t_ptr = temp_name;
         if (get_elts_in_species(t_ptr, trxn.token[i].coef) == ERROR)
-		{
+        {
 //			free_check_null(temp_name);
-			return (ERROR);
-		}
+            return (ERROR);
+        }
 //		free_check_null(temp_name);
-	}
+    }
 /*
  *   Sort elements in reaction and combine
  */
-	qsort(elt_list, (size_t) count_elts, (size_t) sizeof(struct elt_list),
-		  elt_list_compare);
-	if (elt_list_combine() == ERROR)
-		return (ERROR);
+    qsort(elt_list, (size_t) count_elts, (size_t) sizeof(struct elt_list),
+          elt_list_compare);
+    if (elt_list_combine() == ERROR)
+        return (ERROR);
 /*
  *   Check charge
  */
-	if (equal(sumcharge, 0.0, TOL) == FALSE)
-	{
-		error_string = sformatf( "Equation is not charge balanced, right - left = %7.4f moles charge", sumcharge);
-		error_msg(error_string, CONTINUE);
-		oops++;
-	}
+    if (equal(sumcharge, 0.0, TOL) == FALSE)
+    {
+        error_string = sformatf( "Equation is not charge balanced, right - left = %7.4f moles charge", sumcharge);
+        error_msg(error_string, CONTINUE);
+        oops++;
+    }
 /*
  *   Check mass balance
  */
-	for (i = 0; i < count_elts; i++)
-	{
+    for (i = 0; i < count_elts; i++)
+    {
         if ((equal(elt_list[i].coef, 0.0, TOL) == FALSE) /*&&
             strncmp((elt_list[i].elt).name, "e", MAX_LENGTH) != 0*/)
-		{
-			error_string = sformatf(
-				"Equation does not balance for element, %s: right - left = %7.4f moles",
+        {
+            error_string = sformatf(
+                "Equation does not balance for element, %s: right - left = %7.4f moles",
                 (elt_list[i].elt).name, elt_list[i].coef);
-			error_msg(error_string, CONTINUE);
-			oops++;
-		}
-	}
-	if (oops == 0)
-	{
-		return (OK);
-	}
-	else
-	{
-		return (ERROR);
-	}
+            error_msg(error_string, CONTINUE);
+            oops++;
+        }
+    }
+    if (oops == 0)
+    {
+        return (OK);
+    }
+    else
+    {
+        return (ERROR);
+    }
 }
 
 /* ---------------------------------------------------------------------- */
@@ -258,105 +211,105 @@ get_charge(char *charge, LDBLE * l_z)
  *      OK.
  */
 {
-	int i;
-	char *ptr;
-	char c, c1;
+    int i;
+    char *ptr;
+    char c, c1;
 /*
  *   Charge is zero
  */
-	if ((c = charge[0]) == '\0')
-	{
-		*l_z = 0.0;
-		return (OK);
-	}
+    if ((c = charge[0]) == '\0')
+    {
+        *l_z = 0.0;
+        return (OK);
+    }
 /*
  *   Error check for + or - at start of string
  */
-	if (c != '+' && c != '-')
-	{
-		error_string = sformatf(
-				"Character string for charge does not start with + or -,\t%s.",
-				charge);
-		error_msg(error_string, CONTINUE);
-		return (ERROR);
-	}
+    if (c != '+' && c != '-')
+    {
+        error_string = sformatf(
+                "Character string for charge does not start with + or -,\t%s.",
+                charge);
+        error_msg(error_string, CONTINUE);
+        return (ERROR);
+    }
 /*
  *   Count string of +'s or -'s
  */
-	i = 0;
-	while (c == (c1 = charge[i++]));
-	i--;
-	if (c1 == '\0')
-	{
-		if (c == '-')
-			i = -i;
-	}
-	else
-	{
+    i = 0;
+    while (c == (c1 = charge[i++]));
+    i--;
+    if (c1 == '\0')
+    {
+        if (c == '-')
+            i = -i;
+    }
+    else
+    {
 /*
  *   + or - followed by a number
  */
-		errno = 0;
-		i = strtol(charge, &ptr, 0);
+        errno = 0;
+        i = strtol(charge, &ptr, 0);
 /*
  *   Truncate fractional part of charge if all zeros
  */
-		if (*ptr != '\0')
-		{
-			if (*ptr == '.')
-			{
-				while (*(++ptr) != '\0')
-				{
-					if (*ptr != '0')
-					{
-						*l_z = strtod(charge, &ptr);
-						return (OK);
-					}
-				}
+        if (*ptr != '\0')
+        {
+            if (*ptr == '.')
+            {
+                while (*(++ptr) != '\0')
+                {
+                    if (*ptr != '0')
+                    {
+                        *l_z = strtod(charge, &ptr);
+                        return (OK);
+                    }
+                }
 /*
  *   Non-numeric characters
  */
-			}
-			else
-			{
-				error_string = sformatf(
-						"Error in character string for charge, %s.", charge);
-				error_msg(error_string, CONTINUE);
-				return (ERROR);
-			}
-		}
-	}
+            }
+            else
+            {
+                error_string = sformatf(
+                        "Error in character string for charge, %s.", charge);
+                error_msg(error_string, CONTINUE);
+                return (ERROR);
+            }
+        }
+    }
 /*
  *   Charge is zero, must have had +0 or -0 in eqn
  */
-	if (i == 0)
-	{
-		charge[0] = '\0';
-	}
+    if (i == 0)
+    {
+        charge[0] = '\0';
+    }
 /*
  *   Charge is +1 or -1, single + or -
  */
-	if (abs(i) == 1)
-	{
-		charge[0] = c;
-		charge[1] = '\0';
-	}
+    if (abs(i) == 1)
+    {
+        charge[0] = c;
+        charge[1] = '\0';
+    }
 /*
  *   Abs(z)>1, set charge to + or - plus integer
  */
-	if (abs(i) > 1)
-	{
-		if (sprintf(charge, "%-+d", i) == EOF)
-		{
-			error_string = sformatf(
-					"Error converting charge to character string, %s.",
-					charge);
-			error_msg(error_string, CONTINUE);
-			return (ERROR);
-		}
-	}
-	*l_z = i;
-	return (OK);
+    if (abs(i) > 1)
+    {
+        if (sprintf(charge, "%-+d", i) == EOF)
+        {
+            error_string = sformatf(
+                    "Error converting charge to character string, %s.",
+                    charge);
+            error_msg(error_string, CONTINUE);
+            return (ERROR);
+        }
+    }
+    *l_z = i;
+    return (OK);
 }
 
 /* ---------------------------------------------------------------------- */
@@ -378,56 +331,56 @@ get_coef(LDBLE * coef, std::string eqnaddr)
  *      OK.
  */
 {
-	int i;
-	char c, c1;
-	char *ptr, *ptr1, *rest;
+    int i;
+    char c, c1;
+    char *ptr, *ptr1, *rest;
     std::string token;
 
 //	rest = *eqnaddr;
 //	ptr = *eqnaddr;				/* address of a position in eqn */
-	c = *ptr;					/* character in eqn */
-	*coef = 0.0;
+    c = *ptr;					/* character in eqn */
+    *coef = 0.0;
 /*
  *   No leading sign or number
  */
-	if (isalpha((int) c) ||
-		(c == '(') || (c == ')') || (c == '[') || (c == ']'))
-	{
-		*coef = 1.0;
-		return (OK);
-	}
+    if (isalpha((int) c) ||
+        (c == '(') || (c == ')') || (c == '[') || (c == ']'))
+    {
+        *coef = 1.0;
+        return (OK);
+    }
 /*
  *   Leading +, no digits
  */
-	c1 = *(ptr + 1);
-	if (c == '+' &&
-		(isalpha((int) c1) ||
-		 (c1 == '(') || (c1 == ')') || (c1 == '[') || (c1 == ']')))
-	{
+    c1 = *(ptr + 1);
+    if (c == '+' &&
+        (isalpha((int) c1) ||
+         (c1 == '(') || (c1 == ')') || (c1 == '[') || (c1 == ']')))
+    {
 //		*eqnaddr = ++ptr;
-		*coef = 1.0;
-		return (OK);
-	}
+        *coef = 1.0;
+        return (OK);
+    }
 /*
  *   Leading -, no digits
  */
-	if (c == '-' &&
-		(isalpha((int) c1) ||
-		 (c1 == '(') || (c1 == ')') || (c1 == '[') || (c1 == ']')))
-	{
+    if (c == '-' &&
+        (isalpha((int) c1) ||
+         (c1 == '(') || (c1 == ')') || (c1 == '[') || (c1 == ']')))
+    {
 //		*eqnaddr = ++ptr;
-		*coef = -1.0;
-		return (OK);
-	}
-	i = 0;
+        *coef = -1.0;
+        return (OK);
+    }
+    i = 0;
 /*
  *   Has number coefficient
  */
-	if (isdigit((int) c) || c == '+' || c == '-' || c == '.')
-	{
-		while (isdigit((int) c) || c == '+' || c == '-' || c == '.')
-		{
-			token[i++] = c;
+    if (isdigit((int) c) || c == '+' || c == '-' || c == '.')
+    {
+        while (isdigit((int) c) || c == '+' || c == '-' || c == '.')
+        {
+            token[i++] = c;
 //			if (i >= MAX_LENGTH)
 //			{
 //				error_string = sformatf(
@@ -435,28 +388,28 @@ get_coef(LDBLE * coef, std::string eqnaddr)
 //				error_msg(error_string, CONTINUE);
 //				return (ERROR);
 //			}
-			c = *(++ptr);
-		}
-		token[i] = '\0';
+            c = *(++ptr);
+        }
+        token[i] = '\0';
 //		*eqnaddr = ptr;
-		errno = 0;
+        errno = 0;
         *coef = std::stod(token);
-		if ((errno == ERANGE) || (*ptr1 != '\0'))
-		{
-			error_string = sformatf(
-					"Error converting coefficient in get_coef, %s.", token);
-			error_msg(error_string, CONTINUE);
-			return (ERROR);
-		}
-		return (OK);
-	}
+        if ((errno == ERANGE) || (*ptr1 != '\0'))
+        {
+            error_string = sformatf(
+                    "Error converting coefficient in get_coef, %s.", token);
+            error_msg(error_string, CONTINUE);
+            return (ERROR);
+        }
+        return (OK);
+    }
 /*
  *   None of the above, unknown construct
  */
-	error_string = sformatf(
-			"Illegal equation construct detected in get_coef.\n\t%s.", rest);
-	error_msg(error_string, CONTINUE);
-	return (ERROR);
+    error_string = sformatf(
+            "Illegal equation construct detected in get_coef.\n\t%s.", rest);
+    error_msg(error_string, CONTINUE);
+    return (ERROR);
 }
 
 /* ---------------------------------------------------------------------- */
@@ -475,7 +428,7 @@ get_elt(std::string t_ptr, std::string element, int *i)
  *         *element  input pointer to place to return element character string
  */
 {
-	char c;
+    char c;
 
 //	c = *(*t_ptr)++;
 //	if (c == '\0')
@@ -485,7 +438,7 @@ get_elt(std::string t_ptr, std::string element, int *i)
 //		error_msg(error_string, CONTINUE);
 //		return (ERROR);
 //	}
-///*
+/*
 // *   Load name into char array element
 // */
 //	element[0] = c;
@@ -527,13 +480,31 @@ get_elt(std::string t_ptr, std::string element, int *i)
 //			(*t_ptr)++;
 //		}
 //	}
-	element[*i] = '\0';
-	return (OK);
+    element[*i] = '\0';
+    return (OK);
 }
 
-/* ---------------------------------------------------------------------- */
+std::vector<std::string> s_split(std::string const& str)
+{
+    std::string str1 = str;
+    std::string::size_type identifier_pos;
+    if ((identifier_pos = str.find_first_of("+-")) != std::string::npos)
+        str1 = str.substr(0, identifier_pos);
+
+    std::vector<std::string> match_str;
+    std::string const delims{ "ABCDEFGHIJKLMNOPQRSTUVWXYZ" };
+
+    size_t beg, pos = 0;
+    while ((beg = str1.find_first_of(delims, pos)) != std::string::npos)
+    {
+        pos = str1.find_first_of(delims, beg + 1);
+        match_str.push_back(str1.substr(beg, pos - beg));
+    }
+    return match_str;
+}
+
 int Phreeqc::
-get_elts_in_species(std::string t_ptr, LDBLE coef)
+get_elts_in_species(std::string species, double coef)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -547,10 +518,10 @@ get_elts_in_species(std::string t_ptr, LDBLE coef)
  *                  output, is next position to start looking
  *         coef     input, coefficient to multiply subscripts by
  */
-	int i, count, l;
-	char c, c1;
-	LDBLE d;
-    std::string element;
+    int i, count, l;
+    char c, c1;
+    LDBLE d;
+    auto elements = s_split(species);
 
 //	while (((c = **t_ptr) != '+') && (c != '-') && (c != '\0'))
 //	{
@@ -571,7 +542,7 @@ get_elts_in_species(std::string t_ptr, LDBLE coef)
 //		/* beginning of element name */
 //		if (isupper((int) c) || (c == 'e' && c1 == '-') || (c == '['))
 //		{
-///*
+/*
 // *   Get new element and subscript
 // */
 //			if (get_elt(t_ptr, element, &l) == ERROR)
@@ -583,14 +554,14 @@ get_elts_in_species(std::string t_ptr, LDBLE coef)
 //				space((void **) ((void *) &elt_list), count_elts, &max_elts,
 //					  sizeof(struct elt_list));
 //			}
-//			elt_list[count_elts].elt = element_store(element);
+            elt_list[count_elts].elt = element_store(element);
 //			if (get_num(t_ptr, &d) == ERROR)
 //			{
 //				return (ERROR);
 //			}
 //			elt_list[count_elts].coef = d * coef;
 //			count_elts++;
-///*
+/*
 // *   Expand working space for elements if necessary
 // */
 //			if (count_elts >= max_elts)
@@ -600,7 +571,7 @@ get_elts_in_species(std::string t_ptr, LDBLE coef)
 //			}
 //			continue;
 //		}
-///*
+/*
 // *   Open parentheses
 // */
 //		if (c == '(')
@@ -627,7 +598,7 @@ get_elts_in_species(std::string t_ptr, LDBLE coef)
 //			}
 //			continue;
 //		}
-///*
+/*
 // *   Colon
 // */
 //		if (c == ':')
@@ -648,7 +619,7 @@ get_elts_in_species(std::string t_ptr, LDBLE coef)
 //			}
 //			continue;
 //		}
-///*
+/*
 // *   Not beginning of element and not opening paren
 // */
 //		error_string = sformatf(
@@ -658,14 +629,14 @@ get_elts_in_species(std::string t_ptr, LDBLE coef)
 //		input_error++;
 //		return (ERROR);
 //	}
-	if (paren_count != 0)
-	{
-		error_string = sformatf( "Unbalanced parentheses.");
-		error_msg(error_string, CONTINUE);
-		input_error++;
-		return (ERROR);
-	}
-	return (OK);
+    if (paren_count != 0)
+    {
+        error_string = sformatf( "Unbalanced parentheses.");
+        error_msg(error_string, CONTINUE);
+        input_error++;
+        return (ERROR);
+    }
+    return (OK);
 }
 
 /* ---------------------------------------------------------------------- */
@@ -684,108 +655,108 @@ get_secondary(char **t_ptr, char *element, int *i)
  *         *element  input pointer to place to return element character string
  */
 {
-	int j;
-	char c;
-	char *ptr;
+    int j;
+    char c;
+    char *ptr;
 
-	c = *(*t_ptr)++;
-	if (c == '\0')
-	{
-		error_string = sformatf(
-				"Empty string in get_elt.  Expected an element name.");
-		error_msg(error_string, CONTINUE);
-		input_error++;
-		return (ERROR);
-	}
+    c = *(*t_ptr)++;
+    if (c == '\0')
+    {
+        error_string = sformatf(
+                "Empty string in get_elt.  Expected an element name.");
+        error_msg(error_string, CONTINUE);
+        input_error++;
+        return (ERROR);
+    }
 /*
  *   Load name into char array element
  */
-	element[0] = c;
-	*i = 1;
-	if (c == '[')
-	{
-		while ((c = (**t_ptr)) != ']')
-		{
-			element[*i] = c;
-			(*i)++;
-			(*t_ptr)++;
-			if ((c = (**t_ptr)) == ']')
-			{
-				element[*i] = c;
-				(*i)++;
-				(*t_ptr)++;
-				c = (**t_ptr);
-				break;
-			}
-			else if ((c = (**t_ptr)) == '\0')
-			{
-				error_msg("Did not find ending bracket (])", CONTINUE);
-				input_error++;
-				return (ERROR);
-			}
-		}
-		while (islower((int) (c = (**t_ptr))) || c == '_')
-		{
-			element[*i] = c;
-			(*i)++;
-			(*t_ptr)++;
-		}
-	}
-	else
-	{
-		while (islower((int) (c = (**t_ptr))) || c == '_')
-		{
-			element[*i] = c;
-			(*i)++;
-			(*t_ptr)++;
-		}
-	}
+    element[0] = c;
+    *i = 1;
+    if (c == '[')
+    {
+        while ((c = (**t_ptr)) != ']')
+        {
+            element[*i] = c;
+            (*i)++;
+            (*t_ptr)++;
+            if ((c = (**t_ptr)) == ']')
+            {
+                element[*i] = c;
+                (*i)++;
+                (*t_ptr)++;
+                c = (**t_ptr);
+                break;
+            }
+            else if ((c = (**t_ptr)) == '\0')
+            {
+                error_msg("Did not find ending bracket (])", CONTINUE);
+                input_error++;
+                return (ERROR);
+            }
+        }
+        while (islower((int) (c = (**t_ptr))) || c == '_')
+        {
+            element[*i] = c;
+            (*i)++;
+            (*t_ptr)++;
+        }
+    }
+    else
+    {
+        while (islower((int) (c = (**t_ptr))) || c == '_')
+        {
+            element[*i] = c;
+            (*i)++;
+            (*t_ptr)++;
+        }
+    }
 /*
  *   Check if secondary master species element
  */
-	j = *i;
-	ptr = *t_ptr;
-	if (c == '(')
-	{
-		/* copy parenthesis */
-		element[*i] = c;
-		(*i)++;
-		(*t_ptr)++;
-		/* copy number */
-		for (;;)
-		{
-			c = **t_ptr;
-			if (isdigit((int) c) || c == '-' || c == '.')
-			{
-				element[*i] = c;
-				(*i)++;
-				(*t_ptr)++;
-			}
-			else if (c == '+')
-			{
-				(*t_ptr)++;
-			}
-			else
-			{
-				break;
-			}
-		}
-		/* go back to before parenthesis */
-		if (c != ')')
-		{
-			*i = j;
-			*t_ptr = ptr;
-			/* put in closing parenthesis */
-		}
-		else
-		{
-			element[*i] = c;
-			(*i)++;
-			(*t_ptr)++;
-		}
-	}
-	element[*i] = '\0';
-	return (OK);
+    j = *i;
+    ptr = *t_ptr;
+    if (c == '(')
+    {
+        /* copy parenthesis */
+        element[*i] = c;
+        (*i)++;
+        (*t_ptr)++;
+        /* copy number */
+        for (;;)
+        {
+            c = **t_ptr;
+            if (isdigit((int) c) || c == '-' || c == '.')
+            {
+                element[*i] = c;
+                (*i)++;
+                (*t_ptr)++;
+            }
+            else if (c == '+')
+            {
+                (*t_ptr)++;
+            }
+            else
+            {
+                break;
+            }
+        }
+        /* go back to before parenthesis */
+        if (c != ')')
+        {
+            *i = j;
+            *t_ptr = ptr;
+            /* put in closing parenthesis */
+        }
+        else
+        {
+            element[*i] = c;
+            (*i)++;
+            (*t_ptr)++;
+        }
+    }
+    element[*i] = '\0';
+    return (OK);
 }
 
 /* ---------------------------------------------------------------------- */
@@ -804,9 +775,9 @@ get_secondary_in_species(std::string t_ptr, LDBLE coef)
  *                  output, is next position to start looking
  *         coef     input, coefficient to multiply subscripts by
  */
-	int i, count, l;
-	char c, c1;
-	LDBLE d;
+    int i, count, l;
+    char c, c1;
+    LDBLE d;
     std::string element;
 
 //	while (((c = **t_ptr) != '+') && (c != '-') && (c != '\0'))
@@ -910,13 +881,13 @@ get_secondary_in_species(std::string t_ptr, LDBLE coef)
 //		error_msg(error_string, CONTINUE);
 //		return (ERROR);
 //	}
-	if (paren_count != 0)
-	{
-		error_string = sformatf( "Unbalanced parentheses.");
-		error_msg(error_string, CONTINUE);
-		return (ERROR);
-	}
-	return (OK);
+    if (paren_count != 0)
+    {
+        error_string = sformatf( "Unbalanced parentheses.");
+        error_msg(error_string, CONTINUE);
+        return (ERROR);
+    }
+    return (OK);
 }
 
 /* ---------------------------------------------------------------------- */
@@ -939,25 +910,25 @@ get_num(std::string t_ptr, LDBLE * num)
  *         OK.
  */
 {
-	int i, decimal;
-	char c;
-	char *ptr1;
+    int i, decimal;
+    char c;
+    char *ptr1;
     std::string token;
 
-	*num = 1.0;
-	i = 0;
+    *num = 1.0;
+    i = 0;
 //	c = **t_ptr;
-	decimal = 0;
-	if (isdigit((int) c) || (c == '.'))
-	{
-		while (isdigit((int) c) || (c == '.'))
-		{
-			if (c == '.')
-				decimal++;
-			if (decimal > 1)
-				break;
-			token[i++] = c;
-			/* check number length */
+    decimal = 0;
+    if (isdigit((int) c) || (c == '.'))
+    {
+        while (isdigit((int) c) || (c == '.'))
+        {
+            if (c == '.')
+                decimal++;
+            if (decimal > 1)
+                break;
+            token[i++] = c;
+            /* check number length */
 //			if (i >= MAX_LENGTH)
 //			{
 //				error_string = sformatf(
@@ -967,32 +938,25 @@ get_num(std::string t_ptr, LDBLE * num)
 //				return (ERROR);
 //			}
 //			c = *(++(*t_ptr));
-		}
-		token[i] = '\0';
-		errno = 0;
+        }
+        token[i] = '\0';
+        errno = 0;
         *num = std::stod(token);
-		if (errno == ERANGE)
-		{
-			error_string = sformatf( "Converting number in get_num, %s.", token);
-			input_error++;
-			error_msg(error_string, CONTINUE);
-			return (ERROR);
-		}
-	}
-	return (OK);
+        if (errno == ERANGE)
+        {
+            error_string = sformatf( "Converting number in get_num, %s.", token);
+            input_error++;
+            error_msg(error_string, CONTINUE);
+            return (ERROR);
+        }
+    }
+    return (OK);
 }
 
-std::string parseSpeciesName(std::string term)
+std::pair<std::string, double> parseSpeciesName(std::string term)
 {
-    std::string::size_type last_index = term.find_first_not_of("0123456789.");
-    double coefficient;
-    if (last_index == 0)
-        coefficient = 1.0;
-    else
-        coefficient = std::stod(term.substr(0, last_index));
-    term.erase(0, last_index);
-
     std::array<std::string, 2> identifiers = {"+", "-"};
+    int charge = 0;
     int occurrences = 0;
     for (auto const& identifier : identifiers)
     {
@@ -1005,82 +969,75 @@ std::string parseSpeciesName(std::string term)
 
         if (occurrences == 0)
             continue;
-        else if (occurrences == 1 &&
-                 (std::isdigit(term.back()) || term.back() == identifier[0]))
+        else if (occurrences == 1 && term.back() == identifier[0])
         {
             assert(term.find_last_of(identifier) -
                        term.find_first_of(identifier) + 1 ==
                    occurrences);
-            return term;
+            charge = identifier == "+" ? 1 : -1;
+            return std::make_pair(term, charge);
+        }
+        else if (occurrences == 1 && std::isdigit(term.back()))
+        {
+            assert(term.find_last_of(identifier) -
+                       term.find_first_of(identifier) + 1 ==
+                   occurrences);
+            charge = static_cast<int>(term.back()) - '0';
+            charge *= identifier == "+" ? 1 : -1;
+            return std::make_pair(term, charge);
         }
         else
         {
             assert(term.find_last_of(identifier) -
                        term.find_first_of(identifier) + 1 ==
                    occurrences);
-            return term.substr(0, term.find(identifier) + 1) +
-                      std::to_string(occurrences);
+            charge = occurrences;
+            charge *= identifier == "+" ? 1 : -1;
+            return std::make_pair(term.substr(0, term.find(identifier) + 1) +
+                      std::to_string(occurrences), charge);
         }
     }
 
     if (occurrences == 0)
-        return term;
+    {
+        return std::make_pair(term, 0);
+    }
 }
 
 template <bool IsEquationRhs>
-void Phreeqc::get_species(std::string& expression)
+void Phreeqc::parseExpression(std::string& expression)
 {
-/*   Function reads next species out of the equation, including optional
- *   preceding coefficient and optional trailing charge. Data are
- *   store in trxn.token[count].
- *
- *   Arguments:
- *    **ptr       input, points to the position in the equation to pick up the species.
- *                output, points to the next character after the species charge.
- *
- */
+    // split expression into terms
     std::vector<std::string> terms;
     typedef boost::split_iterator<std::string::iterator> string_split_iterator;
-    for(string_split_iterator It=
-        boost::make_split_iterator(expression, boost::first_finder(" + ", boost::is_iequal()));
-        It!=string_split_iterator();
-        ++It)
+    for (string_split_iterator It = boost::make_split_iterator(
+             expression, boost::first_finder(" +", boost::is_iequal()));
+         It != string_split_iterator();
+         ++It)
     {
         auto term = boost::copy_range<std::string>(*It);
+        // compress the terms trimmed by removing whitespace
         boost::erase_all(term, " ");
         terms.push_back(term);
     }
 
-    // single term
-    for(auto& term : terms)
+    for (auto& term : terms)
     {
-        std::string::size_type last_index = term.find_first_not_of("0123456789.");
-        double coefficient;
-        if (last_index == 0)
-            coefficient = 1.0;
-        else
-            coefficient = std::stod(term.substr(0, last_index));
-        term.erase(0, last_index);
+        // extract stoichiometric coefficient
+        std::string::size_type nondigit_position =
+            term.find_first_not_of("0123456789.");
+        double coefficient = nondigit_position == 0
+                                 ? 1.0
+                                 : std::stod(term.substr(0, nondigit_position));
+        coefficient *= IsEquationRhs ? -1.0 : 1.0;
+        term.erase(0, nondigit_position);
 
+        // parse species names and electronic charges carried
         auto species = parseSpeciesName(term);
+        auto& species_name = species.first;
+        auto& charge = species.second;
 
-//        double coefficient = IsEquationRhs ? -1.0 : 1.0;
-        trxn.token.emplace_back(species, coefficient);
+        // initialization
+        trxn.token.emplace_back(species_name, charge, coefficient);
     }
-
-
-//	if (get_coef(&(trxn.token[count_trxn].coef), ptr) == ERROR)
-//	{
-//		return (ERROR);
-//	}
-/* name and charge */
-//    if (get_token(ptr, string, &trxn.token[count_trxn].z, &l) == ERROR)
-//	{
-//		return (ERROR);
-//	}
-/*
-   trxn.token[count_trxn].z = 0;
-   trxn.token[count_trxn].s = NULL;
-   trxn.token[count_trxn].unknown = NULL;
- */
 }

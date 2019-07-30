@@ -75,11 +75,11 @@ sit_tidy(void)
 			continue;
 		if (s[i]->type == EX || s[i]->type == SURF) 
 			continue;
-		if (s[i]->z < -.001)
+        if (s[i]->charge< -.001)
 		{
 			anions[sit_count_anions++] = s[i];
 		}
-		else if (s[i]->z > .001)
+        else if (s[i]->charge > .001)
 		{
 			cations[sit_count_cations++] = s[i];
 		}
@@ -543,8 +543,8 @@ sit(void)
 	{
 		int i = s_list[j];
 		sit_LGAMMA[i] = 0.0;
-		XX = XX + sit_M[i] * fabs(spec[i]->z);
-		XI = XI + sit_M[i] * spec[i]->z * spec[i]->z;
+        XX = XX + sit_M[i] * fabs(spec[i]->charge);
+        XI = XI + sit_M[i] * spec[i]->charge * spec[i]->charge;
 		OSUM = OSUM + sit_M[i];
 	}
 	//for (i = 0; i < 2 * count_s + sit_count_anions; i++)
@@ -590,8 +590,8 @@ sit(void)
 		i0 = sit_params[i]->ispec[0];
 		i1 = sit_params[i]->ispec[1];
 		//if (sit_IPRSNT[i0] == FALSE || sit_IPRSNT[i1] == FALSE) continue;
-		z0 = spec[i0]->z;
-		z1 = spec[i1]->z;
+        z0 = spec[i0]->charge;
+        z1 = spec[i1]->charge;
 		param = sit_params[i]->p;
 		switch (sit_params[i]->type)
 		{
@@ -633,7 +633,7 @@ sit(void)
 	for (size_t j = 0; j < ion_list.size(); j++)
 	{
 		int i = ion_list[j];
-		z0 = spec[i]->z;
+        z0 = spec[i]->charge;
 		sit_LGAMMA[i] += z0 * z0 * F;
 	}
 	//for (i = 0; i < sit_count_cations; i++)
@@ -783,8 +783,8 @@ sit_initial_guesses(void)
 		if (x[i]->type < CB)
 		{
 			mu_x +=
-				x[i]->moles / mass_water_aq_x * 0.5 * x[i]->master[0]->s->z *
-				x[i]->master[0]->s->z;
+                x[i]->moles / mass_water_aq_x * 0.5 * x[i]->master[0]->s->charge *
+                x[i]->master[0]->s->charge;
 			x[i]->master[0]->s->la = log10(x[i]->moles / mass_water_aq_x);
 		}
 		else if (x[i]->type == CB)

@@ -503,14 +503,15 @@ public:
 	int check_eqn(int association);
 	int get_charge(char *charge, LDBLE * z);
     int get_elt(std::string t_ptr, std::string element, int *i);
-    int get_elts_in_species(std::string t_ptr, LDBLE coef);
+    int get_elts_in_species(std::string species, double coef);
     int get_num(std::string t_ptr, LDBLE * num);
     int get_secondary_in_species(std::string t_ptr, LDBLE coef);
-    void parse_eq(std::string eqn, struct elt_list** elt_ptr, int association);
+    void parse_eq(std::string reaction_equation, struct elt_list** elt_ptr,
+                  int association);
     int get_coef(LDBLE * coef, std::string eqnaddr);
 	int get_secondary(char **t_ptr, char *element, int *i);
     template <bool IsEquationRhs>
-    void get_species(std::string& expression);
+    void parseExpression(std::string& expression);
 
     // phqalloc.cpp -------------------------------
 public:

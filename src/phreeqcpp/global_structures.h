@@ -674,7 +674,7 @@ struct species
 	struct master *primary;		/* points to master species list, NULL if not primary master */
 	struct master *secondary;	/* points to master species list, NULL if not secondary master */
 	LDBLE gfw;					/* gram formula wt of species */
-	LDBLE z;					/* charge of species */
+        LDBLE charge;					/* charge of species */
 	LDBLE dw;					/* tracer diffusion coefficient in water at 25oC, m2/s */
 	LDBLE dw_t;					/* correct Dw for temperature: Dw(TK) = Dw(298.15) * exp(dw_t / TK - dw_t / 298.15) */
 	LDBLE dw_a;					/* parms for calc'ng SC = SC0 * exp(-dw_a * z * mu^0.5 / (1 + DH_B * dw_a2 * mu^0.5)) */
@@ -864,12 +864,13 @@ struct reaction_temp
 };
 struct rxn_token_temp
 {
-    rxn_token_temp(std::string name_, double coef_) : name(name_), coef(coef_)
+    rxn_token_temp(std::string name_, double charge_, double coef_)
+        : name(name_), charge(charge_), coef(coef_)
     {
     }
     /* data for equations, aq. species or minerals */
     std::string name; /* pointer to a species name (formula) */
-    double z;         /* charge on species */
+    double charge;    /* charge on species */
     struct species* s;
     struct unknown* unknown;
     double coef; /* coefficient of species name */

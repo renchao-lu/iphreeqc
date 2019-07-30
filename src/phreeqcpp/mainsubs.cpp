@@ -1274,7 +1274,7 @@ xexchange_save(int n_user)
 				{
 					add_elt_list(species_list[j].s->next_elt,
 								 species_list[j].s->moles);
-					charge += species_list[j].s->moles * species_list[j].s->z;
+                    charge += species_list[j].s->moles * species_list[j].s->charge;
 				}
 			}
 /*
@@ -1695,7 +1695,7 @@ xsurface_save(int n_user)
 								 species_list[j].s->moles);
 					//add_elt_list_multi_surf(species_list[j].s->next_elt,
 					//			 species_list[j].s->moles, x[i]->master[0]->elt);
-					charge += species_list[j].s->moles * species_list[j].s->z;
+                    charge += species_list[j].s->moles * species_list[j].s->charge;
 				}
 			}
 			{
@@ -1768,11 +1768,11 @@ xsurface_save(int n_user)
 				if (s_x[j]->type > H2O)
 					continue;
 				double molality = under(s_x[j]->lm);
-				double moles_excess = mass_water_aq_x * molality * charge_ref.Get_g_map()[s_x[j]->z].Get_g();
+                double moles_excess = mass_water_aq_x * molality * charge_ref.Get_g_map()[s_x[j]->charge].Get_g();
 				double moles_surface = mass_water_surface * molality + moles_excess;
 				charge_ref.Get_dl_species_map()[s_x[j]->number] = moles_surface/mass_water_surface;
 //#ifdef SKIP
-				double g = charge_ref.Get_g_map()[s_x[j]->z].Get_g();
+                double g = charge_ref.Get_g_map()[s_x[j]->charge].Get_g();
 				//double moles_excess = mass_water_aq_x * molality * (g * s_x[j]->erm_ddl +
 				//	mass_water_surface /
 				//	mass_water_aq_x * (s_x[j]->erm_ddl - 1));

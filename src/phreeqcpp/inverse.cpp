@@ -458,7 +458,7 @@ setup_inverse(struct inverse *inv_ptr)
 //				}
 				else
 				{
-                    coef = master[j].s->z + master[j].s->alk;
+                    coef = master[j].s->charge + master[j].s->alk;
 				}
                 cb += coef * master[j].total;
 			}
@@ -694,7 +694,7 @@ setup_inverse(struct inverse *inv_ptr)
 		{
 			column = col_epsilon + j * inv_ptr->count_solns + i;
 			coef =
-				inv_ptr->elts[j].master->s->z +
+                inv_ptr->elts[j].master->s->charge +
 				inv_ptr->elts[j].master->s->alk;
             if (inv_ptr->elts[j].master == &master_alk)
 			{

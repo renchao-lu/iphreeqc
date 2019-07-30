@@ -2311,7 +2311,7 @@ mb_for_species_aq(int n)
  */
 	if (charge_balance_unknown != NULL && s[n]->type < H2O)
 	{
-		store_mb_unknowns(charge_balance_unknown, &s[n]->moles, s[n]->z,
+        store_mb_unknowns(charge_balance_unknown, &s[n]->moles, s[n]->charge,
 						  &s[n]->dg);
 	}
 	if (alkalinity_unknown != NULL && s[n]->type < H2O)
@@ -2325,7 +2325,7 @@ mb_for_species_aq(int n)
 	}
 	if (mu_unknown != NULL && s[n]->type < H2O)
 	{
-		store_mb_unknowns(mu_unknown, &s[n]->moles, s[n]->z * s[n]->z,
+        store_mb_unknowns(mu_unknown, &s[n]->moles, s[n]->charge * s[n]->charge,
 						  &s[n]->dg);
 	}
 /* 
@@ -2383,7 +2383,7 @@ mb_for_species_aq(int n)
 					unknown_ptr = x[i + 2];
 
 				store_mb_unknowns(unknown_ptr, s_diff_layer[n][charge_ptr->Get_name()].Get_g_moles_address(),
-								  s[n]->z, s_diff_layer[n][charge_ptr->Get_name()].Get_dg_g_moles_address());
+                                  s[n]->charge, s_diff_layer[n][charge_ptr->Get_name()].Get_dg_g_moles_address());
 				j++;
 			}
 		}
@@ -2474,7 +2474,7 @@ mb_for_species_ex(int n)
  */
 	if (charge_balance_unknown != NULL)
 	{
-		store_mb_unknowns(charge_balance_unknown, &s[n]->moles, s[n]->z,
+        store_mb_unknowns(charge_balance_unknown, &s[n]->moles, s[n]->charge,
 						  &s[n]->dg);
 	}
 	if (mass_hydrogen_unknown != NULL)
@@ -2559,7 +2559,7 @@ mb_for_species_surf(int n)
  */
 	if (charge_balance_unknown != NULL && dl_type_x == cxxSurface::NO_DL)
 	{
-		store_mb_unknowns(charge_balance_unknown, &s[n]->moles, s[n]->z,
+        store_mb_unknowns(charge_balance_unknown, &s[n]->moles, s[n]->charge,
 						  &s[n]->dg);
 	}
 /* 
@@ -2606,7 +2606,7 @@ mb_for_species_surf(int n)
 		if (master_ptr->s->type == SURF_PSI
 			&& use.Get_surface_ptr()->Get_type() != cxxSurface::CD_MUSIC)
 		{
-			store_mb_unknowns(master_ptr->unknown, &s[n]->moles, s[n]->z,
+            store_mb_unknowns(master_ptr->unknown, &s[n]->moles, s[n]->charge,
 							  &s[n]->dg);
 			continue;
 		}
@@ -2877,7 +2877,7 @@ add_potential_factor(void)
 		if (trxn.token[i].s->type == AQ || trxn.token[i].s == s_hplus ||
 			trxn.token[i].s == s_eminus)
 		{
-			sum_z += trxn.token[i].s->z * trxn.token[i].coef;
+            sum_z += trxn.token[i].s->charge * trxn.token[i].coef;
 		}
 		if (trxn.token[i].s->type == SURF)
 		{
@@ -5671,11 +5671,11 @@ calc_vm(LDBLE tc, LDBLE pa)
 			//	LDBLE Z3 = fabs(pow(s_x[i]->z, 3)) / re / re - s_x[i]->z / 9.498724;
 			//	s_x[i]->rxn_x->logk[vm_tc] += ZBrn * 1.66027e5 * Z3 * dgdP;
 			//}
-			if (s_x[i]->z)
+            if (s_x[i]->charge)
 			{
 			/* the ionic strength term * I^0.5... */
 				if (s_x[i]->logk[b_Av] < 1e-5)
-					s_x[i]->rxn_x->logk[vm_tc] += s_x[i]->z * s_x[i]->z * 0.5 * DH_Av * sqrt_mu;
+                    s_x[i]->rxn_x->logk[vm_tc] += s_x[i]->charge * s_x[i]->charge * 0.5 * DH_Av * sqrt_mu;
 				else
 				{
 					/* limit the Debye-Hueckel slope by b... */
@@ -5683,7 +5683,7 @@ calc_vm(LDBLE tc, LDBLE pa)
 					//s_x[i]->rxn_x->logk[vm_tc] += s_x[i]->z * s_x[i]->z * 0.5 * DH_Av *
 					//	log(1 + s_x[i]->logk[b_Av] * sqrt(mu_x)) / s_x[i]->logk[b_Av];
 					/* extended DH... */
-					s_x[i]->rxn_x->logk[vm_tc] += s_x[i]->z * s_x[i]->z * 0.5 * DH_Av *
+                    s_x[i]->rxn_x->logk[vm_tc] += s_x[i]->charge * s_x[i]->charge * 0.5 * DH_Av *
 						sqrt_mu / (1 + s_x[i]->logk[b_Av] * DH_B * sqrt_mu);
 				}
 				/* plus the volume terms * I... */
@@ -5701,10 +5701,10 @@ calc_vm(LDBLE tc, LDBLE pa)
 		{
 		/* Millero volume at I = 0... */
 			s_x[i]->rxn_x->logk[vm_tc] = s_x[i]->millero[0] + tc * (s_x[i]->millero[1] + tc * s_x[i]->millero[2]);
-			if (s_x[i]->z)
+            if (s_x[i]->charge)
 			{
 			/* the ionic strength terms... */
-				s_x[i]->rxn_x->logk[vm_tc] += s_x[i]->z * s_x[i]->z * 0.5 * DH_Av * sqrt_mu +
+                s_x[i]->rxn_x->logk[vm_tc] += s_x[i]->charge * s_x[i]->charge * 0.5 * DH_Av * sqrt_mu +
 					(s_x[i]->millero[3] + tc * (s_x[i]->millero[4] + tc * s_x[i]->millero[5])) * mu_x;
 			}
 		}

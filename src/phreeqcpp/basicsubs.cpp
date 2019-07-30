@@ -322,7 +322,7 @@ calc_SC(void)
 			else
 				continue;
 		}
-		if ((l_z = fabs(s_x[i]->z)) == 0)
+        if ((l_z = fabs(s_x[i]->charge)) == 0)
 			l_z = 1; // only a 1st approximation for correct_Dw in electrical field
 		if (s_x[i]->dw_t)
 			Dw *= exp(s_x[i]->dw_t / tk_x - s_x[i]->dw_t / 298.15); // the viscosity multiplier is done in SC
@@ -350,7 +350,7 @@ calc_SC(void)
 		Dw *= ff;
 		s_x[i]->dw_corr = Dw;
 
-		if (s_x[i]->z == 0)
+        if (s_x[i]->charge == 0)
 			continue;
 		s_x[i]->dw_t_SC = s_x[i]->moles / mass_water_aq_x * l_z * l_z * Dw;
 		SC += s_x[i]->dw_t_SC;
@@ -754,7 +754,7 @@ calc_surface_charge(std::string surface_name)
             copy_token(token1, ptr, &j);
             if (surface_name == token1)
 			{
-				charge += s_x[k]->moles * s_x[k]->z;
+                charge += s_x[k]->moles * s_x[k]->charge;
 			}
 		}
 	}
@@ -1023,7 +1023,7 @@ diff_layer_total(std::string total_name, std::string surface_name)
 			if (s_x[j]->type > HPLUS)
 				continue;
 			molality = under(s_x[j]->lm);
-			LDBLE g = surface_charge_ptr1->Get_g_map()[s_x[j]->z].Get_g();
+            LDBLE g = surface_charge_ptr1->Get_g_map()[s_x[j]->charge].Get_g();
 
 			moles_excess = mass_water_aq_x * molality * (g * s_x[j]->erm_ddl +
 										  mass_water_surface /
@@ -1064,7 +1064,7 @@ calc_t_sc(std::string name)
 	s_ptr = s_search(token);
 	if (s_ptr != NULL)
 	{
-		if (!s_ptr->z)
+        if (!s_ptr->charge)
 			return (0);
 		calc_SC();
 		if (!SC)
@@ -2855,7 +2855,7 @@ get_edl_species(cxxSurfaceCharge & charge_ref)
 		else if (s_x[j]->type < H2O)
 		{
 			double molality = under(s_x[j]->lm);
-			double moles_excess = mass_water_aq_x * molality * charge_ref.Get_g_map()[s_x[j]->z].Get_g();
+            double moles_excess = mass_water_aq_x * molality * charge_ref.Get_g_map()[s_x[j]->charge].Get_g();
 			double moles_surface = mass_water_surface * molality + moles_excess;
             sys[count_sys].name = s_x[j]->name;
 			sys[count_sys].moles = moles_surface;
@@ -3161,7 +3161,7 @@ species_formula(std::string phase_name, cxxNameDouble &stoichiometry)
 	{
 		cxxNameDouble nd(s_ptr->next_elt);
 		stoichiometry = nd;
-		stoichiometry["charge"] = s_ptr->z;
+        stoichiometry["charge"] = s_ptr->charge;
 		if (s_ptr->type == EX)
 		{
 			formula = "ex";
@@ -3638,7 +3638,7 @@ system_total_elt(std::string total_name)
 				molality = under(s_x[j]->lm);
 				moles_excess =
 					mass_water_aq_x * molality *
-					(charge_ptr->Get_g_map()[s_x[j]->z].Get_g() * s_x[j]->erm_ddl +
+                    (charge_ptr->Get_g_map()[s_x[j]->charge].Get_g() * s_x[j]->erm_ddl +
 					 mass_water_surface / mass_water_aq_x * (s_x[j]->erm_ddl -
 															 1));
 				moles_surface = mass_water_surface * molality + moles_excess;
@@ -3923,7 +3923,7 @@ system_total_elt_secondary(std::string total_name)
 						molality = under(s_x[j]->lm);
 						moles_excess =
 							mass_water_aq_x * molality *
-							charge_ptr->Get_g_map()[s_x[j]->z].Get_g();
+                            charge_ptr->Get_g_map()[s_x[j]->charge].Get_g();
 						moles_surface =
 							mass_water_surface * molality + moles_excess;
 						sum += moles_surface * coef;

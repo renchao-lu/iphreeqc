@@ -1806,7 +1806,7 @@ Phreeqc::InternalCopy(const Phreeqc *pSrc)
 	space((void **)((void *)&s), pSrc->max_s, &max_s, sizeof(struct species *));
 	for (int i = 0; i < pSrc->count_s; i++)
 	{
-		struct species *s_ptr = s_store(pSrc->s[i]->name, pSrc->s[i]->z, FALSE);
+        struct species *s_ptr = s_store(pSrc->s[i]->name, pSrc->s[i]->charge, FALSE);
 		memcpy(s_ptr, pSrc->s[i], sizeof(struct species));
 		s_ptr->name = string_hsave(pSrc->s[i]->name);
 		// fix up all pointers
@@ -1980,7 +1980,7 @@ Phreeqc::InternalCopy(const Phreeqc *pSrc)
 		}
 //        master[i].elt = element_store(pSrc->master[i].elt.name);
         master[i].unknown = NULL;
-        master[i].s = s_store(pSrc->master[i].s->name, pSrc->master[i].s->z, false);
+        master[i].s = s_store(pSrc->master[i].s->name, pSrc->master[i].s->charge, false);
 		//rxn_primary
         master[i].rxn_primary = NULL;
         if (pSrc->master[i].rxn_primary != NULL)

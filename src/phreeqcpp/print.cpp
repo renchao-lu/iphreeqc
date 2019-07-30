@@ -295,7 +295,7 @@ print_diffuse_layer(cxxSurfaceCharge *charge_ptr)
 			if (s_x[j]->type > HPLUS)
 				continue;
 			molality = under(s_x[j]->lm);
-			moles_excess = mass_water_aq_x * molality * (charge_ptr->Get_g_map()[s_x[j]->z].Get_g() *
+            moles_excess = mass_water_aq_x * molality * (charge_ptr->Get_g_map()[s_x[j]->charge].Get_g() *
 				s_x[j]->erm_ddl +
 				mass_water_surface /
 				mass_water_aq_x * (s_x[j]->erm_ddl - 1));
@@ -304,7 +304,7 @@ print_diffuse_layer(cxxSurfaceCharge *charge_ptr)
 			{
 				output_msg(sformatf("\t%-12s\t%12.3e\t%12.3e\t%12.3e\n",
 					s_x[j]->name, moles_surface, moles_excess,
-					charge_ptr->Get_g_map()[s_x[j]->z].Get_g()));
+                    charge_ptr->Get_g_map()[s_x[j]->charge].Get_g()));
 			}
 			/*
 			 *   Accumulate elements in diffuse layer
@@ -527,7 +527,7 @@ print_exchange(void)
 			}
 			else
 			{
-				if (species_list[i].master_s->z == 0)
+                if (species_list[i].master_s->charge == 0)
 				{
 					dum = 1 / master_ptr->total;
 				}
@@ -536,9 +536,9 @@ print_exchange(void)
 					dum = 1;
 				}
 			}
-			if (species_list[i].master_s->z != 0.0)
+            if (species_list[i].master_s->charge != 0.0)
 			{
-				dum2 = fabs(species_list[i].master_s->z);
+                dum2 = fabs(species_list[i].master_s->charge);
 			}
 			else
 			{
@@ -1926,7 +1926,7 @@ print_surface_cd_music(void)
 		{
 			sum +=
 				x[j]->comp_unknowns[k]->moles *
-				x[j]->comp_unknowns[k]->master[0]->s->z;
+                x[j]->comp_unknowns[k]->master[0]->s->charge;
 		}
 		output_msg(sformatf("\t%11.3e  Surface charge, plane 0, eq\n",
 				   (double) (charge0 + sum)));

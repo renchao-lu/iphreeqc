@@ -57,9 +57,9 @@ calc_all_g(void)
 		{
 			if (s_x[i]->type > HPLUS)
 				continue;
-			if (temp_g_map.find(s_x[i]->z) != temp_g_map.end())
+            if (temp_g_map.find(s_x[i]->charge) != temp_g_map.end())
 				continue;
-			z_global = s_x[i]->z;
+            z_global = s_x[i]->charge;
 			if (charge_ptr->Get_grams() > 0.0)
 			{
 				
@@ -254,9 +254,9 @@ g_function(LDBLE x_value)
 	}
 	for (i = 0; i < count_s_x; i++)
 	{
-		if (s_x[i]->type < H2O && s_x[i]->z != 0.0)
+        if (s_x[i]->type < H2O && s_x[i]->charge != 0.0)
 		{
-			sum += s_x[i]->moles * charge_ptr->Get_g_map()[s_x[i]->z].Get_psi_to_z();
+            sum += s_x[i]->moles * charge_ptr->Get_g_map()[s_x[i]->charge].Get_psi_to_z();
 		}
 	}
 	if (sum < 0.0)
@@ -267,13 +267,13 @@ g_function(LDBLE x_value)
 				   "Species\tmoles\tX**z-1\tsum\tsum charge\n"));
 		for (i = 0; i < count_s_x; i++)
 		{
-			if (s_x[i]->type < H2O && s_x[i]->z != 0.0)
+            if (s_x[i]->type < H2O && s_x[i]->charge != 0.0)
 			{
-				sum += s_x[i]->moles * (pow(x_value, s_x[i]->z) - 1.0);
-				sum1 += s_x[i]->moles * s_x[i]->z;
+                sum += s_x[i]->moles * (pow(x_value, s_x[i]->charge) - 1.0);
+                sum1 += s_x[i]->moles * s_x[i]->charge;
 				output_msg(sformatf( "%s\t%e\t%e\t%e\t%e\n",
 						   s_x[i]->name, (double) s_x[i]->moles,
-						   (double) (pow((LDBLE) x_value, (LDBLE) s_x[i]->z) -
+                           (double) (pow((LDBLE) x_value, (LDBLE) s_x[i]->charge) -
 									 1.0), (double) sum, (double) sum1));
 			}
 		}
@@ -484,16 +484,16 @@ calc_init_g(void)
 			if (s_x[i]->type > HPLUS)
 				continue;
 
-			if (charge_ptr->Get_g_map().find(s_x[i]->z) == charge_ptr->Get_g_map().end())
+            if (charge_ptr->Get_g_map().find(s_x[i]->charge) == charge_ptr->Get_g_map().end())
 			{
 				cxxSurfDL temp_g;
 				/* save g for charge */
 				if (charge_ptr->Get_grams() > 0.0)
 				{
-					temp_g.Set_g(2 * alpha_global * sqrt(mu_x) * (pow(xd_global, s_x[i]->z / 2.0) - 1) *
+                    temp_g.Set_g(2 * alpha_global * sqrt(mu_x) * (pow(xd_global, s_x[i]->charge / 2.0) - 1) *
 						charge_ptr->Get_grams() *
 						charge_ptr->Get_specific_area() / F_C_MOL);
-					temp_g.Set_dg(-s_x[i]->z);
+                    temp_g.Set_dg(-s_x[i]->charge);
 					if (use.Get_surface_ptr()->Get_only_counter_ions() &&
 						temp_g.Get_g() < 0)
 					{
@@ -504,9 +504,9 @@ calc_init_g(void)
 				else
 				{
 					temp_g.Set_g(0);
-					temp_g.Set_dg(-s_x[i]->z);
+                    temp_g.Set_dg(-s_x[i]->charge);
 				}
-				charge_ptr->Get_g_map()[s_x[i]->z] = temp_g;
+                charge_ptr->Get_g_map()[s_x[i]->charge] = temp_g;
 			}
 
 			{
@@ -708,7 +708,7 @@ sum_diffuse_layer(cxxSurfaceCharge *charge_ptr)
 		if (s_x[j]->type > HPLUS)
 			continue;
 		molality = under(s_x[j]->lm);
-		LDBLE g = charge_ptr->Get_g_map()[s_x[j]->z].Get_g();
+        LDBLE g = charge_ptr->Get_g_map()[s_x[j]->charge].Get_g();
 		if (s_x[j]->erm_ddl != 1)
 		{
 			LDBLE ratio_aq = mass_water_surface / mass_water_aq_x;
@@ -775,7 +775,7 @@ calc_all_donnan(void)
 		{
 			if (s_x[i]->type > HPLUS)
 				continue;
-			charge_group_map[s_x[i]->z] += s_x[i]->z * s_x[i]->moles * s_x[i]->erm_ddl;
+            charge_group_map[s_x[i]->charge] += s_x[i]->charge * s_x[i]->moles * s_x[i]->erm_ddl;
 		}
 		/* find surface charge from potential... */
 		A_surf = charge_ptr->Get_specific_area() * charge_ptr->Get_grams();
@@ -929,13 +929,13 @@ calc_init_donnan(void)
 	{
 		if (s_x[i]->type > HPLUS)
 			continue;
-		if (charge_group_map.find(s_x[i]->z) != charge_group_map.end())
+        if (charge_group_map.find(s_x[i]->charge) != charge_group_map.end())
 		{
-			charge_group_map.find(s_x[i]->z)->second += s_x[i]->z * s_x[i]->moles * s_x[i]->erm_ddl;
+            charge_group_map.find(s_x[i]->charge)->second += s_x[i]->charge * s_x[i]->moles * s_x[i]->erm_ddl;
 		}
 		else
 		{
-			charge_group_map[s_x[i]->z] = s_x[i]->z * s_x[i]->moles * s_x[i]->erm_ddl;
+            charge_group_map[s_x[i]->charge] = s_x[i]->charge * s_x[i]->moles * s_x[i]->erm_ddl;
 		}
 	}
 /*

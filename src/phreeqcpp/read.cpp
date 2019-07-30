@@ -760,11 +760,11 @@ read_exchange_species()
              * if necessary
              */
             trxn.token[0].s =
-                s_store(trxn.token[0].name, trxn.token[0].z, TRUE);
+                s_store(trxn.token[0].name, trxn.token[0].charge, TRUE);
             for (i = 1; i < count_trxn; i++)
             {
 				trxn.token[i].s =
-					s_store(trxn.token[i].name, trxn.token[i].z, FALSE);
+                    s_store(trxn.token[i].name, trxn.token[i].charge, FALSE);
 			}
 /*
  *   Save element list and carbon, hydrogen, and oxygen in species
@@ -3984,7 +3984,7 @@ read_phases(void)
 //					replace("(AQ)", "", token1);
 //					replace("H2O(l)", "H2O", token1);
 //					replace("(H2O(L)", "H2O", token1);
-					trxn.token[i].s = s_store(token1, trxn.token[i].z, FALSE);
+                    trxn.token[i].s = s_store(token1, trxn.token[i].charge, FALSE);
 				}
 				else
 				{
@@ -7031,11 +7031,11 @@ read_surface_species(void)
              * if necessary
              */
             trxn.token[0].s =
-                s_store(trxn.token[0].name, trxn.token[0].z, TRUE);
+                s_store(trxn.token[0].name, trxn.token[0].charge, TRUE);
             for (i = 1; i < count_trxn; i++)
             {
 				trxn.token[i].s =
-					s_store(trxn.token[i].name, trxn.token[i].z, FALSE);
+                    s_store(trxn.token[i].name, trxn.token[i].charge, FALSE);
 			}
 			/*
 			 *   Save element list and carbon, hydrogen, and oxygen in species

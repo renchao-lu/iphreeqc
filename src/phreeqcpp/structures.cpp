@@ -1773,7 +1773,7 @@ cxxChemRxn2rxn(cxxChemRxn &cr)
 	{
 		if (cr.Get_tokens()[i].s != NULL)
 		{
-			cr.Get_tokens()[i].s = s_store(cr.Get_tokens()[i].s->name, cr.Get_tokens()[i].s->z, FALSE);
+            cr.Get_tokens()[i].s = s_store(cr.Get_tokens()[i].s->name, cr.Get_tokens()[i].s->charge, FALSE);
 		}
         if (!cr.Get_tokens()[i].name.empty())
         {
@@ -1803,7 +1803,7 @@ cxxChemRxn2rxn(cxxChemRxn &cr)
 	for (int i = 0; rxn_ptr_new->token[i].s != NULL; i++)
 	{
 		rxn_ptr_new->token[i].name = string_hsave(rxn_ptr_new->token[i].name);
-		LDBLE  z = rxn_ptr_new->token[i].s->z;
+        LDBLE  z = rxn_ptr_new->token[i].s->charge;
 		rxn_ptr_new->token[i].s = s_store(rxn_ptr_new->token[i].name, z, false);
 	}
 	return (rxn_ptr_new);
@@ -2002,7 +2002,7 @@ s_init(struct species *s_ptr)
 	s_ptr->primary = NULL;
 	s_ptr->secondary = NULL;
 	s_ptr->gfw = 0.0;
-	s_ptr->z = 0.0;
+    s_ptr->charge = 0.0;
 	s_ptr->dw = 0.0;
 	s_ptr->dw_t = 0.0;
 	s_ptr->dw_a = 0.0;
@@ -2160,7 +2160,7 @@ s_store(std::string name, LDBLE l_z, int replace_if_found)
 	}
 	/* set name and z in pointer in species structure */
 	s_ptr->name = string_hsave(name);
-	s_ptr->z = l_z;
+    s_ptr->charge = l_z;
 /*
  *   Update hash table
  */

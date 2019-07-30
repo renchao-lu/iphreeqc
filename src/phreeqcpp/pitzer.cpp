@@ -111,11 +111,11 @@ pitzer_tidy(void)
 			continue;
 		if (s[i]->type == EX || s[i]->type == SURF) 
 			continue;
-		if (s[i]->z < -.001)
+        if (s[i]->charge < -.001)
 		{
 			anions[count_anions++] = s[i];
 		}
-		else if (s[i]->z > .001)
+        else if (s[i]->charge > .001)
 		{
 			cations[count_cations++] = s[i];
 		}
@@ -251,8 +251,8 @@ pitzer_tidy(void)
 	 */
 	for (i = 0; i < count_pitz_param; i++)
 	{
-		z0 = fabs(spec[pitz_params[i]->ispec[0]]->z);
-		z1 = fabs(spec[pitz_params[i]->ispec[1]]->z);
+        z0 = fabs(spec[pitz_params[i]->ispec[0]]->charge);
+        z1 = fabs(spec[pitz_params[i]->ispec[1]]->charge);
 		if (equal(z0, 1.0, 1e-8) || equal(z1, 1.0, 1e-8))
 		{
 			order = 1;
@@ -343,8 +343,8 @@ pitzer_tidy(void)
 	{
 		if (pitz_params[i]->type == TYPE_ETHETA)
 		{
-			z0 = spec[pitz_params[i]->ispec[0]]->z;
-			z1 = spec[pitz_params[i]->ispec[1]]->z;
+            z0 = spec[pitz_params[i]->ispec[0]]->charge;
+            z1 = spec[pitz_params[i]->ispec[1]]->charge;
 			theta_param_ptr = theta_param_search(z0, z1);
 			if (theta_param_ptr == NULL)
 			{
@@ -380,15 +380,15 @@ pitzer_tidy(void)
 			count_pos = count_neg = count_neut = 0;
 			for (j = 0; j <= 2; j++)
 			{
-				if (spec[pitz_params[i]->ispec[j]]->z > 0)
+                if (spec[pitz_params[i]->ispec[j]]->charge > 0)
 				{
 					count_pos++;
 				}
-				if (spec[pitz_params[i]->ispec[j]]->z == 0)
+                if (spec[pitz_params[i]->ispec[j]]->charge == 0)
 				{
 					count_neut++;
 				}
-				if (spec[pitz_params[i]->ispec[j]]->z < 0)
+                if (spec[pitz_params[i]->ispec[j]]->charge < 0)
 				{
 					count_neg++;
 				}
@@ -451,8 +451,8 @@ pitzer_tidy(void)
 			for (j = 0; j <= 2; j++)
 			{
 				/* cation or anion */
-				if (spec[pitz_params[i]->ispec[j]]->z < 0
-					|| spec[pitz_params[i]->ispec[j]]->z > 0)
+                if (spec[pitz_params[i]->ispec[j]]->charge < 0
+                    || spec[pitz_params[i]->ispec[j]]->charge > 0)
 				{
 					if (count[0] > 1 || count[1] > 1)
 					{
@@ -1283,7 +1283,7 @@ pitzer(void)
 	{
 		int i = s_list[j];
 		LGAMMA[i] = 0.0;
-		XX = XX + M[i] * fabs(spec[i]->z);
+        XX = XX + M[i] * fabs(spec[i]->charge);
 		OSUM = OSUM + M[i];
 	}
 	/*
@@ -1349,8 +1349,8 @@ pitzer(void)
  		int i = param_list[j];
 		i0 = pitz_params[i]->ispec[0];
 		i1 = pitz_params[i]->ispec[1];
-		z0 = spec[i0]->z;
-		z1 = spec[i1]->z;
+        z0 = spec[i0]->charge;
+        z1 = spec[i1]->charge;
 		param = pitz_params[i]->p;
 		l_alpha = pitz_params[i]->alpha;
 		F_var = 0;
@@ -1467,7 +1467,7 @@ pitzer(void)
 	for (size_t j = 0; j < ion_list.size(); j++)
 	{
 		int i = ion_list[j];
-		z0 = fabs(spec[i]->z);
+        z0 = fabs(spec[i]->charge);
 		F_var = (z0 == 1 ? F1 : (z0 == 2.0 ? F2 : F));
 		LGAMMA[i] += z0 * z0 * F_var + z0 * CSUM;
 	}
@@ -1487,7 +1487,7 @@ pitzer(void)
 		for (size_t j = 0; j < s_list.size(); j++)
 		{
 			int i = s_list[j];
-			LGAMMA[i] = LGAMMA[i] + spec[i]->z * PHIMAC;
+            LGAMMA[i] = LGAMMA[i] + spec[i]->charge * PHIMAC;
 		}
 	}
 
@@ -1778,8 +1778,8 @@ pitzer_initial_guesses(void)
 		if (x[i]->type < CB)
 		{
 			mu_x +=
-				x[i]->moles / mass_water_aq_x * 0.5 * x[i]->master[0]->s->z *
-				x[i]->master[0]->s->z;
+                x[i]->moles / mass_water_aq_x * 0.5 * x[i]->master[0]->s->charge *
+                x[i]->master[0]->s->charge;
 			x[i]->master[0]->s->la = log10(x[i]->moles / mass_water_aq_x);
 		}
 		else if (x[i]->type == CB)

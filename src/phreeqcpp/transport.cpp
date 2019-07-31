@@ -1722,8 +1722,8 @@ fill_spec(int l_cell_no)
 	{
 		for (int i = 0; i < count_species_list; i++)
 		{
-			sol_D[l_cell_no].spec[i].name = NULL;
-			sol_D[l_cell_no].spec[i].aq_name = NULL;
+            sol_D[l_cell_no].spec[i].name.clear();
+            sol_D[l_cell_no].spec[i].aq_name.clear();
 			sol_D[l_cell_no].spec[i].type = -1;
 			sol_D[l_cell_no].spec[i].a = 0.0;
 			sol_D[l_cell_no].spec[i].lm = 0.0;
@@ -1790,7 +1790,7 @@ fill_spec(int l_cell_no)
 			continue;
 		if (s_ptr->type == SURF)
 			continue;
-		if (i > 0 && strcmp(s_ptr->name, species_list[i - 1].s->name) == 0)
+        if (i > 0 && s_ptr->name == species_list[i - 1].s->name)
 			continue;
 		if (s_ptr == s_h2o)
 			continue;
@@ -1920,8 +1920,8 @@ fill_spec(int l_cell_no)
 		{
 			for (int i = sol_D[l_cell_no].spec_size; i < count_spec; i++)
 			{
-				sol_D[l_cell_no].spec[i].name = NULL;
-				sol_D[l_cell_no].spec[i].aq_name = NULL;
+                sol_D[l_cell_no].spec[i].name.clear();
+                sol_D[l_cell_no].spec[i].aq_name.clear();
 				sol_D[l_cell_no].spec[i].type = -1;
 				sol_D[l_cell_no].spec[i].a = 0.0;
 				sol_D[l_cell_no].spec[i].lm = 0.0;
@@ -1951,7 +1951,7 @@ sort_species_name(const void *ptr1, const void *ptr2)
 	nptr1 = (const struct species_list *) ptr1;
 	nptr2 = (const struct species_list *) ptr2;
 
-	return (strcmp(nptr1->s->name, nptr2->s->name));
+    return (nptr1->s->name == nptr2->s->name);
 }
 /* ---------------------------------------------------------------------- */
 int Phreeqc::
@@ -2755,7 +2755,7 @@ find_J(int icell, int jcell, LDBLE mixf, LDBLE DDt, int stagnant)
 	while (i < i_max || j < j_max)
 	{
 		if (j == j_max
-			|| (i < i_max && strcmp(sol_D[icell].spec[i].name, sol_D[jcell].spec[j].name) < 0))
+            || (i < i_max && sol_D[icell].spec[i].name != sol_D[jcell].spec[j].name))
 		{
 			/* species 'name' is only in icell */
 			if (il_calcs && sol_D[icell].spec[i].type == EX)
@@ -2870,7 +2870,7 @@ find_J(int icell, int jcell, LDBLE mixf, LDBLE DDt, int stagnant)
 		}
 
 		else if (i == i_max ||
-			(j < j_max && strcmp(sol_D[icell].spec[i].name, sol_D[jcell].spec[j].name) > 0))
+            (j < j_max && sol_D[icell].spec[i].name != sol_D[jcell].spec[j].name))
 		{
 			/* species 'name' is only in jcell */
 			if (il_calcs && sol_D[jcell].spec[j].type == EX)
@@ -2981,7 +2981,7 @@ find_J(int icell, int jcell, LDBLE mixf, LDBLE DDt, int stagnant)
 			if (j < j_max)
 				j++;
 		}
-		else if (strcmp(sol_D[icell].spec[i].name, sol_D[jcell].spec[j].name) == 0)
+        else if (sol_D[icell].spec[i].name == sol_D[jcell].spec[j].name)
 		{
 			/* species 'name' is in both cells */
 			if (il_calcs && sol_D[icell].spec[i].type == EX)
@@ -3242,35 +3242,38 @@ dV_dcell2:
 				/* transfer O and H... */
 				for (; it != nd.end(); it++)
 				{
-                    struct element elt_ptr = element_store(it->first.c_str());
-					LDBLE coef = it->second;
-                    if (elt_ptr.name == "H")
-					{
-						if (coef < rc1 * tot1_h)
-						{
-							tot1_h -= coef;
-							comp_ref.Get_totals().insert("H", 0);
-						}
-						else
-						{
-							comp_ref.Get_totals().insert("H", coef - rc1 * tot1_h);
-							tot1_h *= (1 - rc1);
-						}
-					}
-                    else if (elt_ptr.name == "O")
-					{
-						if (coef < rc1 * tot1_o)
-						{
-							tot1_o -= coef;
-							comp_ref.Get_totals().insert("O", 0);
-						}
-						else
-						{
-							comp_ref.Get_totals().insert("O", coef - rc1 * tot1_o);
-							tot1_o *= (1 - rc1);
-						}
-					}
-				}
+                    //                    struct element elt_ptr =
+                    //                    element_store(it->first.c_str());
+                    //					LDBLE coef = it->second;
+                    //                    if (elt_ptr.name == "H")
+                    //					{
+                    //						if (coef < rc1 * tot1_h)
+                    //						{
+                    //							tot1_h -= coef;
+                    //							comp_ref.Get_totals().insert("H",
+                    //0);
+                    //						}
+                    //						else
+                    //						{
+                    //							comp_ref.Get_totals().insert("H", coef - rc1
+                    //* tot1_h); 							tot1_h *= (1 - rc1);
+                    //						}
+                    //					}
+                    //                    else if (elt_ptr.name == "O")
+                    //					{
+                    //						if (coef < rc1 * tot1_o)
+                    //						{
+                    //							tot1_o -= coef;
+                    //							comp_ref.Get_totals().insert("O",
+                    //0);
+                    //						}
+                    //						else
+                    //						{
+                    //							comp_ref.Get_totals().insert("O", coef - rc1
+                    //* tot1_o); 							tot1_o *= (1 - rc1);
+                    //						}
+                    //					}
+                }
 				/* transfer other elements... */
 				j_max = 0;		/* if j_max turns true, reallocate the exchange structure */
 				for (j = 0; j < count_m_s; j++)
@@ -3282,23 +3285,26 @@ dV_dcell2:
 					cxxNameDouble::iterator it = nd.begin();
 					for (; it != nd.end(); it++)
 					{
-                        struct element elt_ptr = element_store(it->first.c_str());
-						LDBLE coef = it->second;
-                        if (m_s[j].name != elt_ptr.name)
-							continue;
+                        //                        struct element elt_ptr =
+                        //                        element_store(it->first.c_str());
+                        //						LDBLE coef = it->second;
+                        //                        if (m_s[j].name !=
+                        //                        elt_ptr.name)
+                        //							continue;
 
-						/* rc1 part goes to exchange species... */
-						if (coef < rc1 * m_s[j].tot1)
-						{
-							m_s[j].tot1 -= coef;
-							comp_ref.Get_totals().insert(m_s[j].name, 0);
-						}
-						else
-						{
-							comp_ref.Get_totals().insert(m_s[j].name, coef - rc1 * m_s[j].tot1);
-							m_s[j].tot1 *= (1 - rc1);
-						}
-					}
+                        /* rc1 part goes to exchange species... */
+                        //						if (coef < rc1 * m_s[j].tot1)
+                        //						{
+                        //							m_s[j].tot1 -= coef;
+                        //							comp_ref.Get_totals().insert(m_s[j].name,
+                        //0);
+                        //						}
+                        //						else
+                        //						{
+                        //							comp_ref.Get_totals().insert(m_s[j].name,
+                        //coef - rc1 * m_s[j].tot1); 							m_s[j].tot1 *= (1 - rc1);
+                        //						}
+                    }
 				}
 			}
 		}
@@ -3327,36 +3333,39 @@ dV_dcell2:
 				/* transfer O and H... */
 				for (; it != nd.end(); it++)
 				{
-                    struct element elt_ptr = element_store(it->first.c_str());
-					LDBLE coef = it->second;
+                    //                    struct element elt_ptr =
+                    //                    element_store(it->first.c_str());
+                    //					LDBLE coef = it->second;
 
-                    if (elt_ptr.name == "H")
-					{
-						if (coef < -rc2 * tot2_h)
-						{
-							tot2_h += coef;
-							comp_ref.Get_totals().insert("H", 0);
-						}
-						else
-						{
-							comp_ref.Get_totals().insert("H", coef + rc2 * tot2_h);
-							tot2_h *= (1 - rc2);
-						}
-					}
-                    else if (elt_ptr.name == "O")
-					{
-						if (coef < -rc2 * tot2_o)
-						{
-							tot2_o += coef;
-							comp_ref.Get_totals().insert("O", 0);
-						}
-						else
-						{
-							comp_ref.Get_totals().insert("O", coef + rc2 * tot2_o);
-							tot2_o *= (1 - rc2);
-						}
-					}
-				}
+                    //                    if (elt_ptr.name == "H")
+                    //					{
+                    //						if (coef < -rc2 * tot2_h)
+                    //						{
+                    //							tot2_h += coef;
+                    //							comp_ref.Get_totals().insert("H",
+                    //0);
+                    //						}
+                    //						else
+                    //						{
+                    //							comp_ref.Get_totals().insert("H", coef + rc2
+                    //* tot2_h); 							tot2_h *= (1 - rc2);
+                    //						}
+                    //					}
+                    //                    else if (elt_ptr.name == "O")
+                    //					{
+                    //						if (coef < -rc2 * tot2_o)
+                    //						{
+                    //							tot2_o += coef;
+                    //							comp_ref.Get_totals().insert("O",
+                    //0);
+                    //						}
+                    //						else
+                    //						{
+                    //							comp_ref.Get_totals().insert("O", coef + rc2
+                    //* tot2_o); 							tot2_o *= (1 - rc2);
+                    //						}
+                    //					}
+                }
 				/* transfer other elements... */
 				for (j = 0; j < count_m_s; j++)
 				{
@@ -3367,23 +3376,26 @@ dV_dcell2:
 					cxxNameDouble::iterator it = nd.begin();
 					for (; it != nd.end(); it++)
 					{
-                        struct element elt_ptr = element_store(it->first.c_str());
-						LDBLE coef = it->second;
-                        if (m_s[j].name != elt_ptr.name)
-							continue;
+                        //                        struct element elt_ptr =
+                        //                        element_store(it->first.c_str());
+                        //						LDBLE coef = it->second;
+                        //                        if (m_s[j].name !=
+                        //                        elt_ptr.name)
+                        //							continue;
 
-						/* rc2 part goes to exchange species... */
-						if (coef < -rc2 * m_s[j].tot2)
-						{
-							m_s[j].tot2 += coef;
-							comp_ref.Get_totals().insert(m_s[j].name, 0);
-						}
-						else
-						{
-							comp_ref.Get_totals().insert(m_s[j].name, coef + rc2 * m_s[j].tot2);
-							m_s[j].tot2 *= (1 - rc2);
-						}
-					}
+                        /* rc2 part goes to exchange species... */
+                        //						if (coef < -rc2 * m_s[j].tot2)
+                        //						{
+                        //							m_s[j].tot2 += coef;
+                        //							comp_ref.Get_totals().insert(m_s[j].name,
+                        //0);
+                        //						}
+                        //						else
+                        //						{
+                        //							comp_ref.Get_totals().insert(m_s[j].name,
+                        //coef + rc2 * m_s[j].tot2); 							m_s[j].tot2 *= (1 - rc2);
+                        //						}
+                    }
 				}
 			}
 		}
@@ -4625,7 +4637,7 @@ viscosity(void)
 		}
 		if (l_z < 0)
 		{
-			if (!strcmp(s_x[i]->name, "Cl-"))
+            if (s_x[i]->name != "Cl-")
 				// volumina for f_an...
 			{
 				V_Cl = s_x[i]->logk[vm_tc];

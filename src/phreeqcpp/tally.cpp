@@ -107,7 +107,7 @@ get_all_components(void)
 	tally_count_component = 3;
 	for (i = 0; i < count_master; i++)
 	{
-        if (master[i].total > 0.0 && master[i].s->type == AQ)
+        if (master[i].total > 0.0 && master[i].s.type == AQ)
 		{
 			tally_count_component++;
 		}
@@ -142,7 +142,7 @@ get_all_components(void)
 
 	for (i = 0; i < count_master; i++)
 	{
-        if (master[i].total > 0.0 && master[i].s->type == AQ)
+        if (master[i].total > 0.0 && master[i].s.type == AQ)
 		{
 //            t_buffer[j].name = master[i].elt.name;
 //			t_buffer[j].master = master[i];
@@ -654,9 +654,10 @@ fill_tally_table(int *n_user, int index_conservative, int n_buffer)
 				{
 					add_elt_list(exchange_ptr->Get_exchange_comps()[j].Get_totals(), 1.0);
 				}
-				qsort(elt_list, (size_t) count_elts,
-					(size_t) sizeof(struct elt_list), elt_list_compare);
-				elt_list_combine();
+                //				qsort(elt_list, (size_t) count_elts,
+                //					(size_t) sizeof(struct elt_list),
+                //elt_list_compare);
+                elt_list_combine();
 				elt_list_to_tally_table(tally_table[i].total[n_buffer]);
 			}
 			break;
@@ -676,9 +677,10 @@ fill_tally_table(int *n_user, int index_conservative, int n_buffer)
 				{
 					add_elt_list(surface_ptr->Get_surface_comps()[j].Get_totals(), 1.0);
 				}
-				qsort(elt_list, (size_t) count_elts,
-					(size_t) sizeof(struct elt_list), elt_list_compare);
-				elt_list_combine();
+                //				qsort(elt_list, (size_t) count_elts,
+                //					(size_t) sizeof(struct elt_list),
+                //elt_list_compare);
+                elt_list_combine();
 				elt_list_to_tally_table(tally_table[i].total[n_buffer]);
 			}
 			break;
@@ -747,9 +749,10 @@ fill_tally_table(int *n_user, int index_conservative, int n_buffer)
 
 					add_elt_list(phase_ptr->next_elt, (*gc)[l].Get_moles());
 				}
-				qsort(elt_list, (size_t) count_elts,
-					(size_t) sizeof(struct elt_list), elt_list_compare);
-				elt_list_combine();
+                //				qsort(elt_list, (size_t) count_elts,
+                //					(size_t) sizeof(struct elt_list),
+                //elt_list_compare);
+                elt_list_combine();
 				elt_list_to_tally_table(tally_table[i].total[n_buffer]);
 				break;
 			}
@@ -818,14 +821,14 @@ elt_list_to_tally_table(struct tally_buffer *buffer_ptr)
 
 	for (j = 0; j < count_elts; j++)
 	{
-        if (elt_list[j].elt.primary->s == s_h2o)
-			continue;
-        if (elt_list[j].elt.primary->s == s_hplus)
-			continue;
-        if (elt_list[j].elt.primary->s == s_h3oplus)
-			continue;
-        if (elt_list[j].elt.primary->type != AQ)
-			continue;
+//        if (elt_list[j].elt.primary->s == s_h2o)
+//			continue;
+//        if (elt_list[j].elt.primary->s == s_hplus)
+//			continue;
+//        if (elt_list[j].elt.primary->s == s_h3oplus)
+//			continue;
+//        if (elt_list[j].elt.primary->type != AQ)
+//			continue;
 		for (i = 0; i < count_tally_table_rows; i++)
 		{
 			if (buffer_ptr[i].master != NULL)
@@ -1024,9 +1027,10 @@ build_tally_table(void)
                     token = phase_ptr->formula;
                     add_elt_list(phase_ptr->next_elt, 1.0);
 				}
-				qsort(elt_list, (size_t) count_elts,
-					  (size_t) sizeof(struct elt_list), elt_list_compare);
-				elt_list_combine();
+                //				qsort(elt_list, (size_t) count_elts,
+                //					  (size_t) sizeof(struct elt_list),
+                //elt_list_compare);
+                elt_list_combine();
 				tally_table[n].formula = elt_list_save();
 			}
 		}
@@ -1076,9 +1080,10 @@ build_tally_table(void)
 					paren_count = 0;
                     token = phase_ptr->formula;
                     add_elt_list(phase_ptr->next_elt, 1.0);
-					qsort(elt_list, (size_t) count_elts,
-						  (size_t) sizeof(struct elt_list), elt_list_compare);
-					elt_list_combine();
+                    //					qsort(elt_list, (size_t) count_elts,
+                    //						  (size_t) sizeof(struct elt_list),
+                    //elt_list_compare);
+                    elt_list_combine();
 					tally_table[n].formula = elt_list_save();
 				}
 			}
@@ -1146,9 +1151,10 @@ build_tally_table(void)
 //						free_check_null(temp_name);
 					}
 				}
-				qsort(elt_list, (size_t) count_elts,
-					  (size_t) sizeof(struct elt_list), elt_list_compare);
-				elt_list_combine();
+                //				qsort(elt_list, (size_t) count_elts,
+                //					  (size_t) sizeof(struct elt_list),
+                //elt_list_compare);
+                elt_list_combine();
 				tally_table[n].formula = elt_list_save();
 			}
 		}

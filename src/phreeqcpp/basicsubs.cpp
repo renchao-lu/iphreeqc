@@ -578,7 +578,7 @@ calc_solution_volume(void)
 
 	for (int i = 0; i < count_master; i++)
 	{
-        if (master[i].s->type != AQ) continue;
+        if (master[i].s.type != AQ) continue;
         struct master master_ptr = master[i];
 //        if (master_ptr.primary == TRUE && (master_ptr.elt.name =="Alkalinity"))
 //		{
@@ -842,7 +842,7 @@ diff_layer_total(std::string total_name, std::string surface_name)
 	{
 		if (use.Get_surface_ptr()->Get_type() == cxxSurface::DDL || use.Get_surface_ptr()->Get_type() == cxxSurface::CCM)
 		{
-			return ((LDBLE) (x[j]->master[0]->s->la * 2 * R_KJ_DEG_MOL *
+            return ((LDBLE) (x[j]->master[0]->s.la * 2 * R_KJ_DEG_MOL *
 							 tk_x * LOG_10 / F_KJ_V_EQ));
 		}
 		else if (use.Get_surface_ptr()->Get_type() == cxxSurface::CD_MUSIC)
@@ -851,7 +851,7 @@ diff_layer_total(std::string total_name, std::string surface_name)
 			if (master_ptr != NULL)
 			{
 				return ((LDBLE)
-						(-master_ptr->s->la * R_KJ_DEG_MOL * tk_x * LOG_10 /
+                        (-master_ptr->s.la * R_KJ_DEG_MOL * tk_x * LOG_10 /
 						 F_KJ_V_EQ));
 			}
 			else
@@ -870,7 +870,7 @@ diff_layer_total(std::string total_name, std::string surface_name)
 		if (master_ptr != NULL)
 		{
 			return ((LDBLE)
-					(-master_ptr->s->la * R_KJ_DEG_MOL * tk_x * LOG_10 /
+                    (-master_ptr->s.la * R_KJ_DEG_MOL * tk_x * LOG_10 /
 					 F_KJ_V_EQ));
 		}
 		else
@@ -884,7 +884,7 @@ diff_layer_total(std::string total_name, std::string surface_name)
 		if (master_ptr != NULL)
 		{
 			return ((LDBLE)
-					(-master_ptr->s->la * R_KJ_DEG_MOL * tk_x * LOG_10 /
+                    (-master_ptr->s.la * R_KJ_DEG_MOL * tk_x * LOG_10 /
 					 F_KJ_V_EQ));
 		}
 		else
@@ -1036,9 +1036,10 @@ diff_layer_total(std::string total_name, std::string surface_name)
 		}
 		if (count_elts > 0)
 		{
-			qsort(elt_list, (size_t) count_elts,
-				  (size_t) sizeof(struct elt_list), Phreeqc:: elt_list_compare);
-			elt_list_combine();
+            //			qsort(elt_list, (size_t) count_elts,
+            //				  (size_t) sizeof(struct elt_list), Phreeqc::
+            //elt_list_compare);
+            elt_list_combine();
 		}
 /*
  *   Return totals
@@ -2677,9 +2678,9 @@ surf_total_no_redox(std::string total_name, std::string surface_name)
 	}
 	if (count_elts > 0)
 	{
-		qsort(elt_list, (size_t) count_elts,
-			  (size_t) sizeof(struct elt_list), elt_list_compare);
-		elt_list_combine();
+        //		qsort(elt_list, (size_t) count_elts,
+        //			  (size_t) sizeof(struct elt_list), elt_list_compare);
+        elt_list_combine();
 	}
 /*
  *   Return totals
@@ -2736,7 +2737,7 @@ total(std::string total_name)
 		/*
 		 *  Not a redox element
 		 */
-		if (master_ptr->s->secondary == NULL)
+        if (master_ptr->s.secondary == NULL)
 		{
 			t = master_ptr->total / mass_water_aq_x;
 			/*
@@ -2806,7 +2807,7 @@ total_mole(std::string total_name)
 		/*
 		 *  Not a redox element
 		 */
-		if (master_ptr->s->secondary == NULL)
+        if (master_ptr->s.secondary == NULL)
 		{
 			t = master_ptr->total;
 			/*
@@ -3111,9 +3112,10 @@ kinetics_formula(std::string kin_name, cxxNameDouble &stoichiometry)
 				//elt_list[count_elts].elt = NULL;
 				if (count_elts > 0)
 				{
-					qsort(elt_list, (size_t) count_elts,
-						(size_t) sizeof(struct elt_list), elt_list_compare);
-					elt_list_combine();
+                    //					qsort(elt_list, (size_t) count_elts,
+                    //						(size_t) sizeof(struct elt_list),
+                    //elt_list_compare);
+                    elt_list_combine();
 				}
 				stoichiometry = elt_list_NameDouble();
 				break;
@@ -3234,14 +3236,14 @@ system_total_elements(void)
 		/*
 		 *  H and O
 		 */
-        if (master_ptr.s == s_hplus)
-		{
-			continue;
-		}
-        else if (master_ptr.s == s_h2o)
-		{
-			continue;
-		}
+//        if (master_ptr.s == *s_hplus)
+//		{
+//			continue;
+//		}
+//        else if (master_ptr.s == *s_h2o)
+//		{
+//			continue;
+//		}
         if (master_ptr.primary == TRUE)
 		{
             if (master_ptr.total_primary > 0)
@@ -3251,7 +3253,7 @@ system_total_elements(void)
 				 *  Not a redox element
 				 */
 			}
-            else if (master_ptr.s->secondary == NULL)
+            else if (master_ptr.s.secondary == NULL)
 			{
                 t = master_ptr.total;
 				/*
@@ -3279,15 +3281,15 @@ system_total_elements(void)
         sys[count_sys].name =name;
 		sys[count_sys].moles = t;
 		sys_tot += sys[count_sys].moles;
-        if (master[i].s->type <= SOLID)
+        if (master[i].s.type <= SOLID)
 		{
             sys[count_sys].type = "dis";
 		}
-        else if (master[i].s->type == EX)
+        else if (master[i].s.type == EX)
 		{
             sys[count_sys].type = "ex";
 		}
-        else if (master[i].s->type == SURF || master[i].s->type == SURF_PSI)
+        else if (master[i].s.type == SURF || master[i].s.type == SURF_PSI)
 		{
             sys[count_sys].type = "surf";
 		}
@@ -3560,9 +3562,9 @@ system_total_elt(std::string total_name)
 
 		if (count_elts > 0)
 		{
-			qsort(elt_list, (size_t) count_elts,
-				(size_t) sizeof(struct elt_list), elt_list_compare);
-			elt_list_combine();
+            //			qsort(elt_list, (size_t) count_elts,
+            //				(size_t) sizeof(struct elt_list), elt_list_compare);
+            elt_list_combine();
 		}
 		/*
 		 *   Look for element
@@ -3649,9 +3651,10 @@ system_total_elt(std::string total_name)
 			}
 			if (count_elts > 0)
 			{
-				qsort(elt_list, (size_t) count_elts,
-					  (size_t) sizeof(struct elt_list), elt_list_compare);
-				elt_list_combine();
+                //				qsort(elt_list, (size_t) count_elts,
+                //					  (size_t) sizeof(struct elt_list),
+                //elt_list_compare);
+                elt_list_combine();
 			}
 			/*
 			 *   Print totals
@@ -3697,9 +3700,10 @@ system_total_elt(std::string total_name)
 			add_elt_list(phase_ptr->next_elt, x[i]->moles);
 			if (count_elts > 0)
 			{
-				qsort(elt_list, (size_t) count_elts,
-					  (size_t) sizeof(struct elt_list), elt_list_compare);
-				elt_list_combine();
+                //				qsort(elt_list, (size_t) count_elts,
+                //					  (size_t) sizeof(struct elt_list),
+                //elt_list_compare);
+                elt_list_combine();
 			}
 			for (j = 0; j < count_elts; j++)
 			{
@@ -3739,10 +3743,10 @@ system_total_elt(std::string total_name)
 								 comp_ptr->Get_moles());
 					if (count_elts > 0)
 					{
-						qsort(elt_list, (size_t) count_elts,
-							  (size_t) sizeof(struct elt_list),
-							  elt_list_compare);
-						elt_list_combine();
+                        //						qsort(elt_list, (size_t)
+                        //count_elts, 							  (size_t) sizeof(struct elt_list),
+                        //							  elt_list_compare);
+                        elt_list_combine();
 					}
 					for (j = 0; j < count_elts; j++)
 					{
@@ -3780,9 +3784,10 @@ system_total_elt(std::string total_name)
 				add_elt_list(phase_ptr->next_elt, phase_ptr->moles_x);
 				if (count_elts > 0)
 				{
-					qsort(elt_list, (size_t) count_elts,
-						  (size_t) sizeof(struct elt_list), elt_list_compare);
-					elt_list_combine();
+                    //					qsort(elt_list, (size_t) count_elts,
+                    //						  (size_t) sizeof(struct elt_list),
+                    //elt_list_compare);
+                    elt_list_combine();
 				}
 				/*
 				 *   Look for element
@@ -3836,9 +3841,10 @@ system_total_elt_secondary(std::string total_name)
 		}
 		if (count_elts > 0)
 		{
-			qsort(elt_list, (size_t) count_elts,
-				  (size_t) sizeof(struct elt_list), elt_list_compare);
-			elt_list_combine();
+            //			qsort(elt_list, (size_t) count_elts,
+            //				  (size_t) sizeof(struct elt_list),
+            //elt_list_compare);
+            elt_list_combine();
 		}
 		/*
 		 *   Look for element
@@ -3968,9 +3974,10 @@ system_total_elt_secondary(std::string total_name)
 			add_elt_list(phase_ptr->next_sys_total,	 x[i]->moles);
 			if (count_elts > 0)
 			{
-				qsort(elt_list, (size_t) count_elts,
-					  (size_t) sizeof(struct elt_list), elt_list_compare);
-				elt_list_combine();
+                //				qsort(elt_list, (size_t) count_elts,
+                //					  (size_t) sizeof(struct elt_list),
+                //elt_list_compare);
+                elt_list_combine();
 			}
 			for (j = 0; j < count_elts; j++)
 			{
@@ -4010,10 +4017,10 @@ system_total_elt_secondary(std::string total_name)
 								 comp_ptr->Get_moles());
 					if (count_elts > 0)
 					{
-						qsort(elt_list, (size_t) count_elts,
-							  (size_t) sizeof(struct elt_list),
-							  elt_list_compare);
-						elt_list_combine();
+                        //						qsort(elt_list, (size_t)
+                        //count_elts, 							  (size_t) sizeof(struct elt_list),
+                        //							  elt_list_compare);
+                        elt_list_combine();
 					}
 					for (j = 0; j < count_elts; j++)
 					{
@@ -4053,9 +4060,10 @@ system_total_elt_secondary(std::string total_name)
 
 				if (count_elts > 0)
 				{
-					qsort(elt_list, (size_t) count_elts,
-						  (size_t) sizeof(struct elt_list), elt_list_compare);
-					elt_list_combine();
+                    //					qsort(elt_list, (size_t) count_elts,
+                    //						  (size_t) sizeof(struct elt_list),
+                    //elt_list_compare);
+                    elt_list_combine();
 				}
 				/*
 				 *   Look for element
@@ -4145,9 +4153,10 @@ solution_sum_secondary(const char *total_name)
 		}
 		if (count_elts > 0)
 		{
-			qsort(elt_list, (size_t) count_elts,
-				  (size_t) sizeof(struct elt_list), elt_list_compare);
-			elt_list_combine();
+            //			qsort(elt_list, (size_t) count_elts,
+            //				  (size_t) sizeof(struct elt_list),
+            //elt_list_compare);
+            elt_list_combine();
 		}
 		/*
 		 *   Look for element
@@ -4252,9 +4261,9 @@ system_total_solids(cxxExchange *exchange_ptr,
 
 	if (count_elts > 0)
 	{
-		qsort(elt_list, (size_t) count_elts,
-			  (size_t) sizeof(struct elt_list), elt_list_compare);
-		elt_list_combine();
+        //		qsort(elt_list, (size_t) count_elts,
+        //			  (size_t) sizeof(struct elt_list), elt_list_compare);
+        elt_list_combine();
 	}
 	return (OK);
 }

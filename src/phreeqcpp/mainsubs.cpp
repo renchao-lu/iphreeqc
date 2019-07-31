@@ -45,9 +45,6 @@ initialize(void)
         cell_data.push_back(per_cell_data);
     }
 
-	space((void **) ((void *) &elements), INIT, &max_elements,
-		  sizeof(struct element *));
-
 	space((void **) ((void *) &elt_list), INIT, &max_elts,
 		  sizeof(struct elt_list));
 
@@ -55,9 +52,6 @@ initialize(void)
 	space((void **) ((void *) &line), INIT, &max_line, sizeof(char));
 
 	space((void **) ((void *) &line_save), INIT, &max_line, sizeof(char));
-
-	space((void **) ((void *) &master), INIT, &max_master,
-		  sizeof(struct master *));
 
 	space((void **) ((void *) &mb_unknowns), INIT, &max_mb_unknowns,
 		  sizeof(struct unknown_list));
@@ -76,8 +70,6 @@ initialize(void)
 
 	space((void **) ((void *) &trxn.token), INIT, &max_trxn,
 		  sizeof(struct rxn_token_temp));
-
-	space((void **) ((void *) &s), INIT, &max_s, sizeof(struct species *));
 
 	space((void **) ((void *) &logk), INIT, &max_logk, sizeof(struct logk *));
 
@@ -1261,7 +1253,7 @@ xexchange_save(int n_user)
 				assert(false);
 			}
 			cxxExchComp xcomp = *comp_ptr;
-			xcomp.Set_la(x[i]->master[0]->s->la);
+            xcomp.Set_la(x[i]->master[0]->s.la);
 /*
  *   Save element concentrations on exchanger
  */
@@ -1270,19 +1262,19 @@ xexchange_save(int n_user)
 			charge = 0.0;
 			for (j = 0; j < count_species_list; j++)
 			{
-				if (species_list[j].master_s == x[i]->master[0]->s)
-				{
-					add_elt_list(species_list[j].s->next_elt,
-								 species_list[j].s->moles);
-                    charge += species_list[j].s->moles * species_list[j].s->charge;
-				}
+//				if (species_list[j].master_s == x[i]->master[0]->s)
+//				{
+//					add_elt_list(species_list[j].s->next_elt,
+//								 species_list[j].s->moles);
+//                    charge += species_list[j].s->moles * species_list[j].s->charge;
+//				}
 			}
 /*
  *   Keep exchanger related to phase even if none currently in solution
  */
 			if (xcomp.Get_phase_name().size() != 0 && count_elts == 0)
 			{
-				add_elt_list(x[i]->master[0]->s->next_elt, 1e-20);
+                add_elt_list(x[i]->master[0]->s.next_elt, 1e-20);
 			}
 /*
  *   Store list
@@ -1484,27 +1476,27 @@ xsolution_save(int n_user)
                     master_i_ptr->total = master_isotope[i].moles;
 					if (master_ptr->total > 0)
 					{
-						master_i_ptr->s->la =
-							master_ptr->s->la +
+                        master_i_ptr->s.la =
+                            master_ptr->s.la +
 							log10(master_i_ptr->total / master_ptr->total);
 					}
 					else
 					{
-						master_i_ptr->s->la = master_ptr->s->la;
+                        master_i_ptr->s.la = master_ptr->s.la;
 					}
 				}
                 else if (master_isotope[i].minor_isotope == FALSE
-						 && master_ptr->s != s_hplus
-						 && master_ptr->s != s_h2o)
+/*						 && master_ptr->s != s_hplus
+                         && master_ptr->s != s_h2o*/)
 				{
-					if (master_ptr->s->secondary != NULL)
+                    if (master_ptr->s.secondary != NULL)
 					{
-						master_ptr->s->secondary->total =
+                        master_ptr->s.secondary->total =
                             master_isotope[i].moles;
 					}
 					else
 					{
-						master_ptr->s->primary->total =
+                        master_ptr->s.primary->total =
                             master_isotope[i].moles;
 					}
 				}
@@ -1516,13 +1508,13 @@ xsolution_save(int n_user)
  */
 	for (int i = 0; i < count_master; i++)
 	{
-        if (master[i].s->type == EX ||
-            master[i].s->type == SURF || master[i].s->type == SURF_PSI)
+        if (master[i].s.type == EX ||
+            master[i].s.type == SURF || master[i].s.type == SURF_PSI)
 			continue;
-        if (master[i].s == s_hplus)
-			continue;
-        if (master[i].s == s_h2o)
-			continue;
+//        if (master[i].s == s_hplus)
+//			continue;
+//        if (master[i].s == s_h2o)
+//			continue;
 /*
  *   Save list of log activities
  */
@@ -1679,7 +1671,7 @@ xsurface_save(int n_user)
 		{
 			cxxSurfaceComp *comp_ptr = temp_surface.Find_comp(x[i]->surface_comp);
 			assert(comp_ptr);
-			comp_ptr->Set_la(x[i]->master[0]->s->la);
+            comp_ptr->Set_la(x[i]->master[0]->s.la);
 			comp_ptr->Set_moles(0.);
 /*
  *   Save element concentrations on surface
@@ -1689,14 +1681,14 @@ xsurface_save(int n_user)
 			charge = 0.0;
 			for (int j = 0; j < count_species_list; j++)
 			{
-				if (species_list[j].master_s == x[i]->master[0]->s)
-				{
-					add_elt_list(species_list[j].s->next_elt,
-								 species_list[j].s->moles);
-					//add_elt_list_multi_surf(species_list[j].s->next_elt,
-					//			 species_list[j].s->moles, x[i]->master[0]->elt);
-                    charge += species_list[j].s->moles * species_list[j].s->charge;
-				}
+//				if (species_list[j].master_s == x[i]->master[0]->s)
+//				{
+//					add_elt_list(species_list[j].s->next_elt,
+//								 species_list[j].s->moles);
+//					//add_elt_list_multi_surf(species_list[j].s->next_elt,
+//					//			 species_list[j].s->moles, x[i]->master[0]->elt);
+//                    charge += species_list[j].s->moles * species_list[j].s->charge;
+//				}
 			}
 			{
 				cxxNameDouble nd = elt_list_NameDouble();
@@ -1709,7 +1701,7 @@ xsurface_save(int n_user)
 			cxxSurfaceCharge *charge_ptr = temp_surface.Find_charge(x[i]->surface_charge);
 			assert(charge_ptr);
 			charge_ptr->Set_charge_balance(x[i]->f);
-			charge_ptr->Set_la_psi(x[i]->master[0]->s->la);
+            charge_ptr->Set_la_psi(x[i]->master[0]->s.la);
 /*
  *   Store moles from diffuse_layer
  */
@@ -1744,7 +1736,7 @@ xsurface_save(int n_user)
 					* (charge_ptr->Get_specific_area() *
 					   charge_ptr->Get_grams()) / F_C_MOL);
 			}
-			charge_ptr->Set_la_psi(x[i]->master[0]->s->la);
+            charge_ptr->Set_la_psi(x[i]->master[0]->s.la);
 /*
  *   Store moles from diffuse_layer
  */
@@ -1972,7 +1964,7 @@ step_save_exch(int n_user)
 	// Set exchange total in one component
 	for (int i = 0; i < count_master; i++)
 	{
-        if (master[i].s->type != EX)
+        if (master[i].s.type != EX)
 			continue;
 //        std::string e(master[i].elt.name);
 		for (size_t j = 0; j < temp_exchange.Get_exchange_comps().size(); j++)
@@ -2017,7 +2009,7 @@ step_save_surf(int n_user)
 	cxxSurface *surface_ptr = Utilities::Rxn_find(Rxn_surface_map, n_user);
 	for (int i = 0; i < count_master; i++)
 	{
-        if (master[i].s->type != SURF)
+        if (master[i].s.type != SURF)
 			continue;
 		for (size_t j = 0; j < surface_ptr->Get_surface_comps().size(); j++)
 		{

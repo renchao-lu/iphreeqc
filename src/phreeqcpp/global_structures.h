@@ -573,6 +573,7 @@ struct element
         : name(name_), master(master_), primary(primary_), gfw(gfw_)
     {
     }
+    element(){}
 
     std::string name; /* element name */
     /*    int in; */
@@ -667,14 +668,17 @@ protected:
  *---------------------------------------------------------------------- */
 struct species
 {								/* all data pertinent to an aqueous species */
-	const char *name;					/* name of species */
-	const char *mole_balance;			/* formula for mole balance */
+    species(std::string name_, double charge_) : name(name_), charge(charge_){}
+    species() {}
+
+    std::string name;                   /* name of species */
+    const char *mole_balance;			/* formula for mole balance */
 	int in;						/* species used in model if TRUE */
 	int number;
 	struct master *primary;		/* points to master species list, NULL if not primary master */
 	struct master *secondary;	/* points to master species list, NULL if not secondary master */
 	LDBLE gfw;					/* gram formula wt of species */
-        LDBLE charge;					/* charge of species */
+        double charge;					/* charge of species */
 	LDBLE dw;					/* tracer diffusion coefficient in water at 25oC, m2/s */
 	LDBLE dw_t;					/* correct Dw for temperature: Dw(TK) = Dw(298.15) * exp(dw_t / TK - dw_t / 298.15) */
 	LDBLE dw_a;					/* parms for calc'ng SC = SC0 * exp(-dw_a * z * mu^0.5 / (1 + DH_B * dw_a2 * mu^0.5)) */
@@ -742,7 +746,7 @@ struct logk
 struct phase
 {								/* all data pertinent to a pure solid phase */
 	const char *name;					/* name of species */
-	const char *formula;				/* chemical formula */
+        std::string formula;				/* chemical formula */
 	int in;						/* species used in model if TRUE */
 	LDBLE lk;					/* log10 k at working temperature */
 	LDBLE logk[MAX_LOG_K_INDICES];				/* log kt0, delh, 6 coefficients analalytical expression */
@@ -782,31 +786,45 @@ struct phase
  *   Master species
  *---------------------------------------------------------------------- */
  struct master
- {								/* list of name and number of elements in an equation */
-        int in = 0;						/* TRUE if in model, FALSE if out, REWRITE if other mb eq */
-        int number = -1;					/* sequence number in list of masters */
-        int last_model = -1;				/* saved to determine if model has changed */
-        int type = 0;					/* AQ or EX */
-        int primary = 0;				/* TRUE if master species is primary */
-        double coef = 0.0;					/* coefficient of element in master species */
-        double total = 0.0;				/* total concentration for element or valence state */
-        double isotope_ratio = 0.0;
-        double isotope_ratio_uncertainty = 0.0;
-        int isotope = 0;
-        double total_primary = 0.0;
- 	/*    LDBLE la;  */ /* initial guess of master species log activity */
-//        struct element elt;		/* element structure */
-        double alk = 0.0;					/* alkalinity of species */
-        double gfw = 0.0;					/* default gfw for species */
-        std::string gfw_formula;			/* formula from which to calcuate gfw */
-        struct unknown *unknown = nullptr;	/* pointer to unknown structure */
-        struct species *s = nullptr;			/* pointer to species structure */
-        struct reaction *rxn_primary = nullptr;	/* reaction writes master species in terms of primary
- 									   master species */
-        struct reaction *rxn_secondary = nullptr;	/* reaction writes master species in terms of secondary
- 									   master species */
-        std::string pe_rxn;
-        int minor_isotope = 0;
+ {
+     /* list of name and number of elements in an equation */
+     master(){}
+     master(int type_, struct element elt_, struct species s_, double alk_,
+            std::string gfw_formula_, double gfw_, bool primary_)
+         : type(type_),
+           elt(elt_),
+           s(s_),
+           alk(alk_),
+           gfw_formula(gfw_formula_),
+           gfw(gfw_),
+           primary(primary_)
+     {
+     }
+
+     int in = 0; /* TRUE if in model, FALSE if out, REWRITE if other mb eq */
+     int number = -1;     /* sequence number in list of masters */
+     int last_model = -1; /* saved to determine if model has changed */
+     int type = 0;        /* AQ or EX */
+     bool primary;     /* TRUE if master species is primary */
+     double coef = 0.0;   /* coefficient of element in master species */
+     double total = 0.0;  /* total concentration for element or valence state */
+     double isotope_ratio = 0.0;
+     double isotope_ratio_uncertainty = 0.0;
+     int isotope = 0;
+     double total_primary = 0.0;
+     /*    LDBLE la;  */      /* initial guess of master species log activity */
+     struct element elt;      /* element structure */
+     double alk = 0.0;        /* alkalinity of species */
+     double gfw = 0.0;        /* default gfw for species */
+     std::string gfw_formula; /* formula from which to calcuate gfw */
+     struct unknown* unknown = nullptr;      /* pointer to unknown structure */
+     struct species s;            /* pointer to species structure */
+     struct reaction* rxn_primary = nullptr; /* reaction writes master species
+                                    in terms of primary master species */
+     struct reaction* rxn_secondary = nullptr; /* reaction writes master species
+                                  in terms of secondary master species */
+     std::string pe_rxn;
+     int minor_isotope = 0;
 };
 /*----------------------------------------------------------------------
  *   Unknowns
@@ -1040,8 +1058,8 @@ struct tally
 /* transport.c ------------------------------- */
 struct spec
 {
-	const char *name;					/* name of species */
-	const char *aq_name;				/* name of aqueous species in EX species */
+        std::string name;					/* name of species */
+        std::string aq_name;				/* name of aqueous species in EX species */
 	int type;					/* type: AQ or EX */
 	LDBLE a;					/* activity */
 	LDBLE lm;					/* log(concentration) */
@@ -1063,7 +1081,7 @@ struct sol_D
 };
 struct J_ij
 {
-	const char *name;
+        std::string name;
 	LDBLE tot1, tot2;        /* species change in cells i and j */
 };
 struct M_S

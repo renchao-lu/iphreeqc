@@ -436,10 +436,10 @@ setup_inverse(struct inverse *inv_ptr)
 			{
                 my_array[master[j].in * max_column_count + i] =
                     f * master[j].total;
-                if (master[j].s == s_eminus)
-				{
-                    my_array[master[j].in * max_column_count + i] = 0.0;
-				}
+//                if (master[j].s == s_eminus)
+//				{
+//                    my_array[master[j].in * max_column_count + i] = 0.0;
+//				}
 			}
 		}
 		/* calculate charge balance for elements in model */
@@ -448,18 +448,18 @@ setup_inverse(struct inverse *inv_ptr)
 		{
             if (master[j].in >= 0)
 			{
-                if (master[j].s == s_eminus)
-				{
-					coef = 0.0;
-				}
+//                if (master[j].s == s_eminus)
+//				{
+//					coef = 0.0;
+//				}
 //                else if (master[j] == *master_alk)
 //				{
 //					coef = -1.0;
 //				}
-				else
-				{
-                    coef = master[j].s->charge + master[j].s->alk;
-				}
+//				else
+//				{
+//                    coef = master[j].s->charge + master[j].s->alk;
+//				}
                 cb += coef * master[j].total;
 			}
 		}
@@ -493,20 +493,20 @@ setup_inverse(struct inverse *inv_ptr)
 						phase_ptr->name);
 				error_msg(error_string, STOP);
 			}
-			if (master_ptr->s == s_hplus)
-				continue;
-			if (master_ptr->s == s_h2o)
-			{
-				row = row_fract;
+//			if (master_ptr->s == s_hplus)
+//				continue;
+//			if (master_ptr->s == s_h2o)
+//			{
+//				row = row_fract;
 /* turn off h2o from minerals in water mass balance */
-				if (inv_ptr->mineral_water != TRUE)
-					continue;
+//				if (inv_ptr->mineral_water != TRUE)
+//					continue;
 
-			}
-			else
-			{
-				row = master_ptr->in;
-			}
+//			}
+//			else
+//			{
+//				row = master_ptr->in;
+//			}
 			/* e- has coef of 0 for some reason */
 			coef = master_ptr->coef;
 			if (coef <= 0)
@@ -523,7 +523,7 @@ setup_inverse(struct inverse *inv_ptr)
 	k = 0;
 	for (i = 0; i < inv_ptr->count_elts; i++)
 	{
-		if (inv_ptr->elts[i].master->s->primary == NULL)
+        if (inv_ptr->elts[i].master->s.primary == NULL)
 		{
 			coef = inv_ptr->elts[i].master->coef;
 			rxn_ptr = inv_ptr->elts[i].master->rxn_primary;
@@ -547,19 +547,19 @@ setup_inverse(struct inverse *inv_ptr)
 							rxn_ptr->token[j].s->name);
 					error_msg(error_string, STOP);
 				}
-				if (master_ptr->s == s_hplus)
-					continue;
-				if (master_ptr->s == s_h2o)
-				{
-					row = row_fract;
+//				if (master_ptr->s == s_hplus)
+//					continue;
+//				if (master_ptr->s == s_h2o)
+//				{
+//					row = row_fract;
 /* turn off h2o from minerals in water mass balance */
-					if (inv_ptr->mineral_water != TRUE)
-						continue;
-				}
-				else
-				{
-					row = master_ptr->in;
-				}
+//					if (inv_ptr->mineral_water != TRUE)
+//						continue;
+//				}
+//				else
+//				{
+//					row = master_ptr->in;
+//				}
 				assert(row * max_column_count + column < max_column_count * max_row_count);
 				assert(row >= 0);
 				assert(column >= 0);
@@ -571,7 +571,7 @@ setup_inverse(struct inverse *inv_ptr)
 			}
             row = master_alk.in;	/* include alkalinity for redox reaction */
 			my_array[row * max_column_count + column] =
-				(calc_alk(rxn_ptr) - inv_ptr->elts[i].master->s->alk) / coef;
+                (calc_alk(rxn_ptr) - inv_ptr->elts[i].master->s.alk) / coef;
 		}
 	}
 
@@ -591,10 +591,10 @@ setup_inverse(struct inverse *inv_ptr)
 			{
 				my_array[row * max_column_count + column] = -1.0;
 			}
-			if (inv_ptr->elts[i].master->s == s_eminus)
-			{
-				my_array[row * max_column_count + column] = 0.0;
-			}
+//			if (inv_ptr->elts[i].master->s == s_eminus)
+//			{
+//				my_array[row * max_column_count + column] = 0.0;
+//			}
             sprintf(const_cast<char*>(token.c_str()), "%s %d", row_name[row], j);
 			col_name[column] = string_hsave(token);
 			column++;
@@ -694,17 +694,17 @@ setup_inverse(struct inverse *inv_ptr)
 		{
 			column = col_epsilon + j * inv_ptr->count_solns + i;
 			coef =
-                inv_ptr->elts[j].master->s->charge +
-				inv_ptr->elts[j].master->s->alk;
+                inv_ptr->elts[j].master->s.charge +
+                inv_ptr->elts[j].master->s.alk;
             if (inv_ptr->elts[j].master == &master_alk)
 			{
 				coef = -1.0;
 			}
 			my_array[count_rows * max_column_count + column] = coef;
-			if (inv_ptr->elts[j].master->s == s_eminus)
-			{
-				my_array[count_rows * max_column_count + column] = 0.0;
-			}
+//			if (inv_ptr->elts[j].master->s == s_eminus)
+//			{
+//				my_array[count_rows * max_column_count + column] = 0.0;
+//			}
 		}
 //		sprintf(token, "%s %d", "charge", i);
 		row_name[count_rows] = string_hsave(token);
@@ -759,8 +759,8 @@ setup_inverse(struct inverse *inv_ptr)
 	{
 		for (j = 0; j < inv_ptr->count_elts; j++)
 		{
-			if (inv_ptr->elts[j].master->s == s_eminus)
-				continue;
+//			if (inv_ptr->elts[j].master->s == s_eminus)
+//				continue;
 			column = col_epsilon + j * inv_ptr->count_solns + i;
 
 /* calculate magnitude of bound */
@@ -1814,8 +1814,8 @@ print_model(struct inverse *inv_ptr)
 		}
 		for (j = 0; j < inv_ptr->count_elts; j++)
 		{
-			if (inv_ptr->elts[j].master->s == s_eminus)
-				continue;
+//			if (inv_ptr->elts[j].master->s == s_eminus)
+//				continue;
 			d1 = inv_ptr->elts[j].master->total;
 			d2 = inv_delta1[col_epsilon + j * inv_ptr->count_solns +
 						i] / inv_delta1[i];
@@ -3606,7 +3606,7 @@ count_isotope_unknowns(struct inverse *inv_ptr,
 		}
 
 		/* nonredox element */
-		if (primary_ptr->s->secondary == NULL)
+        if (primary_ptr->s.secondary == NULL)
 		{
 			isotopes =
 				(struct isotope *) PHRQ_realloc(isotopes,
@@ -4489,8 +4489,8 @@ dump_netpath_pat(struct inverse *inv_ptr)
 		/* update total in master */
 		for (j = 0; j < inv_ptr->count_elts; j++)
 		{
-			if (inv_ptr->elts[j].master->s == s_eminus)
-				continue;
+//			if (inv_ptr->elts[j].master->s == s_eminus)
+//				continue;
 			d1 = inv_ptr->elts[j].master->total;
 			d2 = inv_delta1[col_epsilon + j * inv_ptr->count_solns +
 						i] / inv_delta1[i];

@@ -152,8 +152,8 @@ check_eqn(int association)
 /*
  *   Sort elements in reaction and combine
  */
-    qsort(elt_list, (size_t) count_elts, (size_t) sizeof(struct elt_list),
-          elt_list_compare);
+    //    qsort(elt_list, (size_t) count_elts, (size_t) sizeof(struct elt_list),
+    //          elt_list_compare);
     if (elt_list_combine() == ERROR)
         return (ERROR);
 /*
@@ -521,114 +521,114 @@ get_elts_in_species(std::string species, double coef)
     int i, count, l;
     char c, c1;
     LDBLE d;
-    auto elements = s_split(species);
+    //    auto elements = s_split(species);
 
-//	while (((c = **t_ptr) != '+') && (c != '-') && (c != '\0'))
-//	{
-//		/* close parenthesis */
-//		if (c == ')')
-//		{
-//			paren_count--;
-//			if (paren_count < 0)
-//			{
-//				error_string = sformatf( "Too many right parentheses.");
-//				error_msg(error_string, CONTINUE);
-//				return (ERROR);
-//			}
-//			(*t_ptr)++;
-//			return (OK);
-//		}
-//		c1 = *((*t_ptr) + 1);
-//		/* beginning of element name */
-//		if (isupper((int) c) || (c == 'e' && c1 == '-') || (c == '['))
-//		{
-/*
-// *   Get new element and subscript
-// */
-//			if (get_elt(t_ptr, element, &l) == ERROR)
-//			{
-//				return (ERROR);
-//			}
-//			if (count_elts >= max_elts)
-//			{
-//				space((void **) ((void *) &elt_list), count_elts, &max_elts,
-//					  sizeof(struct elt_list));
-//			}
-            elt_list[count_elts].elt = element_store(element);
-//			if (get_num(t_ptr, &d) == ERROR)
-//			{
-//				return (ERROR);
-//			}
-//			elt_list[count_elts].coef = d * coef;
-//			count_elts++;
-/*
-// *   Expand working space for elements if necessary
-// */
-//			if (count_elts >= max_elts)
-//			{
-//				space((void **) ((void *) &elt_list), count_elts, &max_elts,
-//					  sizeof(struct elt_list));
-//			}
-//			continue;
-//		}
-/*
-// *   Open parentheses
-// */
-//		if (c == '(')
-//		{
-//			count = count_elts;
-//			if (c1 == ')')
-//			{
-//				error_string = sformatf( "Empty parentheses.");
-//				warning_msg(error_string);
-//			}
-//			paren_count++;
-//			(*t_ptr)++;
-//			if (get_elts_in_species(t_ptr, coef) == ERROR)
-//			{
-//				return (ERROR);
-//			}
-//			if (get_num(t_ptr, &d) == ERROR)
-//			{
-//				return (ERROR);
-//			}
-//			for (i = count; i < count_elts; i++)
-//			{
-//				elt_list[i].coef *= d;
-//			}
-//			continue;
-//		}
-/*
-// *   Colon
-// */
-//		if (c == ':')
-//		{
-//			count = count_elts;
-//			(*t_ptr)++;
-//			if (get_num(t_ptr, &d) == ERROR)
-//			{
-//				return (ERROR);
-//			}
-//			if (get_elts_in_species(t_ptr, coef) == ERROR)
-//			{
-//				return (ERROR);
-//			}
-//			for (i = count; i < count_elts; i++)
-//			{
-//				elt_list[i].coef *= d;
-//			}
-//			continue;
-//		}
-/*
-// *   Not beginning of element and not opening paren
-// */
-//		error_string = sformatf(
-//				"Parsing error in get_elts_in_species, unexpected character, %c.",
-//				c);
-//		error_msg(error_string, CONTINUE);
-//		input_error++;
-//		return (ERROR);
-//	}
+    //	while (((c = **t_ptr) != '+') && (c != '-') && (c != '\0'))
+    //	{
+    //		/* close parenthesis */
+    //		if (c == ')')
+    //		{
+    //			paren_count--;
+    //			if (paren_count < 0)
+    //			{
+    //				error_string = sformatf( "Too many right parentheses.");
+    //				error_msg(error_string, CONTINUE);
+    //				return (ERROR);
+    //			}
+    //			(*t_ptr)++;
+    //			return (OK);
+    //		}
+    //		c1 = *((*t_ptr) + 1);
+    //		/* beginning of element name */
+    //		if (isupper((int) c) || (c == 'e' && c1 == '-') || (c == '['))
+    //		{
+    /*
+    // *   Get new element and subscript
+    // */
+    //			if (get_elt(t_ptr, element, &l) == ERROR)
+    //			{
+    //				return (ERROR);
+    //			}
+    //			if (count_elts >= max_elts)
+    //			{
+    //				space((void **) ((void *) &elt_list), count_elts, &max_elts,
+    //					  sizeof(struct elt_list));
+    //			}
+
+    //        auto coefficeint = d * coef;
+    //        elt_list.emplace_back(element_name, coefficeint);
+
+    //			if (get_num(t_ptr, &d) == ERROR)
+    //			{
+    //				return (ERROR);
+    //			}
+    //			count_elts++;
+    /*
+    // *   Expand working space for elements if necessary
+    // */
+    //			if (count_elts >= max_elts)
+    //			{
+    //				space((void **) ((void *) &elt_list), count_elts, &max_elts,
+    //					  sizeof(struct elt_list));
+    //			}
+    //			continue;
+    //		}
+    /*
+    // *   Open parentheses
+    // */
+    //		if (c == '(')
+    //		{
+    //			count = count_elts;
+    //			if (c1 == ')')
+    //			{
+    //				error_string = sformatf( "Empty parentheses.");
+    //				warning_msg(error_string);
+    //			}
+    //			paren_count++;
+    //			(*t_ptr)++;
+    //			if (get_elts_in_species(t_ptr, coef) == ERROR)
+    //			{
+    //				return (ERROR);
+    //			}
+    //			if (get_num(t_ptr, &d) == ERROR)
+    //			{
+    //				return (ERROR);
+    //			}
+    //			for (i = count; i < count_elts; i++)
+    //			{
+    //				elt_list[i].coef *= d;
+    //			}
+    //			continue;
+    //		}
+    /*
+    // *   Colon
+    // */
+    //		if (c == ':')
+    //		{
+    //			count = count_elts;
+    //			(*t_ptr)++;
+    //			if (get_num(t_ptr, &d) == ERROR)
+    //			{
+    //				return (ERROR);
+    //			}
+    //			if (get_elts_in_species(t_ptr, coef) == ERROR)
+    //			{
+    //				return (ERROR);
+    //			}
+    //			for (i = count; i < count_elts; i++)
+    //			{
+    //				elt_list[i].coef *= d;
+    //			}
+    //			continue;
+    //		}
+    /*
+    // *   Not beginning of element and not opening paren
+    // */
+    //		error_string = sformatf(
+    //				"Parsing error in get_elts_in_species, unexpected character,
+    //%c.", 				c); 		error_msg(error_string, CONTINUE); 		input_error++; 		return
+    //(ERROR);
+    //	}
     if (paren_count != 0)
     {
         error_string = sformatf( "Unbalanced parentheses.");
@@ -953,7 +953,7 @@ get_num(std::string t_ptr, LDBLE * num)
     return (OK);
 }
 
-std::pair<std::string, double> parseSpeciesName(std::string term)
+std::pair<std::string, double> Phreeqc::parseSpeciesName(std::string term)
 {
     std::array<std::string, 2> identifiers = {"+", "-"};
     int charge = 0;
@@ -1001,6 +1001,24 @@ std::pair<std::string, double> parseSpeciesName(std::string term)
     if (occurrences == 0)
     {
         return std::make_pair(term, 0);
+    }
+}
+
+struct species& Phreeqc::getOrcreateSpecies(std::pair<std::string, double> species_name)
+{
+    auto& name = species_name.first;
+    auto& charge = species_name.second;
+    auto compare_by_name = [&name](auto const& species) {
+        return species.name == name;};
+    auto it = std::find_if(species_set.begin(), species_set.end(), compare_by_name);
+    if (it == species_set.end())
+    {
+        species_set.emplace_back(name, charge);
+        return species_set.back();
+    }
+    else
+    {
+        return *it;
     }
 }
 

@@ -109,10 +109,10 @@ build_fixed_volume_gas(void)
 				{
                     unknown_ptr = elt_list[j].elt.primary->unknown;
 				}
-                else if (elt_list[j].elt.primary->s->secondary != NULL)
+                else if (elt_list[j].elt.primary->s.secondary != NULL)
 				{
 					unknown_ptr =
-                        elt_list[j].elt.primary->s->secondary->unknown;
+                        elt_list[j].elt.primary->s.secondary->unknown;
 				}
 			}
 			if (unknown_ptr != NULL)
@@ -157,10 +157,10 @@ build_fixed_volume_gas(void)
 				{
                     unknown_ptr = elt_list[j].elt.primary->unknown;
 				}
-                else if (elt_list[j].elt.primary->s->secondary != NULL)
+                else if (elt_list[j].elt.primary->s.secondary != NULL)
 				{
 					unknown_ptr =
-                        elt_list[j].elt.primary->s->secondary->unknown;
+                        elt_list[j].elt.primary->s.secondary->unknown;
 				}
 			}
 			if (unknown_ptr == NULL)
@@ -190,12 +190,12 @@ build_fixed_volume_gas(void)
 				else
 				{
 					master_ptr = master_bsearch_primary(rxn_ptr->s->name);
-					master_ptr->s->la = -999.0;
+                    master_ptr->s.la = -999.0;
 				}
 				if (debug_prep == TRUE)
 				{
 					output_msg(sformatf( "\t\t%s\n",
-							   master_ptr->s->name));
+                               master_ptr->s.name));
 				}
 				if (master_ptr->unknown == NULL)
 				{
@@ -214,7 +214,7 @@ build_fixed_volume_gas(void)
 				if (debug_prep == TRUE)
 				{
 					output_msg(sformatf( "\t\t%-24s%10.3f\t%d\t%d",
-							   master_ptr->s->name, (double) coef,
+                               master_ptr->s.name, (double) coef,
 							   row / (count_unknowns + 1), col));
 				}
 				store_jacob(&(gas_unknowns[i]->moles),
@@ -269,10 +269,10 @@ build_fixed_volume_gas(void)
 				else
 				{
 					master_ptr = master_bsearch_primary(rxn_ptr->s->name);
-					if (master_ptr && master_ptr->s)
-					{
-						master_ptr->s->la = -999.0;
-					}
+//					if (master_ptr && master_ptr->s)
+//					{
+//                        master_ptr->s.la = -999.0;
+//					}
 				}
 
 				if (master_ptr == NULL)
@@ -287,7 +287,7 @@ build_fixed_volume_gas(void)
 				{
 					if (debug_prep == TRUE)
 					{
-						output_msg(sformatf( "\t\t%s\n", master_ptr->s->name));
+                        output_msg(sformatf( "\t\t%s\n", master_ptr->s.name));
 					}
 					if (master_ptr->unknown == NULL)
 					{
@@ -306,7 +306,7 @@ build_fixed_volume_gas(void)
 					if (debug_prep == TRUE)
 					{
 						output_msg(sformatf( "\t\t%-24s%10.3f\t%d\t%d",
-							master_ptr->s->name, (double) coef,
+                            master_ptr->s.name, (double) coef,
 							row / (count_unknowns + 1), col));
 					}
 					store_jacob(&(phase_ptr->p_soln_x), &(my_array[row + col]), coef);

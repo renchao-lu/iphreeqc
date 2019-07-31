@@ -3,6 +3,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <complex>
+#include <regex>
 
 #include "Utils.h"	
 #include "Phreeqc.h"
@@ -1200,13 +1201,13 @@ read_exchange_master_species(void)
 		s_ptr = s_search(token);
 		if (s_ptr != NULL)
 		{
-            master[count_master].s = s_ptr;
+            master[count_master].s = *s_ptr;
 		}
 		else
 		{
 			ptr1 = token;
             get_token(ptr1, token1, &l_z, &l);
-            master[count_master].s = s_store(token1, l_z, FALSE);
+            master[count_master].s = *s_store(token1, l_z, FALSE);
 		}
 /*
  *   MAKE LISTS OF PRIMARY AND SECONDARY MASTER SPECIES
@@ -3238,140 +3239,34 @@ read_master_species()
         boost::algorithm::split(items, line,
                                 boost::is_any_of("\t "),
                                 boost::token_compress_on);
-/*
- *   Get element name and save pointer to character string
- */
 
-/*
- *   Delete master if it exists
- */
-//		master_delete(token);
-/*
-/*
- *   Set type to AQ
- */
-/*
- *   Save element name
- */
+        // element
         auto& element_name = items[0];
+        struct element elt(element_name, nullptr, nullptr, 0.0);
+        elements.push_back(elt);
+
+        // species
+        auto master_species_name = parseSpeciesName(items[1]);
+        auto& s = getOrcreateSpecies(master_species_name);
+
+        // alk
+        auto alk = std::stod(items[2]);
+
+        // gfw_formula
+        auto& gfw_formula = items[3];
+
+        // gfw
         assert(items.size() == 4 || items.size() == 5);
         double gfw = items.size() == 5 ? std::stod(items[4]) : 0.0;
 
-        elements.emplace_back(element_name, nullptr, nullptr, gfw);
-/*
- *   Save pointer to species data for master species
- */
-//        if ((copy_token(token, ptr, &l) != UPPER) &&
-//			token[0] != '[' && (strcmp_nocase_arg1(token, "e-") != 0))
-//		{
-//			parse_error++;
-//			error_msg("Reading master species name.", CONTINUE);
-//            error_msg(line_save.c_str(), CONTINUE);
-//			continue;
-//		}
+        // distinguish primary and secondary master species
+        auto primary = std::regex_match(element_name, std::regex("^[A-Za-z]+$"));
 
-//		s_ptr = s_search(token);
-//		if (s_ptr != NULL)
-//		{
-//            master[count_master-1].s = s_ptr;
-//		}
-//		else
-//		{
-//			ptr1 = token;
-//            get_token(ptr1, token1, &l_z, &l);
-//            master[count_master-1].s = s_store(token1, l_z, FALSE);
-//		}
-		
-//		std::string sname = token;
-//		replace("("," ", ename);
-//		std::istringstream iss(ename);
-//		iss >> ename;
-//		if (ename != "e" && ename != "E" && ename != "Alkalinity" && std::string::npos == sname.find(ename))
-//		{
-//			input_error++;
-//			std::ostringstream oss;
-//			oss << "Master species, " << sname << " must contain the element, " << ename;
-//			error_msg(oss.str().c_str(), CONTINUE);
-//			continue;
-//		}
-
-/*
- *   Read alkalinity for species
- */
-
-/*
- *   Read default gfw for species
- */
-//        i = copy_token(token, ptr, &l);
-//		if (i == DIGIT)
-//		{
-//            sscanf(token, SCANFORMAT, &master[count_master-1].gfw);
-//		}
-//		else if (i == UPPER)
-//		{
-//            master[count_master-1].gfw_formula = string_hsave(token);
-//		}
-//		else
-//		{
-//			input_error++;
-//			if (elts_ptr != NULL)
-//			{
-//				error_string = sformatf(
-//						"Expected gram formula weight for master species, %s, in master species input.",
-//						elts_ptr->name);
-//			}
-//			else
-//			{
-//				error_string = sformatf(
-//						"Expected gram formula weight for master species in master species input.");
-//			}
-//			error_msg(error_string, CONTINUE);
-//			continue;
-//		}
-/*
- *   MAKE LISTS OF PRIMARY AND SECONDARY MASTER SPECIES
- */
-//        if (strchr(master[count_master-1].elt.name, '(') == NULL)
-//		{
-//            master[count_master-1].primary = TRUE;
-//			/* Read gram formula weight for primary */
-//            if (master[count_master-1].elt.name != "E")
-//			{
-//                elts_ptr = master[count_master-1].elt;
-//                i = copy_token(token, ptr, &l);
-//				if (i == DIGIT)
-//				{
-//                    sscanf(token, SCANFORMAT, &elts_ptr->gfw);
-//				}
-//				else
-//				{
-//					input_error++;
-//					if (elts_ptr != NULL)
-//					{
-//						error_string = sformatf(
-//								"Expected gram formula weight for element, %s.",
-//								elts_ptr->name);
-//					}
-//					else
-//					{
-//						error_string = sformatf(
-//								"Expected gram formula weight for element.");
-//					}
-
-//					error_msg(error_string, CONTINUE);
-//					continue;
-//				}
-//			}
-//		}
-//		else
-//		{
-//            master[count_master-1].primary = FALSE;
-//		}
-
+        // initialization
+        master.emplace_back(AQ, elt, s, alk, gfw_formula, gfw, primary);
 	}
-	gfw_map.clear();
 }
-/* ---------------------------------------------------------------------- */
+
 int Phreeqc::
 read_mix(void)
 /* ---------------------------------------------------------------------- */
@@ -5957,21 +5852,17 @@ inline SolutionSpeciesKeywords convertStringToSolutionSpeciesKeywords(std::strin
     }
 }
 
-void Phreeqc::
-
-    read_species(void)
+void Phreeqc::read_species()
 {
 /*
  *   Read data for aqueous species, parse equations
  */
-	int i;
-	int association;
-	struct species *s_ptr;
+    struct species *s_ptr = nullptr;
 	struct elt_list *next_elt;
-    std::string ptr; std::string token;
 	//bool vm_read = false;
-	int return_value, opt, opt_save;
     std::string next_char;
+    int count_opt_list = 24;
+    bool association = true;
 	const char *opt_list[] = {
 		"no_check",				/* 0 */
 		"check",				/* 1 */
@@ -6000,9 +5891,6 @@ void Phreeqc::
 		"vm",		    /* 22, parms for molar volume, a1..a4 and w_ref, I terms */
 		"viscosity"		/* 23, b and d parms for viscosity, (b1 + b2 * exp(-b3 * tc)) * c + (d1 * exp(-d2 * tc)) * c ^ d3 */
 	};
-	int count_opt_list = 24;
-	association = TRUE;
-	s_ptr = NULL;
 /*
  *   Read eqn from file and call parser
  */
@@ -7813,13 +7701,13 @@ read_surface_master_species(void)
 			s_ptr = s_search(token);
 			if (s_ptr != NULL)
 			{
-                master[count_master].s = s_ptr;
+                master[count_master].s = *s_ptr;
 			}
 			else
 			{
 				ptr1 = token;
                 get_token(ptr1, token1, &l_z, &l);
-                master[count_master].s = s_store(token1, l_z, FALSE);
+                master[count_master].s = *s_store(token1, l_z, FALSE);
 			}
             master[count_master].primary = TRUE;
 //            token = master[count_master].elt.name;
@@ -7876,34 +7764,34 @@ add_psi_master_species(std::string token)
 			s_ptr = s_search(token);
 			if (s_ptr != NULL)
 			{
-                master[count_master].s = s_ptr;
+                master[count_master].s = *s_ptr;
 			}
 			else
 			{
-                master[count_master].s = s_store(token, 0.0, FALSE);
+                master[count_master].s = *s_store(token, 0.0, FALSE);
 			}
 			count_elts = 0;
 			paren_count = 0;
 			ptr = token;
             get_elts_in_species(ptr, 1.0);
-            master[count_master].s->next_elt = elt_list_save();
-            master[count_master].s->type = plane;
+            master[count_master].s.next_elt = elt_list_save();
+            master[count_master].s.type = plane;
             master[count_master].primary = TRUE;
-            master[count_master].s->rxn = rxn_alloc(3);
+            master[count_master].s.rxn = rxn_alloc(3);
 			/*
 			 *   Define reaction for psi
 			 */
 			for (i = 0; i < MAX_LOG_K_INDICES; i++)
 			{
-                master[count_master].s->rxn->logk[i] = 0.0;
+                master[count_master].s.rxn->logk[i] = 0.0;
 			}
-            master[count_master].s->rxn->token[0].s =
+            *master[count_master].s.rxn->token[0].s =
                 master[count_master].s;
-            master[count_master].s->rxn->token[0].coef = -1.0;
-            master[count_master].s->rxn->token[1].s =
+            master[count_master].s.rxn->token[0].coef = -1.0;
+           *master[count_master].s.rxn->token[1].s =
                 master[count_master].s;
-            master[count_master].s->rxn->token[1].coef = 1.0;
-            master[count_master].s->rxn->token[2].s = NULL;
+            master[count_master].s.rxn->token[1].coef = 1.0;
+            master[count_master].s.rxn->token[2].s = NULL;
 			count_master++;
 		}
 	}

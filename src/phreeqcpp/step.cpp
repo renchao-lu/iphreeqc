@@ -322,7 +322,7 @@ xsolution_zero(void)
 	{
         master[i].total = 0.0;
         master[i].total_primary = 0.0;
-        master[i].s->la = 0.0;
+        master[i].s.la = 0.0;
 	}
 	if (pitzer_model == TRUE || sit_model == TRUE)
 	{
@@ -396,7 +396,7 @@ add_solution(cxxSolution *solution_ptr, LDBLE extensive, LDBLE intensive)
 			master_ptr = master_bsearch(jit->first.c_str());
 			if (master_ptr != NULL)
 			{
-				master_ptr->s->la += jit->second * intensive;
+                master_ptr->s.la += jit->second * intensive;
 			}
 		}
 	}
@@ -439,19 +439,20 @@ add_exchange(cxxExchange *exchange_ptr)
 		cxxNameDouble::iterator it = nd.begin();
 		for ( ; it != nd.end(); it++)
 		{
-            struct element elt_ptr = element_store(it->first.c_str());
-			LDBLE coef = it->second;
-            assert(&elt_ptr != nullptr && elt_ptr.primary != NULL);
-            master_ptr = elt_ptr.primary;
-			if (master_ptr->s == s_hplus)
+            //            struct element elt_ptr =
+            //            element_store(it->first.c_str());
+            LDBLE coef = it->second;
+            //            assert(&elt_ptr != nullptr && elt_ptr.primary !=
+            //            NULL); master_ptr = elt_ptr.primary;
+//            if (master_ptr->s == s_hplus)
 			{
 				total_h_x += coef;
 			}
-			else if (master_ptr->s == s_h2o)
+//			else if (master_ptr->s == s_h2o)
 			{
 				total_o_x += coef;
 			}
-			else
+//			else
 			{
 				master_ptr->total += coef;
 			}
@@ -463,7 +464,7 @@ add_exchange(cxxExchange *exchange_ptr)
 		{
             if (master[i].type == EX && master[i].total > 0)
 			{
-                master[i].s->la = log10(0.1 * master[i].total);
+                master[i].s.la = log10(0.1 * master[i].total);
 			}
 		}
 	}
@@ -475,14 +476,15 @@ add_exchange(cxxExchange *exchange_ptr)
 			cxxNameDouble nd(comp_ref.Get_totals());
 			cxxNameDouble::iterator it = nd.begin();
 			for ( ; it != nd.end(); it++)
-			{	
-                struct element elt_ptr = element_store(it->first.c_str());
-                assert(elt_ptr.master);
-                if (elt_ptr.master->type == EX)
-				{
-                    elt_ptr.master->s->la = comp_ref.Get_la();
-				}
-			}
+			{
+                //                struct element elt_ptr =
+                //                element_store(it->first.c_str());
+                //                assert(elt_ptr.master);
+                //                if (elt_ptr.master->type == EX)
+                //				{
+                //                    elt_ptr.master->s->la = comp_ref.Get_la();
+                //				}
+            }
 			cb_x += comp_ref.Get_charge_balance();
 		}
 	}
@@ -505,14 +507,16 @@ add_surface(cxxSurface *surface_ptr)
 	for (size_t i = 0; i < surface_ptr->Get_surface_comps().size(); i++)
 	{
 		cxxSurfaceComp *comp_ptr = &(surface_ptr->Get_surface_comps()[i]);
-        struct element elt_ptr = element_store(comp_ptr->Get_master_element().c_str());
-        if (elt_ptr.master == NULL)
-		{
-			error_msg(sformatf("Data not defined for master in SURFACE, %s\n", comp_ptr->Get_formula().c_str()), STOP);
-		}
-        struct master *master_i_ptr = elt_ptr.master;
+        //        struct element elt_ptr =
+        //        element_store(comp_ptr->Get_master_element().c_str()); if
+        //        (elt_ptr.master == NULL)
+        //		{
+        //			error_msg(sformatf("Data not defined for master in SURFACE,
+        //%s\n", comp_ptr->Get_formula().c_str()), STOP);
+        //		}
+        //        struct master *master_i_ptr = elt_ptr.master;
 
-		if (surface_ptr->Get_type() == cxxSurface::NO_EDL)
+        if (surface_ptr->Get_type() == cxxSurface::NO_EDL)
 		{
 			cb_x += comp_ptr->Get_charge_balance();
 		}
@@ -524,8 +528,8 @@ add_surface(cxxSurface *surface_ptr)
 #endif
 		if (!surface_ptr->Get_new_def())
 		{
-			master_i_ptr->s->la = comp_ptr->Get_la();
-		}
+            //			master_i_ptr->s->la = comp_ptr->Get_la();
+        }
 /*
  *   Add surface and specifically sorbed elements
  */
@@ -533,28 +537,30 @@ add_surface(cxxSurface *surface_ptr)
 		for (jit = comp_ptr->Get_totals().begin(); jit != comp_ptr->Get_totals().end(); jit++)
 		{
 			LDBLE coef = jit->second;
-            struct element elt_j_ptr = element_store(jit->first.c_str());
-            struct master *master_j_ptr = elt_j_ptr.primary;
-			if (master_j_ptr == NULL)
-			{
-				input_error++;
-				error_string = sformatf( "Element not defined in database, %s.",
-                        elt_j_ptr.name);
-				error_msg(error_string, STOP);
-			}
-			if (master_j_ptr->s == s_hplus)
-			{
-				total_h_x += coef;
-			}
-			else if (master_j_ptr->s == s_h2o)
-			{
-				total_o_x += coef;
-			}
-			else
-			{
-				master_j_ptr->total += coef;
-			}
-		}
+            //            struct element elt_j_ptr =
+            //            element_store(jit->first.c_str()); struct master
+            //            *master_j_ptr = elt_j_ptr.primary;
+            //			if (master_j_ptr == NULL)
+            //			{
+            //				input_error++;
+            //				error_string = sformatf( "Element not defined in database,
+            //%s.",
+            //                        elt_j_ptr.name);
+            //				error_msg(error_string, STOP);
+            //			}
+            //			if (master_j_ptr->s == s_hplus)
+            //			{
+            //				total_h_x += coef;
+            //			}
+            //			else if (master_j_ptr->s == s_h2o)
+            //			{
+            //				total_o_x += coef;
+            //			}
+            //			else
+            //			{
+            //				master_j_ptr->total += coef;
+            //			}
+        }
 	}
 	if (surface_ptr->Get_type() != cxxSurface::DDL && surface_ptr->Get_type() != cxxSurface::CCM && surface_ptr->Get_type() != cxxSurface::CD_MUSIC)
 		return (OK);
@@ -568,7 +574,7 @@ add_surface(cxxSurface *surface_ptr)
 		if (!surface_ptr->Get_new_def())
 		{
 			struct master *master_ptr = surface_get_psi_master(charge_ptr->Get_name().c_str(), SURF_PSI);
-			master_ptr->s->la = charge_ptr->Get_la_psi();
+            master_ptr->s.la = charge_ptr->Get_la_psi();
 		}
 /*
  *   Add diffuse layer elements (including water in Debye layer)
@@ -579,21 +585,22 @@ add_surface(cxxSurface *surface_ptr)
 			for (jit = charge_ptr->Get_diffuse_layer_totals().begin(); jit != charge_ptr->Get_diffuse_layer_totals().end(); jit++)
 			{
 				LDBLE coef = jit->second;
-                struct element elt_j_ptr = element_store(jit->first.c_str());
-                struct master * master_j_ptr = elt_j_ptr.master;
-				if (master_j_ptr->s == s_hplus)
-				{
-					total_h_x += coef;
-				}
-				else if (master_j_ptr->s == s_h2o)
-				{
-					total_o_x += coef;
-				}
-				else
-				{
-					master_j_ptr->total += coef;
-				}
-			}
+                //                struct element elt_j_ptr =
+                //                element_store(jit->first.c_str()); struct
+                //                master * master_j_ptr = elt_j_ptr.master;
+                //				if (master_j_ptr->s == s_hplus)
+                //				{
+                //					total_h_x += coef;
+                //				}
+                //				else if (master_j_ptr->s == s_h2o)
+                //				{
+                //					total_o_x += coef;
+                //				}
+                //				else
+                //				{
+                //					master_j_ptr->total += coef;
+                //				}
+            }
 		}
 	}
 	return (OK);
@@ -710,19 +717,19 @@ add_pp_assemblage(cxxPPassemblage *pp_assemblage_ptr)
 			for (i = 0; i < count_elts; i++)
 			{
                 master_ptr = elt_list[i].elt.primary;
-				if (master_ptr->s == s_hplus)
+//				if (master_ptr->s == s_hplus)
 				{
 					continue;
 				}
-				else if (master_ptr->s == s_h2o)
+//				else if (master_ptr->s == s_h2o)
 				{
 					continue;
 				}
-				else if (master_ptr->total > MIN_TOTAL)
+//				else if (master_ptr->total > MIN_TOTAL)
 				{
 					continue;
 				}
-				else
+//				else
 				{
 					total = (-master_ptr->total + 1e-10) / elt_list[i].coef;
 					if (amount_to_add < total)
@@ -746,15 +753,15 @@ add_pp_assemblage(cxxPPassemblage *pp_assemblage_ptr)
 			for (i = 0; i < count_elts; i++)
 			{
                 master_ptr = elt_list[i].elt.primary;
-				if (master_ptr->s == s_hplus)
+//				if (master_ptr->s == s_hplus)
 				{
 					total_h_x += elt_list[i].coef * amount_to_add;
 				}
-				else if (master_ptr->s == s_h2o)
+//				else if (master_ptr->s == s_h2o)
 				{
 					total_o_x += elt_list[i].coef * amount_to_add;
 				}
-				else
+//				else
 				{
 					master_ptr->total += elt_list[i].coef * amount_to_add;
 				}
@@ -779,18 +786,18 @@ check_pp_assemblage(cxxPPassemblage *pp_assemblage_ptr)
 	cxxNameDouble::iterator it;
 	for (it = nd.begin(); it != nd.end(); it++)
 	{
-        struct element elt_ptr = element_store(it->first.c_str());
-        if (&elt_ptr == nullptr || elt_ptr.primary == NULL)
-		{
-			return FALSE;
-		}
+        //        struct element elt_ptr = element_store(it->first.c_str());
+        //        if (&elt_ptr == nullptr || elt_ptr.primary == NULL)
+        //		{
+        //			return FALSE;
+        //		}
 
-        master_ptr = elt_ptr.primary;
-		if (master_ptr->s == s_h2o || master_ptr->s == s_hplus)
-			continue;
-		if (master_ptr->total > MIN_TOTAL)
-			continue;
-		return (FALSE);
+        //        master_ptr = elt_ptr.primary;
+        //		if (master_ptr->s == s_h2o || master_ptr->s == s_hplus)
+        //			continue;
+        //		if (master_ptr->total > MIN_TOTAL)
+        //			continue;
+        return (FALSE);
 	}
 	return (TRUE);
 }
@@ -901,34 +908,34 @@ add_reaction(cxxReaction *reaction_ptr, int step_number, LDBLE step_fraction)
 	cxxNameDouble::const_iterator it = reaction_ptr->Get_elementList().begin();
 	for ( ; it != reaction_ptr->Get_elementList().end(); it++)
 	{
-        struct element elt_ptr = element_store(it->first.c_str());
-		LDBLE coef = it->second;
-        if (&elt_ptr == nullptr)
-		{
-			assert (false);
-		}
-		else
-		{
-            master_ptr = elt_ptr.primary;
-			if (master_ptr == NULL)
-			{
-				// error msg has been called in reaction_calc
-				continue;
-			}
-			if (master_ptr->s == s_hplus)
-			{
-				total_h_x += coef * step_x * step_fraction;
-			}
-			else if (master_ptr->s == s_h2o)
-			{
-				total_o_x += coef * step_x * step_fraction;
-			}
-			else
-			{
-				master_ptr->total += coef * step_x * step_fraction;
-			}
-		}
-	}
+        //        struct element elt_ptr = element_store(it->first.c_str());
+        //		LDBLE coef = it->second;
+        //        if (&elt_ptr == nullptr)
+        //		{
+        //			assert (false);
+        //		}
+        //		else
+        //		{
+        //            master_ptr = elt_ptr.primary;
+        //			if (master_ptr == NULL)
+        //			{
+        //				// error msg has been called in reaction_calc
+        //				continue;
+        //			}
+        //			if (master_ptr->s == s_hplus)
+        //			{
+        //				total_h_x += coef * step_x * step_fraction;
+        //			}
+        //			else if (master_ptr->s == s_h2o)
+        //			{
+        //				total_o_x += coef * step_x * step_fraction;
+        //			}
+        //			else
+        //			{
+        //				master_ptr->total += coef * step_x * step_fraction;
+        //			}
+        //		}
+    }
 	return (OK);
 }
 /* ---------------------------------------------------------------------- */
@@ -1033,9 +1040,9 @@ add_gas_phase(cxxGasPhase *gas_phase_ptr)
  */
 	if (count_elts > 0)
 	{
-		qsort(elt_list, (size_t) count_elts,
-			  (size_t) sizeof(struct elt_list), elt_list_compare);
-		elt_list_combine();
+        //		qsort(elt_list, (size_t) count_elts,
+        //			  (size_t) sizeof(struct elt_list), elt_list_compare);
+        elt_list_combine();
 	}
 /*
  *   Add gas elements to totals
@@ -1043,15 +1050,15 @@ add_gas_phase(cxxGasPhase *gas_phase_ptr)
 	for (i = 0; i < count_elts; i++)
 	{
         master_ptr = elt_list[i].elt.primary;
-		if (master_ptr->s == s_hplus)
+//		if (master_ptr->s == s_hplus)
 		{
 			total_h_x += elt_list[i].coef;
 		}
-		else if (master_ptr->s == s_h2o)
+//		else if (master_ptr->s == s_h2o)
 		{
 			total_o_x += elt_list[i].coef;
 		}
-		else
+//		else
 		{
 			master_ptr->total += elt_list[i].coef;
 		}
@@ -1107,19 +1114,19 @@ add_ss_assemblage(cxxSSassemblage *ss_assemblage_ptr)
 				for (k = 0; k < count_elts; k++)
 				{
                     master_ptr = elt_list[k].elt.primary;
-					if (master_ptr->s == s_hplus)
-					{
-						continue;
-					}
-					else if (master_ptr->s == s_h2o)
-					{
-						continue;
-					}
-					else if (master_ptr->total > MIN_TOTAL_SS)
-					{
-						continue;
-					}
-					else
+//					if (master_ptr->s == s_hplus)
+//					{
+//						continue;
+//					}
+//					else if (master_ptr->s == s_h2o)
+//					{
+//						continue;
+//					}
+//					else if (master_ptr->total > MIN_TOTAL_SS)
+//					{
+//						continue;
+//					}
+//					else
 					{
 						total =
 							(-master_ptr->total + 1e-10) / elt_list[k].coef;
@@ -1144,15 +1151,15 @@ add_ss_assemblage(cxxSSassemblage *ss_assemblage_ptr)
 				for (k = 0; k < count_elts; k++)
 				{
                     master_ptr = elt_list[k].elt.primary;
-					if (master_ptr->s == s_hplus)
+//					if (master_ptr->s == s_hplus)
 					{
 						total_h_x += elt_list[k].coef * amount_to_add;
 					}
-					else if (master_ptr->s == s_h2o)
+//					else if (master_ptr->s == s_h2o)
 					{
 						total_o_x += elt_list[k].coef * amount_to_add;
 					}
-					else
+//					else
 					{
 						master_ptr->total += elt_list[k].coef * amount_to_add;
 					}
@@ -1180,31 +1187,31 @@ add_kinetics(cxxKinetics *kinetics_ptr)
 	for (; it != kinetics_ptr->Get_totals().end(); it++)
 	{
 		LDBLE coef = it->second;
-        struct element elt_ptr = element_store(it->first.c_str());
-        if (&elt_ptr == nullptr || (master_ptr = elt_ptr.primary) == NULL)
-		{
-			input_error++;
-			error_string = sformatf(
-					"Element %s in kinetic reaction not found in database.",
-					it->first.c_str());
-			error_msg(error_string, STOP);
-		}
-		else
-		{
-			if (master_ptr->s == s_hplus)
-			{
-				total_h_x += coef;
-			}
-			else if (master_ptr->s == s_h2o)
-			{
-				total_o_x += coef;
-			}
-			else
-			{
-				master_ptr->total += coef;
-			}
-		}
-	}
+        //        struct element elt_ptr = element_store(it->first.c_str());
+        //        if (&elt_ptr == nullptr || (master_ptr = elt_ptr.primary) ==
+        //        NULL)
+        //		{
+        //			input_error++;
+        //			error_string = sformatf(
+        //					"Element %s in kinetic reaction not found in
+        //database.", 					it->first.c_str()); 			error_msg(error_string, STOP);
+        //		}
+        //		else
+        //		{
+        //			if (master_ptr->s == s_hplus)
+        //			{
+        //				total_h_x += coef;
+        //			}
+        //			else if (master_ptr->s == s_h2o)
+        //			{
+        //				total_o_x += coef;
+        //			}
+        //			else
+        //			{
+        //				master_ptr->total += coef;
+        //			}
+        //		}
+    }
 	return (OK);
 }
 /* ---------------------------------------------------------------------- */
@@ -1242,19 +1249,19 @@ gas_phase_check(cxxGasPhase *gas_phase_ptr)
 			for (int j = 0; j < count_elts; j++)
 			{
                 master_ptr = elt_list[j].elt.primary;
-				if (master_ptr->s == s_hplus)
-				{
-					continue;
-				}
-				else if (master_ptr->s == s_h2o)
-				{
-					continue;
-				}
-				else if (master_ptr->total > MIN_TOTAL)
-				{
-					continue;
-				}
-				else
+//				if (master_ptr->s == s_hplus)
+//				{
+//					continue;
+//				}
+//				else if (master_ptr->s == s_h2o)
+//				{
+//					continue;
+//				}
+//				else if (master_ptr->total > MIN_TOTAL)
+//				{
+//					continue;
+//				}
+//				else
 				{
 					if (state != ADVECTION && state != TRANSPORT
 						&& state != PHAST)
@@ -1314,19 +1321,19 @@ pp_assemblage_check(cxxPPassemblage *pp_assemblage_ptr)
 			for (int i = 0; i < count_elts; i++)
 			{
                 master_ptr = elt_list[i].elt.primary;
-				if (master_ptr->s == s_hplus)
-				{
-					continue;
-				}
-				else if (master_ptr->s == s_h2o)
-				{
-					continue;
-				}
-				else if (master_ptr->total > MIN_TOTAL)
-				{
-					continue;
-				}
-				else
+//				if (master_ptr->s == s_hplus)
+//				{
+//					continue;
+//				}
+//				else if (master_ptr->s == s_h2o)
+//				{
+//					continue;
+//				}
+//				else if (master_ptr->total > MIN_TOTAL)
+//				{
+//					continue;
+//				}
+//				else
 				{
 					if (state != ADVECTION && state != TRANSPORT
 						&& state != PHAST)
@@ -1388,19 +1395,19 @@ ss_assemblage_check(cxxSSassemblage *ss_assemblage_ptr)
 				for (l = 0; l < count_elts; l++)
 				{
                     master_ptr = elt_list[l].elt.primary;
-					if (master_ptr->s == s_hplus)
-					{
-						continue;
-					}
-					else if (master_ptr->s == s_h2o)
-					{
-						continue;
-					}
-					else if (master_ptr->total > MIN_TOTAL_SS)
-					{
-						continue;
-					}
-					else
+//					if (master_ptr->s == s_hplus)
+//					{
+//						continue;
+//					}
+//					else if (master_ptr->s == s_h2o)
+//					{
+//						continue;
+//					}
+//					else if (master_ptr->total > MIN_TOTAL_SS)
+//					{
+//						continue;
+//					}
+//					else
 					{
 						if (state != ADVECTION && state != TRANSPORT
 							&& state != PHAST)
@@ -1459,8 +1466,8 @@ solution_check(void)
 		//	master_ptr->total = 0;
 		//	continue;
 		//}
-		if (master_ptr->s == s_eminus || master_ptr->s == s_h2o
-			|| master_ptr->s == s_hplus || master_ptr->s == s_h3oplus)
+//		if (master_ptr->s == s_eminus || master_ptr->s == s_h2o
+//			|| master_ptr->s == s_hplus || master_ptr->s == s_h3oplus)
 		{
 			master_ptr->total = 0;
 			continue;

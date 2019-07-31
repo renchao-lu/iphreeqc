@@ -2086,13 +2086,13 @@ jacobian_sums(void)
 					}
 					my_array[x[i]->number * (count_unknowns + 1) + x[i]->number] -=
 						sinh_constant * sqrt(mu_x) *
-						cosh(x[i]->master[0]->s->la * LOG_10);
+                        cosh(x[i]->master[0]->s.la * LOG_10);
 					if (mu_unknown != NULL)
 					{
 						my_array[x[i]->number * (count_unknowns + 1) +
 							mu_unknown->number] -=
 							0.5 * sinh_constant / sqrt(mu_x) *
-							sinh(x[i]->master[0]->s->la * LOG_10);
+                            sinh(x[i]->master[0]->s.la * LOG_10);
 					}
 				}
 			}
@@ -2377,7 +2377,7 @@ molalities(int allow_overflow)
 	{
         if (master[i].in == REWRITE)
 		{
-            master[i].s->la = master[i].s->lm + master[i].s->lg;
+            master[i].s.la = master[i].s.lm + master[i].s.lg;
 		}
 	}
 	if (dl_type_x != cxxSurface::NO_DL)
@@ -3595,12 +3595,12 @@ reset(void)
 						x[i]->moles = 0.0;
 						if (fabs(x[i]->f) > MIN_RELATED_SURFACE)
 						{
-							x[i]->master[0]->s->la -= 5.;
+                            x[i]->master[0]->s.la -= 5.;
 						}
 					}
 					if (old_moles <= 0 && x[i]->moles > 0)
 					{
-						x[i]->master[0]->s->la = log10(x[i]->moles) - 5.;
+                        x[i]->master[0]->s.la = log10(x[i]->moles) - 5.;
 					}
 				}
 				else if (comp_ptr->Get_phase_name().size() > 0)
@@ -3611,7 +3611,7 @@ reset(void)
 						x[i]->moles = 0.0;
 						if (fabs(x[i]->f) > MIN_RELATED_SURFACE)
 						{
-							x[i]->master[0]->s->la -= 5.;
+                            x[i]->master[0]->s.la -= 5.;
 						}
 					}
 				}
@@ -3622,7 +3622,7 @@ reset(void)
 				x[i]->moles = 0.0;
 				if (fabs(x[i]->f) > MIN_RELATED_SURFACE)
 				{
-					x[i]->master[0]->s->la -= 5.;
+                    x[i]->master[0]->s.la -= 5.;
 				}
 			}
 			if (debug_model == TRUE)
@@ -3630,11 +3630,11 @@ reset(void)
 				output_msg(sformatf(
 						   "%-10.10s %-9s%10.5f   %-9s%10.5f   %-6s%10.2e   "
 						   "%-8s%10.2e\n", x[i]->description, "old la",
-						   (double) x[i]->master[0]->s->la, "new la",
-						   (double) x[i]->master[0]->s->la + (double) d,
+                           (double) x[i]->master[0]->s.la, "new la",
+                           (double) x[i]->master[0]->s.la + (double) d,
 						   "delta", (double) delta[i], "delta/c", (double) d));
 			}
-			x[i]->master[0]->s->la += d;
+            x[i]->master[0]->s.la += d;
 			//if (x[i]->master[0]->s->la < (double) (DBL_MIN_10_EXP + 10))
 			//	x[i]->master[0]->s->la = (double) (DBL_MIN_10_EXP + 10);
 
@@ -3668,12 +3668,12 @@ reset(void)
 				output_msg(sformatf(
 						   "%-10.10s %-9s%10.5f   %-9s%10.5f   %-6s%10.2e\n",
 						   x[i]->description, "old f*psi",
-						   (double) x[i]->master[0]->s->la, "new f*psi",
-						   (double) x[i]->master[0]->s->la + (double) d,
+                           (double) x[i]->master[0]->s.la, "new f*psi",
+                           (double) x[i]->master[0]->s.la + (double) d,
 						   "delta", (double) d));
 			}
 
-			x[i]->master[0]->s->la += d;
+            x[i]->master[0]->s.la += d;
 
 			/* recalculate g's for component */
 			if (dl_type_x != cxxSurface::NO_DL
@@ -3727,11 +3727,11 @@ reset(void)
 				output_msg(sformatf(
 						   "%-10.10s %-9s%10.5f   %-9s%10.5f   %-6s%10.2e   %-8s%10.2e\n",
 						   x[i]->description, "old la",
-						   (double) x[i]->master[0]->s->la, "new la",
-						   (double) (x[i]->master[0]->s->la + d), "delta",
+                           (double) x[i]->master[0]->s.la, "new la",
+                           (double) (x[i]->master[0]->s.la + d), "delta",
 						   (double) delta[i], "delta/c", (double) d));
 			}
-			x[i]->master[0]->s->la += d;
+            x[i]->master[0]->s.la += d;
 /*   Charge balance */
 		}
 		else if (x[i]->type == CB)
@@ -3743,11 +3743,11 @@ reset(void)
 				output_msg(sformatf(
 						   "%-10.10s %-9s%10.5f   %-9s%10.5f   %-6s%10.2e   %-8s%10.2e\n",
 						   x[i]->description, "old la",
-						   (double) x[i]->master[0]->s->la, "new la",
-						   (double) (x[i]->master[0]->s->la + d), "delta",
+                           (double) x[i]->master[0]->s.la, "new la",
+                           (double) (x[i]->master[0]->s.la + d), "delta",
 						   (double) delta[i], "delta/c", (double) d));
 			}
-			x[i]->master[0]->s->la += d;
+            x[i]->master[0]->s.la += d;
 /*   Ionic strength */
 		}
 		else if (x[i]->type == MU)
@@ -3792,8 +3792,8 @@ reset(void)
 				output_msg(sformatf(
 						   "%-10.10s %-9s%10.5f   %-9s%10.5f   %-6s%10.2e   %-8s%10.2e\n",
 						   x[i]->description, "old la",
-						   (double) x[i]->master[0]->s->la, "new la",
-						   (double) (x[i]->master[0]->s->la + d), "delta",
+                           (double) x[i]->master[0]->s.la, "new la",
+                           (double) (x[i]->master[0]->s.la + d), "delta",
 						   (double) delta[i], "delta/c", (double) d));
 			}
 			s_h2o->la += d;
@@ -3809,8 +3809,8 @@ reset(void)
 				output_msg(sformatf(
 						   "%-10.10s %-9s%10.5f   %-9s%10.5f   %-6s%10.2e   %-8s%10.2e\n",
 						   x[i]->description, "old pe",
-						   (double) x[i]->master[0]->s->la, "new pe",
-						   (double) (x[i]->master[0]->s->la + d), "delta",
+                           (double) x[i]->master[0]->s.la, "new pe",
+                           (double) (x[i]->master[0]->s.la + d), "delta",
 						   (double) delta[i], "delta/c", (double) d));
 			}
 			s_eminus->la += d;
@@ -3844,12 +3844,12 @@ reset(void)
 						   (double) mass_water_aq_x,
 						   (double) mass_water_surfaces_x));
 			}
-			x[i]->master[0]->s->moles = mass_water_aq_x / gfw_water;
+            x[i]->master[0]->s.moles = mass_water_aq_x / gfw_water;
 
 			if (use.Get_surface_ptr() != NULL)
 			{
 				if (use.Get_surface_ptr()->Get_debye_lengths() > 0)
-					x[i]->master[0]->s->moles = mass_water_bulk_x / gfw_water;
+                    x[i]->master[0]->s.moles = mass_water_bulk_x / gfw_water;
 			}
 
 			if (mass_water_aq_x < 1e-10)
@@ -4391,7 +4391,7 @@ residuals(void)
 			}
 			else
 			{
-				residual[i] = sinh_constant * sqrt(mu_x) * sinh(x[i]->master[0]->s->la * LOG_10) -
+                residual[i] = sinh_constant * sqrt(mu_x) * sinh(x[i]->master[0]->s.la * LOG_10) -
 					x[i]->f * F_C_MOL / (charge_ptr->Get_specific_area() * charge_ptr->Get_grams());
 			}
 			if (debug_model == TRUE)
@@ -4419,13 +4419,13 @@ residuals(void)
 						   (double) (charge_ptr->Get_specific_area() *
 									 charge_ptr->Get_grams() / F_C_MOL *
 									 sinh_constant * sqrt(mu_x) *
-									 sinh(x[i]->master[0]->s->la * LOG_10))));
+                                     sinh(x[i]->master[0]->s.la * LOG_10))));
 				output_msg(sformatf( "\t			 FPsi/2RT %e\n",
-						   (double) (x[i]->master[0]->s->la * LOG_10)));
+                           (double) (x[i]->master[0]->s.la * LOG_10)));
 				output_msg(sformatf( "\t	   Sinh(FPsi/2RT) %e\n",
-						   sinh(x[i]->master[0]->s->la * LOG_10)));
+                           sinh(x[i]->master[0]->s.la * LOG_10)));
 				output_msg(sformatf( "\t	   Cosh(FPsi/2RT) %e\n",
-						   cosh(x[i]->master[0]->s->la * LOG_10)));
+                           cosh(x[i]->master[0]->s.la * LOG_10)));
 				output_msg(sformatf( "\t		   Sqrt(mu_x) %e\n",
 						   sqrt(mu_x)));
 			}
@@ -4467,18 +4467,18 @@ residuals(void)
 				
 				cd_psi.clear();
 				
-				cd_psi.push_back(-(master_ptr->s->la * LOG_10) * R_KJ_DEG_MOL * tk_x /
+                cd_psi.push_back(-(master_ptr->s.la * LOG_10) * R_KJ_DEG_MOL * tk_x /
 					F_KJ_V_EQ);
-				cd_psi.push_back(-(master_ptr1->s->la * LOG_10) * R_KJ_DEG_MOL * tk_x /
+                cd_psi.push_back(-(master_ptr1->s.la * LOG_10) * R_KJ_DEG_MOL * tk_x /
 					F_KJ_V_EQ);
-				cd_psi.push_back(-(master_ptr2->s->la * LOG_10) * R_KJ_DEG_MOL * tk_x /
+                cd_psi.push_back(-(master_ptr2->s.la * LOG_10) * R_KJ_DEG_MOL * tk_x /
 					F_KJ_V_EQ);
 				sum = 0;
 				for (j = 0; j < x[i]->count_comp_unknowns; j++)
 				{
 					sum +=
 						x[i]->comp_unknowns[j]->moles *
-                        x[i]->comp_unknowns[j]->master[0]->s->charge;
+                        x[i]->comp_unknowns[j]->master[0]->s.charge;
 				}
 				charge_ptr->Set_sigma0(
 					(x[i]->f +
@@ -4515,7 +4515,7 @@ residuals(void)
 			else
 			{
 				residual[i] =
-					charge_ptr->Get_capacitance0() * x[i]->master[0]->s->la * 2 * R_KJ_DEG_MOL *
+                    charge_ptr->Get_capacitance0() * x[i]->master[0]->s.la * 2 * R_KJ_DEG_MOL *
 								 tk_x * LOG_10 / F_KJ_V_EQ -
 					x[i]->f * F_C_MOL / (charge_ptr->Get_specific_area() *
 										 charge_ptr->Get_grams());
@@ -4542,10 +4542,10 @@ residuals(void)
 				output_msg(sformatf( "\t				grams %g\n",
 						   (double) charge_ptr->Get_grams()));
 				output_msg(sformatf( "\tCharge from potential %e eq\n",
-						   (double) (charge_ptr->Get_capacitance0() * x[i]->master[0]->s->la * 2 * R_KJ_DEG_MOL *
+                           (double) (charge_ptr->Get_capacitance0() * x[i]->master[0]->s.la * 2 * R_KJ_DEG_MOL *
 								 tk_x * LOG_10 / F_KJ_V_EQ)));
 				output_msg(sformatf( "\t			      Psi %e\n",
-						   (double) (x[i]->master[0]->s->la * 2 * R_KJ_DEG_MOL *
+                           (double) (x[i]->master[0]->s.la * 2 * R_KJ_DEG_MOL *
 								 tk_x * LOG_10 / F_KJ_V_EQ)));
 			}
 			if (charge_ptr->Get_grams() > MIN_RELATED_SURFACE
@@ -4642,7 +4642,7 @@ residuals(void)
 				master_ptr2 =
 					surface_get_psi_master(charge_ptr->Get_name().c_str(),
 										   SURF_PSI2);
-				negfpsirt = master_ptr2->s->la * LOG_10;
+                negfpsirt = master_ptr2->s.la * LOG_10;
 				sum = 0;
 				sum1 = 0;
 				for (j = 0; j < count_s_x; j++)
@@ -4723,15 +4723,15 @@ residuals(void)
 				output_msg(sformatf( "\tResidual 2	 %14e\n",
 						   (double) residual[master_ptr2->unknown->number]));
 				output_msg(sformatf( "\texp(-FPsi0/RT)     %14e",
-						   (double) pow((LDBLE) 10., master_ptr->s->la)));
+                           (double) pow((LDBLE) 10., master_ptr->s.la)));
 				output_msg(sformatf( "\tPsi0	       %14e\n",
 						   (double) cd_psi[0]));
 				output_msg(sformatf( "\texp(-FPsi1/RT)     %14e",
-						   (double) pow((LDBLE) 10., master_ptr1->s->la)));
+                           (double) pow((LDBLE) 10., master_ptr1->s.la)));
 				output_msg(sformatf( "\tPsi1	       %14e\n",
 						   (double) cd_psi[1]));
 				output_msg(sformatf( "\texp(-FPsi2/RT)     %14e",
-						   (double) pow((LDBLE) 10., master_ptr2->s->la)));
+                           (double) pow((LDBLE) 10., master_ptr2->s.la)));
 				output_msg(sformatf( "\tPsi2	       %14e\n",
 						   (double) cd_psi[2]));
 				output_msg(sformatf( "\tf 0		%14e",
@@ -4859,45 +4859,45 @@ initial_guesses(void)
 		if (x[i]->type < CB)
 		{
 			mu_x +=
-                x[i]->moles / mass_water_aq_x * 0.5 * x[i]->master[0]->s->charge *
-                x[i]->master[0]->s->charge;
-			x[i]->master[0]->s->la = log10(x[i]->moles / mass_water_aq_x);
+                x[i]->moles / mass_water_aq_x * 0.5 * x[i]->master[0]->s.charge *
+                x[i]->master[0]->s.charge;
+            x[i]->master[0]->s.la = log10(x[i]->moles / mass_water_aq_x);
 		}
 		else if (x[i]->type == CB)
 		{
-			x[i]->master[0]->s->la =
+            x[i]->master[0]->s.la =
 				log10(0.001 * x[i]->moles / mass_water_aq_x);
 		}
 		else if (x[i]->type == SOLUTION_PHASE_BOUNDARY)
 		{
-			x[i]->master[0]->s->la =
+            x[i]->master[0]->s.la =
 				log10(0.001 * x[i]->moles / mass_water_aq_x);
 		}
 		else if (x[i]->type == EXCH)
 		{
 			if (x[i]->moles <= 0)
 			{
-				x[i]->master[0]->s->la = MIN_RELATED_LOG_ACTIVITY;
+                x[i]->master[0]->s.la = MIN_RELATED_LOG_ACTIVITY;
 			}
 			else
 			{
-				x[i]->master[0]->s->la = log10(x[i]->moles);
+                x[i]->master[0]->s.la = log10(x[i]->moles);
 			}
 		}
 		else if (x[i]->type == SURFACE)
 		{
 			if (x[i]->moles <= 0)
 			{
-				x[i]->master[0]->s->la = MIN_RELATED_LOG_ACTIVITY;
+                x[i]->master[0]->s.la = MIN_RELATED_LOG_ACTIVITY;
 			}
 			else
 			{
-				x[i]->master[0]->s->la = log10(0.1 * x[i]->moles);
+                x[i]->master[0]->s.la = log10(0.1 * x[i]->moles);
 			}
 		}
 		else if (x[i]->type == SURFACE_CB)
 			{
-				x[i]->master[0]->s->la = 0.0;
+                x[i]->master[0]->s.la = 0.0;
 			}
 	}
 	return (OK);
@@ -4980,7 +4980,7 @@ revise_guesses(void)
 							   "\n\t%5s  at beginning of set %d: %e\t%e\t%e\n",
 							   x[i]->description, l_iter, (double) x[i]->sum,
 							   (double) x[i]->moles,
-							   (double) x[i]->master[0]->s->la));
+                               (double) x[i]->master[0]->s.la));
 				}
 				if (fabs(x[i]->moles) < 1e-30)
 					x[i]->moles = 0;
@@ -4993,15 +4993,15 @@ revise_guesses(void)
 				}
 				if (f == 0 && x[i]->moles == 0)
 				{
-					x[i]->master[0]->s->la = MIN_RELATED_LOG_ACTIVITY;
+                    x[i]->master[0]->s.la = MIN_RELATED_LOG_ACTIVITY;
 					continue;
 				}
 				else if (f == 0)
 				{
 					repeat = TRUE;
-					x[i]->master[0]->s->la += 5;
-					if (x[i]->master[0]->s->la < -999.)
-						x[i]->master[0]->s->la = MIN_RELATED_LOG_ACTIVITY;
+                    x[i]->master[0]->s.la += 5;
+                    if (x[i]->master[0]->s.la < -999.)
+                        x[i]->master[0]->s.la = MIN_RELATED_LOG_ACTIVITY;
 				}
 				else if (fail == TRUE && f < 1.5 * fabs(x[i]->moles))
 				{
@@ -5013,7 +5013,7 @@ revise_guesses(void)
 					weight = (f < 1e-5 * fabs(x[i]->moles)) ? 0.3 : 1.0;
 					if (x[i]->moles <= 0)
 					{
-						x[i]->master[0]->s->la = MIN_RELATED_LOG_ACTIVITY;
+                        x[i]->master[0]->s.la = MIN_RELATED_LOG_ACTIVITY;
 					}
 					else
 					{
@@ -5049,17 +5049,17 @@ revise_guesses(void)
 							d1 = weight * log10(d);
 							if (PHR_ISFINITE((double) d1) /*&& d1 < 5.0*/)
 							{
-								x[i]->master[0]->s->la += d1;
+                                x[i]->master[0]->s.la += d1;
 							}
 							else
 							{
 								warning_msg("Adjustment to la in revise_guesses was NaN\n");
-								x[i]->master[0]->s->la += 5.0;
+                                x[i]->master[0]->s.la += 5.0;
 							}
 						}
 						else
 						{
-							x[i]->master[0]->s->la += 5.0;
+                            x[i]->master[0]->s.la += 5.0;
 						}
 #endif
 					}
@@ -5069,7 +5069,7 @@ revise_guesses(void)
 								   "\t%5s not converged in set %d: %e\t%e\t%e\n",
 								   x[i]->description, l_iter,
 								   (double) x[i]->sum, (double) x[i]->moles,
-								   (double) x[i]->master[0]->s->la));
+                                   (double) x[i]->master[0]->s.la));
 					}
 				}
 			}
@@ -5085,7 +5085,7 @@ revise_guesses(void)
 				{
 					repeat = TRUE;
 					weight = (f < 1e-5 * fabs(x[i]->moles)) ? 0.3 : 1.0;
-					x[i]->master[0]->s->la += weight *
+                    x[i]->master[0]->s.la += weight *
 						log10(fabs(x[i]->moles / x[i]->sum));
 					if (debug_set == TRUE)
 					{
@@ -5093,7 +5093,7 @@ revise_guesses(void)
 								   "%s not converged in set. %e\t%e\t%e\n",
 								   x[i]->description, (double) x[i]->sum,
 								   (double) x[i]->moles,
-								   (double) x[i]->master[0]->s->la));
+                                   (double) x[i]->master[0]->s.la));
 					}
 				}
 			}
@@ -5613,7 +5613,7 @@ numerical_jacobian(void)
 		case SURFACE_CB:
 		case SURFACE_CB1:
 		case SURFACE_CB2:
-			x[i]->master[0]->s->la += d;
+            x[i]->master[0]->s.la += d;
 			d2 = d * LOG_10;
 			break;
 		case MH:
@@ -5621,7 +5621,7 @@ numerical_jacobian(void)
 			d2 = d * LOG_10;
 			break;
 		case AH2O:
-			x[i]->master[0]->s->la += d;
+            x[i]->master[0]->s.la += d;
 			d2 = d * LOG_10;
 			break;
 		case PITZER_GAMMA:
@@ -5638,7 +5638,7 @@ numerical_jacobian(void)
 			mass_water_aq_x += d1;
 			if (use.Get_surface_in() && dl_type_x == cxxSurface::DONNAN_DL)
 				mass_water_bulk_x += d1;
-			x[i]->master[0]->s->moles = mass_water_aq_x / gfw_water;
+            x[i]->master[0]->s.moles = mass_water_aq_x / gfw_water;
 			d2 = d1;
 			break;
 		case MU:
@@ -5750,7 +5750,7 @@ numerical_jacobian(void)
 		case SURFACE_CB1:
 		case SURFACE_CB2:
 		case AH2O:
-			x[i]->master[0]->s->la -= d;
+            x[i]->master[0]->s.la -= d;
 			break;
 		case MH:
 			s_eminus->la -= d;
@@ -5772,7 +5772,7 @@ numerical_jacobian(void)
 			mass_water_aq_x -= d1;
 			if (use.Get_surface_in() && dl_type_x == cxxSurface::DONNAN_DL)
 				mass_water_bulk_x -= d1;
-			x[i]->master[0]->s->moles = mass_water_aq_x / gfw_water;
+            x[i]->master[0]->s.moles = mass_water_aq_x / gfw_water;
 			break;
 		case MU:
 			mu_x -= d2;

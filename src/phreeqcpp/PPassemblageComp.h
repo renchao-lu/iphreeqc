@@ -29,10 +29,10 @@ class cxxPPassemblageComp: public PHRQ_base
 			this->name.clear();
 	}
 	const std::string &Get_add_formula() const {return this->add_formula;}
-	void Set_add_formula(const char * s)
+    void Set_add_formula(std::string s)
 	{
-		if(s != NULL)
-			this->add_formula = std::string(s);
+        if(!s.empty())
+            this->add_formula = s;
 		else
 			this->add_formula.clear();
 	}

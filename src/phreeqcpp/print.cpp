@@ -318,9 +318,9 @@ print_diffuse_layer(cxxSurfaceCharge *charge_ptr)
 			*/
 		if (count_elts > 0)
 		{
-			qsort(elt_list, (size_t)count_elts,
-				(size_t) sizeof(struct elt_list), elt_list_compare);
-			elt_list_combine();
+            //			qsort(elt_list, (size_t)count_elts,
+            //				(size_t) sizeof(struct elt_list), elt_list_compare);
+            elt_list_combine();
 		}
 		/*
 		 *   Print totals
@@ -880,12 +880,12 @@ print_reaction(void)
 	cit = reaction_ptr->Get_elementList().begin();
 	for ( ; cit != reaction_ptr->Get_elementList().end(); cit++)
 	{
-        struct element elt_ptr = element_store(cit->first.c_str());
-//		assert(elt_ptr);
-		output_msg(sformatf("\t%-15s%13.5f\n",
-                   elt_ptr.name,
-				   (double) cit->second));
-	}
+        //        struct element elt_ptr = element_store(cit->first.c_str());
+        //		assert(elt_ptr);
+        //		output_msg(sformatf("\t%-15s%13.5f\n",
+        //                   elt_ptr.name,
+        //				   (double) cit->second));
+    }
 	output_msg(sformatf("\n"));
 	return (OK);
 }
@@ -1669,12 +1669,12 @@ print_surface(void)
 					   (double) (charge_ptr->Get_capacitance0())));
 			}
 			output_msg(sformatf("\t%11.3e  psi, V\n",
-					   (double) (x[j]->master[0]->s->la * 2 * R_KJ_DEG_MOL *
+                       (double) (x[j]->master[0]->s.la * 2 * R_KJ_DEG_MOL *
 								 tk_x * LOG_10 / F_KJ_V_EQ)));
 			output_msg(sformatf("\t%11.3e  -F*psi/RT\n",
-					   (double) (x[j]->master[0]->s->la * (-2) * LOG_10)));
+                       (double) (x[j]->master[0]->s.la * (-2) * LOG_10)));
 			output_msg(sformatf("\t%11.3e  exp(-F*psi/RT)\n",
-					   exp(x[j]->master[0]->s->la * (-2) * LOG_10)));
+                       exp(x[j]->master[0]->s.la * (-2) * LOG_10)));
 			cxxSurfaceComp * comp_ptr = surface_ptr->Find_comp(x[j]->surface_comp);
 			if (comp_ptr->Get_phase_name().size() > 0)
 			{
@@ -1778,8 +1778,8 @@ print_surface(void)
 						   "Molality"));
 				for (int i = 0; i < count_species_list; i++)
 				{
-					if (species_list[i].master_s != master_ptr->s)
-						continue;
+//					if (species_list[i].master_s != master_ptr->s)
+//						continue;
 /*
  *   Print species data
  */
@@ -1820,8 +1820,8 @@ print_surface(void)
 					   "Molality"));
 			for (int i = 0; i < count_species_list; i++)
 			{
-				if (species_list[i].master_s != master_ptr->s)
-					continue;
+//				if (species_list[i].master_s != master_ptr->s)
+//					continue;
 /*
  *   Print species data
  */
@@ -1926,7 +1926,7 @@ print_surface_cd_music(void)
 		{
 			sum +=
 				x[j]->comp_unknowns[k]->moles *
-                x[j]->comp_unknowns[k]->master[0]->s->charge;
+                x[j]->comp_unknowns[k]->master[0]->s.charge;
 		}
 		output_msg(sformatf("\t%11.3e  Surface charge, plane 0, eq\n",
 				   (double) (charge0 + sum)));
@@ -1980,18 +1980,18 @@ print_surface_cd_music(void)
 #endif
 			}
 			output_msg(sformatf("\t%11.3e  psi, plane 0, V\n",
-					   (double) (-master_ptr0->s->la * LOG_10 * R_KJ_DEG_MOL * tk_x / F_KJ_V_EQ)));
+                       (double) (-master_ptr0->s.la * LOG_10 * R_KJ_DEG_MOL * tk_x / F_KJ_V_EQ)));
 			output_msg(sformatf("\t%11.3e  psi, plane 1, V\n",
-					   (double) (-master_ptr1->s->la * LOG_10 * R_KJ_DEG_MOL * tk_x / F_KJ_V_EQ)));
+                       (double) (-master_ptr1->s.la * LOG_10 * R_KJ_DEG_MOL * tk_x / F_KJ_V_EQ)));
 			output_msg(sformatf("\t%11.3e  psi, plane 2, V\n\n",
-					   (double) (-master_ptr2->s->la * LOG_10 * R_KJ_DEG_MOL * tk_x / F_KJ_V_EQ)));
+                       (double) (-master_ptr2->s.la * LOG_10 * R_KJ_DEG_MOL * tk_x / F_KJ_V_EQ)));
 			output_msg(sformatf("\t%11.3e  exp(-F*psi/RT), plane 0\n",
-					   (double) (exp(master_ptr0->s->la * LOG_10))));
+                       (double) (exp(master_ptr0->s.la * LOG_10))));
 			output_msg(sformatf("\t%11.3e  exp(-F*psi/RT), plane 1\n",
-					   (double) (exp(master_ptr1->s->la * LOG_10))));
+                       (double) (exp(master_ptr1->s.la * LOG_10))));
 			output_msg(sformatf(
 					   "\t%11.3e  exp(-F*psi/RT), plane 2\n\n",
-					   (double) (exp(master_ptr2->s->la * LOG_10))));
+                       (double) (exp(master_ptr2->s.la * LOG_10))));
 
 			output_msg(sformatf("\t%11.3e  capacitance 0-1, F/m^2\n",
 					   (double) (charge_ptr->Get_capacitance0())));
@@ -2076,8 +2076,8 @@ print_surface_cd_music(void)
 						   "Molality"));
 				for (int i = 0; i < count_species_list; i++)
 				{
-					if (species_list[i].master_s != master_ptr->s)
-						continue;
+//					if (species_list[i].master_s != master_ptr->s)
+//						continue;
 /*
  *   Print species data
  */

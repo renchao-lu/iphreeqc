@@ -122,8 +122,8 @@ add_elt_list(const cxxNameDouble & nd, LDBLE coef)
 			space((void **) ((void *) &elt_list), count_elts, &max_elts,
 				  sizeof(struct elt_list));
 		}
-		elt_list[count_elts].elt = element_store(cit->first.c_str());
-		elt_list[count_elts].coef = cit->second * coef;
+        //		elt_list[count_elts].elt = element_store(cit->first.c_str());
+        elt_list[count_elts].coef = cit->second * coef;
 		count_elts++;
 	}
 	return (OK);

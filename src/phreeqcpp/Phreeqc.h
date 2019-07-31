@@ -69,8 +69,8 @@ class PBasic;
 class Phreeqc
 {
 public:
-	Phreeqc(PHRQ_io *io = NULL);
-	Phreeqc(const Phreeqc &src);
+    Phreeqc(PHRQ_io *io = nullptr);
+//	Phreeqc(const Phreeqc &src);
 	void InternalCopy(const Phreeqc *pSrc);
 	Phreeqc &operator=(const Phreeqc &rhs); 
 	~Phreeqc(void);
@@ -510,8 +510,11 @@ public:
                   int association);
     int get_coef(LDBLE * coef, std::string eqnaddr);
 	int get_secondary(char **t_ptr, char *element, int *i);
+    std::pair<std::string, double> parseSpeciesName(std::string term);
+    struct species& getOrcreateSpecies(std::pair<std::string, double> species_name);
     template <bool IsEquationRhs>
     void parseExpression(std::string& expression);
+
 
     // phqalloc.cpp -------------------------------
 public:
@@ -760,7 +763,7 @@ public:
 	int read_save(void);
 	int read_selected_output(void);
 	int read_solution(void);
-    void read_species(void);
+    void read_species();
 	int read_surface(void);
 	int read_surface_master_species(void);
 	int read_surface_species(void);
@@ -868,7 +871,6 @@ public:
 	int copier_init(struct copier *copier_ptr);
 	static int element_compare(const void *ptr1, const void *ptr2);
 public:
-    struct element element_store(std::string element);
 	int elt_list_combine(void);
 	static int elt_list_compare(const void *ptr1, const void *ptr2);
 protected:
@@ -917,7 +919,7 @@ public:
 	struct reaction *rxn_alloc(int ntokens);
 	struct reaction *rxn_dup(struct reaction *rxn_ptr_old);
 	struct reaction * cxxChemRxn2rxn(cxxChemRxn &cr);
-	LDBLE rxn_find_coef(struct reaction *r_ptr, const char *str);
+    LDBLE rxn_find_coef(struct reaction *r_ptr, std::string str);
 	int rxn_free(struct reaction *rxn_ptr);
 	int rxn_print(struct reaction *rxn_ptr);
 	static int s_compare(const void *ptr1, const void *ptr2);
@@ -1461,15 +1463,16 @@ protected:
     std::vector<struct element> elements;
 	int count_elements;
 	int max_elements;
-	struct element *element_h_one;
+    struct element *element_h_one;
 
 	/*----------------------------------------------------------------------
 	*   Element List
 	*---------------------------------------------------------------------- */
 
-	struct elt_list *elt_list;	/* structure array of working space while reading equations
-								names are in "strings", initially in input order */
-	int count_elts;		/* number of elements in elt_list = position of next */
+    std::vector<struct elt_list>
+        elt_list; /* structure array of working space while reading equations
+      names are in "strings", initially in input order */
+    int count_elts;		/* number of elements in elt_list = position of next */
 	int max_elts;
 	/*----------------------------------------------------------------------
 	*   Reaction
@@ -1478,15 +1481,15 @@ protected:
 	/*----------------------------------------------------------------------
 	*   Species
 	*---------------------------------------------------------------------- */
-
-	struct logk **logk;
+    std::vector<struct species> species_set;
+    struct logk **logk;
 	int count_logk;
 	int max_logk;
 
     std::string moles_per_kilogram_string;
     std::string pe_string;
 
-	struct species **s;
+    struct species **s;
 	int count_s;
 	int max_s;
 	std::vector< std::map < std::string, cxxSpeciesDL > > s_diff_layer;
@@ -1514,7 +1517,7 @@ protected:
 	*   Master species
 	*---------------------------------------------------------------------- */
     std::vector<struct master> master;	/* structure array of master species */
-	struct master **dbg_master;
+    struct master **dbg_master;
 	int count_master;
 	int max_master;
 

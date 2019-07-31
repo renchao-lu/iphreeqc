@@ -43,7 +43,7 @@ calc_all_g(void)
 		cxxSurfDL temp_g;
 		charge_ptr->Get_g_map()[0] = temp_g;
 		temp_g_map[0] = temp_g;
-		xd_global = exp(-2 * x[j]->master[0]->s->la * LOG_10);
+        xd_global = exp(-2 * x[j]->master[0]->s.la * LOG_10);
 		/* alpha = 0.02935 @ 25;        (ee0RT/2)**1/2, (L/mol)**1/2 C / m**2 */
 		/* 1000 J/kJ and 1000 L/m**3 */
 		//alpha_global =	sqrt(EPSILON * EPSILON_ZERO * (R_KJ_DEG_MOL * 1000.0) * 1000.0 *
@@ -64,8 +64,8 @@ calc_all_g(void)
 			{
 				
 				if ((use.Get_surface_ptr()->Get_only_counter_ions() == false) ||
-					(((x[j]->master[0]->s->la > 0) && (z_global < 0))
-					 || ((x[j]->master[0]->s->la < 0) && (z_global > 0))))
+                    (((x[j]->master[0]->s.la > 0) && (z_global < 0))
+                     || ((x[j]->master[0]->s.la < 0) && (z_global > 0))))
 				{
 					if (xd_global > 0.1)
 					{
@@ -192,8 +192,8 @@ calc_all_g(void)
 						charge_ptr->Get_specific_area() * alpha_global *
 						g_function(xd_global) / F_C_MOL;
 					dg *=
-						-2. / (exp(x[j]->master[0]->s->la * LOG_10) *
-							   exp(x[j]->master[0]->s->la * LOG_10));
+                        -2. / (exp(x[j]->master[0]->s.la * LOG_10) *
+                               exp(x[j]->master[0]->s.la * LOG_10));
 					if ((xd_global - 1) < 0.0)
 					{
 						dg *= -1.0;
@@ -463,7 +463,7 @@ calc_init_g(void)
 		if (x[j]->type != SURFACE_CB)
 			continue;
 		cxxSurfaceCharge *charge_ptr = use.Get_surface_ptr()->Find_charge(x[j]->surface_charge);
-		xd_global = exp(-2 * x[j]->master[0]->s->la * LOG_10);
+        xd_global = exp(-2 * x[j]->master[0]->s.la * LOG_10);
 		/* alpha = 0.02935 @ 25;      (ee0RT/2)**1/2, (L/mol)**1/2 C / m**2 */
 		/*  second 1000 is liters/m**3 */
 		//alpha_global =	sqrt(EPSILON * EPSILON_ZERO * (R_KJ_DEG_MOL * 1000.0) *
@@ -726,9 +726,9 @@ sum_diffuse_layer(cxxSurfaceCharge *charge_ptr)
 
 	if (count_elts > 0)
 	{
-		qsort(elt_list, (size_t) count_elts,
-			  (size_t) sizeof(struct elt_list), elt_list_compare);
-		elt_list_combine();
+        //		qsort(elt_list, (size_t) count_elts,
+        //			  (size_t) sizeof(struct elt_list), elt_list_compare);
+        elt_list_combine();
 	}
 	return (OK);
 }
@@ -781,12 +781,12 @@ calc_all_donnan(void)
 		A_surf = charge_ptr->Get_specific_area() * charge_ptr->Get_grams();
 		if (use.Get_surface_ptr()->Get_type() == cxxSurface::CD_MUSIC)
 		{
-			f_psi = x[j + 2]->master[0]->s->la * LOG_10;	/* -FPsi/RT */
+            f_psi = x[j + 2]->master[0]->s.la * LOG_10;	/* -FPsi/RT */
 			f_psi = f_psi / 2;
 			cd_m = 1;
 		} else
 		{
-			f_psi = x[j]->master[0]->s->la * LOG_10;
+            f_psi = x[j]->master[0]->s.la * LOG_10;
 			cd_m = -1;
 		}
 		surf_chrg_eq = A_surf * f_sinh * sinh(f_psi) / F_C_MOL;
@@ -797,7 +797,7 @@ calc_all_donnan(void)
 			var1 = (var1 + sqrt(var1 * var1 + 1));
 			f_psi = (var1 > 1e-8 ? log(var1) : -18.4);
 			surf_chrg_eq = A_surf * f_sinh * sinh(f_psi) / F_C_MOL;
-			x[j]->master[0]->s->la = f_psi / LOG_10;
+            x[j]->master[0]->s.la = f_psi / LOG_10;
 		}
 		/* also for the derivative... */
 		dif = 1e-5;
@@ -952,10 +952,10 @@ calc_init_donnan(void)
 		A_surf = charge_ptr->Get_specific_area() * charge_ptr->Get_grams();
 		if (use.Get_surface_ptr()->Get_type() == cxxSurface::CD_MUSIC)
 		{
-			f_psi = x[j + 2]->master[0]->s->la * LOG_10;	/* -FPsi/RT */
+            f_psi = x[j + 2]->master[0]->s.la * LOG_10;	/* -FPsi/RT */
 			f_psi = f_psi / 2;
 		} else
-			f_psi = x[j]->master[0]->s->la * LOG_10;
+            f_psi = x[j]->master[0]->s.la * LOG_10;
 		surf_chrg_eq = A_surf * f_sinh * sinh(f_psi) / F_C_MOL;
 
 		/* find psi_avg that matches surface charge... */

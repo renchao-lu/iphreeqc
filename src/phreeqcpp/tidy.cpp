@@ -386,8 +386,8 @@ tidy_model(void)
 				error_msg("O2(aq) not defined in solution_species.", CONTINUE);
 			}
 		}
-        *element_h_one = element_store("H(1)");
-		if (element_h_one == NULL)
+        //        *element_h_one = element_store("H(1)");
+        if (element_h_one == NULL)
 		{
 			input_error++;
 			error_msg("H(1) not defined in solution_master_species.", CONTINUE);
@@ -1415,9 +1415,10 @@ tidy_inverse(void)
  */
 		if (count_elts > 0)
 		{
-			qsort(elt_list, (size_t) count_elts,
-				  (size_t) sizeof(struct elt_list), elt_list_compare);
-			elt_list_combine();
+            //			qsort(elt_list, (size_t) count_elts,
+            //				  (size_t) sizeof(struct elt_list),
+            //elt_list_compare);
+            elt_list_combine();
 		}
 /*
  *   Mark master species list
@@ -1460,7 +1461,7 @@ tidy_inverse(void)
 					{
 						count_in++;
                         master[k].in = TRUE;
-                        if (master[k].s->primary == NULL)
+                        if (master[k].s.primary == NULL)
 						{
 							inverse[i].count_redox_rxns++;
 						}
@@ -1484,8 +1485,8 @@ tidy_inverse(void)
 		for (j = 0; j < count_master; j++)
 		{
 			/* skip H(1) and O(-2) */
-            if (master[j].s == s_hplus || master[j].s == s_h2o)
-				continue;
+//            if (master[j].s == s_hplus || master[j].s == s_h2o)
+//				continue;
             if (master[j].in == TRUE)
 			{
 				/* set master */
@@ -1528,7 +1529,7 @@ tidy_inverse(void)
 				continue;
 			}
 			if (master_ptr->primary == FALSE
-				|| master_ptr->s->secondary == NULL)
+                || master_ptr->s.secondary == NULL)
 				continue;
 			for (k = 0; k < count_in; k++)
 			{
@@ -1557,7 +1558,7 @@ tidy_inverse(void)
 				continue;
 			}
 			if (master_ptr->primary == TRUE
-				&& master_ptr->s->secondary != NULL)
+                && master_ptr->s.secondary != NULL)
 				continue;
 			for (k = 0; k < count_in; k++)
 			{
@@ -2802,14 +2803,14 @@ tidy_species(void)
 	for (i = 0; i < count_master; i++)
 	{
 		count_trxn = 0;
-        if (master[i].s->primary != NULL)
+        if (master[i].s.primary != NULL)
 		{
-            trxn_add(master[i].s->rxn, 1.0, FALSE);
-            trxn_add(master[i].s->rxn, -1.0, TRUE);
+            trxn_add(master[i].s.rxn, 1.0, FALSE);
+            trxn_add(master[i].s.rxn, -1.0, TRUE);
 		}
 		else
 		{
-            trxn_add(master[i].s->rxn, 1.0, FALSE);
+            trxn_add(master[i].s.rxn, 1.0, FALSE);
 			rewrite_eqn_to_primary();
 		}
         rxn_free(master[i].rxn_primary);
@@ -2887,11 +2888,11 @@ tidy_species(void)
 						"Every primary master species for a redox element\n"
 						"\tmust also be a secondary master species.\n"
 						"\tError in definitions related to %s .\n",
-                        master[i].s->name);
+                        master[i].s.name);
 				error_msg(error_string, CONTINUE);
 
 			}
-			else if (master_ptr->s->secondary == NULL)
+            else if (master_ptr->s.secondary == NULL)
 			{
 				input_error++;
 //				error_string = sformatf(
@@ -3087,25 +3088,26 @@ tidy_surface(void)
 			cxxNameDouble::iterator jit = comp_ptr->Get_totals().begin();
 			for ( ; jit != comp_ptr->Get_totals().end(); jit++ )
 			{
-                struct element elt_ptr = element_store(jit->first.c_str());
-                struct master *master_ptr = elt_ptr.master;
-				if (master_ptr == NULL)
-				{
-					input_error++;
-					error_string = sformatf(
-							"Master species not in database for %s, "
-							"skipping element.",
-                            elt_ptr.name);
-					error_msg(error_string, CONTINUE);
-					continue;
-				}
-				if (master_ptr->type != SURF)
-					continue;
-                comp_ptr->Set_master_element(elt_ptr.name);
-/*
- *   Set flags
- */
-				cxxSurfaceCharge *charge_ptr = surface_ptr->Find_charge(comp_ptr->Get_charge_name());
+                //                struct element elt_ptr =
+                //                element_store(jit->first.c_str()); struct
+                //                master *master_ptr = elt_ptr.master;
+                //				if (master_ptr == NULL)
+                //				{
+                //					input_error++;
+                //					error_string = sformatf(
+                //							"Master species not in database for %s,
+                //" 							"skipping element.",
+                //                            elt_ptr.name);
+                //					error_msg(error_string, CONTINUE);
+                //					continue;
+                //				}
+                //				if (master_ptr->type != SURF)
+                //					continue;
+                //                comp_ptr->Set_master_element(elt_ptr.name);
+                /*
+                 *   Set flags
+                 */
+                cxxSurfaceCharge *charge_ptr = surface_ptr->Find_charge(comp_ptr->Get_charge_name());
 				/*
 				 * Calculate moles of sites
 				 */
@@ -3458,7 +3460,7 @@ tidy_isotopes(void)
 					continue;
 
 				/* for primary, fill in ratio for all secondary species */
-				if (master_ptr->primary == TRUE	&& master_ptr->s->secondary != NULL)
+                if (master_ptr->primary == TRUE	&& master_ptr->s.secondary != NULL)
 				{
 					for (int k = primary_number + 1; k < count_master; k++)
 					{
@@ -3497,7 +3499,7 @@ tidy_isotopes(void)
 			for (int k = 0; k < count_master; k++)
 			{
 				/* skip primary master species of redox elements */
-                if (master[k].primary == TRUE && master[k].s->secondary != NULL)
+                if (master[k].primary == TRUE && master[k].s.secondary != NULL)
 					continue;
 //                if (master[k].elt.primary == primary_ptr && master[k].isotope == FALSE)
 //				{
@@ -3580,19 +3582,20 @@ tidy_kin_exchange(void)
 			for (; kit != nd.end(); kit++)
 			{
 				/* Find master species */
-                struct element elt_ptr = element_store(kit->first.c_str());
-                if (&elt_ptr == nullptr || elt_ptr.master == NULL)
-				{
-					input_error++;
-					error_string = sformatf( "Master species not in database "
-							"for %s, skipping element.",
-							kit->first.c_str());
-					error_msg(error_string, CONTINUE);
-					continue;
-				}
-                if (elt_ptr.master->type == EX)
-					found_exchange = true;;
-			}
+                //                struct element elt_ptr =
+                //                element_store(kit->first.c_str()); if
+                //                (&elt_ptr == nullptr || elt_ptr.master ==
+                //                NULL)
+                //				{
+                //					input_error++;
+                //					error_string = sformatf( "Master species not in
+                //database " 							"for %s, skipping element.", 							kit->first.c_str());
+                //					error_msg(error_string, CONTINUE);
+                //					continue;
+                //				}
+                //                if (elt_ptr.master->type == EX)
+                //					found_exchange = true;
+            }
 			if (!found_exchange)
 			{
 				input_error++;
@@ -3700,21 +3703,22 @@ tidy_min_exchange(void)
 			for (; kit != nd.end(); kit++)
 			{
 				/* Find master species */
-                struct element elt_ptr = element_store(kit->first.c_str());
-                if (&elt_ptr == nullptr || elt_ptr.master == NULL)
-				{
-					input_error++;
-					error_string = sformatf( "Master species not in database "
-							"for %s, skipping element.",
-							kit->first.c_str());
-					error_msg(error_string, CONTINUE);
-					continue;
-				}
-                if (elt_ptr.master->type == EX)
-				{
-					found_exchange = true;;
-				}
-			}
+                //                struct element elt_ptr =
+                //                element_store(kit->first.c_str()); if
+                //                (&elt_ptr == nullptr || elt_ptr.master ==
+                //                NULL)
+                //				{
+                //					input_error++;
+                //					error_string = sformatf( "Master species not in
+                //database " 							"for %s, skipping element.", 							kit->first.c_str());
+                //					error_msg(error_string, CONTINUE);
+                //					continue;
+                //				}
+                //                if (elt_ptr.master->type == EX)
+                //				{
+                //					found_exchange = true;
+                //				}
+            }
 			if (!found_exchange)
 			{
 				input_error++;
@@ -3795,12 +3799,13 @@ tidy_min_exchange(void)
 				error_msg(error_string, CONTINUE);
 				continue;
 			}
-			qsort(elt_list, (size_t) count_elts,
-				  (size_t) sizeof(struct elt_list), elt_list_compare);
-			elt_list_combine();
+            //			qsort(elt_list, (size_t) count_elts,
+            //				  (size_t) sizeof(struct elt_list),
+            //elt_list_compare);
+            elt_list_combine();
 			for (jj = 0; jj < count_elts; jj++)
 			{
-                if (elt_list[jj].elt.primary->s->type != EX
+                if (elt_list[jj].elt.primary->s.type != EX
 					&& elt_list[jj].coef < 0)
 				{
 					input_error++;
@@ -3860,21 +3865,22 @@ tidy_min_surface(void)
 			for (it = surface_comp_ptr->Get_totals().begin(); it != surface_comp_ptr->Get_totals().end(); it++)
 			{
 				/* Find master species */
-                struct element elt_ptr = element_store(it->first.c_str());
-                struct master *master_ptr = elt_ptr.master;
-				if (master_ptr == NULL)
-				{
-					input_error++;
-					error_string = sformatf( "Master species not in database "
-							"for %s, skipping element.",
-                            elt_ptr.name);
-					error_msg(error_string, CONTINUE);
-					continue;
-				}
-				if (master_ptr->type != SURF)
-					continue;
-                surface_comp_ptr->Set_master_element(elt_ptr.name);
-				break;
+                //                struct element elt_ptr =
+                //                element_store(it->first.c_str()); struct
+                //                master *master_ptr = elt_ptr.master;
+                //				if (master_ptr == NULL)
+                //				{
+                //					input_error++;
+                //					error_string = sformatf( "Master species not in
+                //database " 							"for %s, skipping element.",
+                //                            elt_ptr.name);
+                //					error_msg(error_string, CONTINUE);
+                //					continue;
+                //				}
+                //				if (master_ptr->type != SURF)
+                //					continue;
+                //                surface_comp_ptr->Set_master_element(elt_ptr.name);
+                break;
 			}
 			if (surface_comp_ptr->Get_master_element().size() == 0)
 			{
@@ -3987,45 +3993,60 @@ tidy_min_surface(void)
 					{
 
 						// Warn if not master species and charge balanced
-                        struct element elt_ptr = element_store(comp_jj_ptr->Get_master_element().c_str());
-                        if (elt_ptr.master == NULL)
-						{
-							input_error++;
-							error_string = sformatf("Unknown element definition in SURFACE \n\t for surface related to equilibrium_phase: SURFACE %d.", 
-								surface_ptr->Get_n_user());
-							error_msg(error_string);
-//							free_check_null(temp_formula);
-							continue;
-						}
-                        if (elt_ptr.master->s == NULL || elt_ptr.master->s->name == NULL)
-						{
-							input_error++;
-							error_string = sformatf("Unknown master species definition in SURFACE \n\t for surface related to equilibrium_phase: SURFACE %d.", 
-								surface_ptr->Get_n_user());
-							error_msg(error_string);
-//							free_check_null(temp_formula);
-							continue;
-						}
-						//if (strcmp(elt_ptr->master->s->name, temp_formula) != 0)
-						//{
-						//	error_string = sformatf("Suggest using master species formula in SURFACE \n\t for surface related to equilibrium_phase: %s.", 
-						//		elt_ptr->master->s->name);
-						//	warning_msg(error_string);
-						//}
-                        if (elt_ptr.master->s->charge != 0.0 && surface_ptr->Get_dl_type() != cxxSurface::DONNAN_DL)
-						{
-							error_string = sformatf(
-								"Use the -donnan option when coupling surface %s to an equilibrium_phase, \n\t and note to give the equilibrium_phase the surface charge.",
-                                elt_ptr.master->s->name);
-							warning_msg(error_string);
-						}	
-					}
+                        //                        struct element elt_ptr =
+                        //                        element_store(comp_jj_ptr->Get_master_element().c_str());
+                        //                        if (elt_ptr.master == NULL)
+                        //						{
+                        //							input_error++;
+                        //							error_string = sformatf("Unknown element
+                        //definition in SURFACE \n\t for surface related to
+                        //equilibrium_phase: SURFACE %d.",
+                        //								surface_ptr->Get_n_user());
+                        //							error_msg(error_string);
+                        //							free_check_null(temp_formula);
+                        //							continue;
+                        //						}
+                        //                        if (elt_ptr.master->s == NULL
+                        //                        || elt_ptr.master->s->name ==
+                        //                        NULL)
+                        //						{
+                        //							input_error++;
+                        //							error_string = sformatf("Unknown master
+                        //species definition in SURFACE \n\t for surface related
+                        //to equilibrium_phase: SURFACE %d.",
+                        //								surface_ptr->Get_n_user());
+                        //							error_msg(error_string);
+                        //							free_check_null(temp_formula);
+                        //							continue;
+                        //						}
+                        // if (strcmp(elt_ptr->master->s->name, temp_formula) !=
+                        // 0)
+                        //{
+                        //	error_string = sformatf("Suggest using master
+                        //species formula in SURFACE \n\t for surface related to
+                        //equilibrium_phase: %s.", 		elt_ptr->master->s->name);
+                        //	warning_msg(error_string);
+                        //}
+                        //                        if (elt_ptr.master->s->charge
+                        //                        != 0.0 &&
+                        //                        surface_ptr->Get_dl_type() !=
+                        //                        cxxSurface::DONNAN_DL)
+                        //						{
+                        //							error_string = sformatf(
+                        //								"Use the -donnan option when coupling
+                        //surface %s to an equilibrium_phase, \n\t and note to
+                        //give the equilibrium_phase the surface charge.",
+                        //                                elt_ptr.master->s->name);
+                        //							warning_msg(error_string);
+                        //						}
+                    }
 //					free_check_null(temp_formula);
 				}
 			}
-			qsort(elt_list, (size_t) count_elts,
-				  (size_t) sizeof(struct elt_list), elt_list_compare);
-			elt_list_combine();
+            //			qsort(elt_list, (size_t) count_elts,
+            //				  (size_t) sizeof(struct elt_list),
+            //elt_list_compare);
+            elt_list_combine();
 			/* Makes no sense: sorbed species need not be in mineral structure... */
 			/* But elements that can desorb into solution must be in mineral */
 			/* If you precipitate Ca-Mont, and make SurfMg (assuming this is the 
@@ -4045,23 +4066,27 @@ tidy_min_surface(void)
 			*/
 			for (int jj = 0; jj < count_elts; jj++)
 			{
-                if (elt_list[jj].elt.primary->s->type != SURF
+                if (elt_list[jj].elt.primary->s.type != SURF
 					&& elt_list[jj].coef < 0
 					//&& elt_list[jj].elt->primary->s != s_hplus
 					//&& elt_list[jj].elt->primary->s != s_h2o
 					)
 				{
-                    struct element elt_ptr = element_store(surface_comp_ptr->Get_master_element().c_str());
-					error_string = sformatf(
-							"Element %s in sum of surface sites,\n"
-							"\t including %s * %g mol sites/mol phase,\n"
-							"\t exceeds stoichiometry in the related phase %s, %s.",
-                            elt_list[jj].elt.name,
-                            elt_ptr.master->s->name,
-							(double) surface_comp_ptr->Get_phase_proportion(),
-							phase_ptr->name,
-							phase_ptr->formula);
-					warning_msg(error_string);
+                    //                    struct element elt_ptr =
+                    //                    element_store(surface_comp_ptr->Get_master_element().c_str());
+                    //					error_string = sformatf(
+                    //							"Element %s in sum of surface
+                    //sites,\n"
+                    //							"\t including %s * %g mol sites/mol
+                    //phase,\n"
+                    //							"\t exceeds stoichiometry in the related
+                    //phase %s, %s.",
+                    //                            elt_list[jj].elt.name,
+                    //                            elt_ptr.master->s->name,
+                    //							(double)
+                    //surface_comp_ptr->Get_phase_proportion(), 							phase_ptr->name,
+                    //							phase_ptr->formula);
+                    warning_msg(error_string);
 					warning_msg("The mismatch in stoichiometry may cause mass-balance errors or unwanted redox reactions.");
 					break;
 				}
@@ -4116,21 +4141,22 @@ tidy_kin_surface(void)
 			for (kit = comp_ptr->Get_totals().begin(); kit != comp_ptr->Get_totals().end(); kit++)
 			{
 				/* Find master species */
-                struct element elt_ptr = element_store(kit->first.c_str());
-                struct master *master_ptr = elt_ptr.master;
-				if (master_ptr == NULL)
-				{
-					input_error++;
-					error_string = sformatf( "Master species not in database "
-							"for %s, skipping element.",
-                            elt_ptr.name);
-					error_msg(error_string, CONTINUE);
-					continue;
-				}
-				if (master_ptr->type != SURF)
-					continue;
-                comp_ptr->Set_master_element(elt_ptr.name);
-				break;
+                //                struct element elt_ptr =
+                //                element_store(kit->first.c_str()); struct
+                //                master *master_ptr = elt_ptr.master;
+                //				if (master_ptr == NULL)
+                //				{
+                //					input_error++;
+                //					error_string = sformatf( "Master species not in
+                //database " 							"for %s, skipping element.",
+                //                            elt_ptr.name);
+                //					error_msg(error_string, CONTINUE);
+                //					continue;
+                //				}
+                //				if (master_ptr->type != SURF)
+                //					continue;
+                //                comp_ptr->Set_master_element(elt_ptr.name);
+                break;
 			}
 			if (comp_ptr->Get_master_element().size() == 0)
 			{
@@ -4251,9 +4277,10 @@ tidy_kin_surface(void)
 			/* save kinetics formula */
 			if (count_elts > 0)
 			{
-				qsort(elt_list, (size_t) count_elts,
-					  (size_t) sizeof(struct elt_list), elt_list_compare);
-				elt_list_combine();
+                //				qsort(elt_list, (size_t) count_elts,
+                //					  (size_t) sizeof(struct elt_list),
+                //elt_list_compare);
+                elt_list_combine();
 			}
 			elt_list_kinetics = elt_list_save();
 			count_elts_kinetics = count_elts;
@@ -4280,9 +4307,10 @@ tidy_kin_surface(void)
 			}
 			if (count_elts > 0)
 			{
-				qsort(elt_list, (size_t) count_elts,
-					  (size_t) sizeof(struct elt_list), elt_list_compare);
-				elt_list_combine();
+                //				qsort(elt_list, (size_t) count_elts,
+                //					  (size_t) sizeof(struct elt_list),
+                //elt_list_compare);
+                elt_list_combine();
 			}
 			for (int j = 0; j < count_elts; j++)
 			{
@@ -4304,17 +4332,17 @@ tidy_kin_surface(void)
 					error_msg(error_string, CONTINUE);
 					continue;
 				}
-                if (elt_list[j].elt.primary->s == NULL)
-				{
-					input_error++;
-					error_string = sformatf(
-						"Cannot identify primary species for an element in kinetics component %s.",
-						comp_ptr_save->Get_formula().c_str());
-					error_msg(error_string, CONTINUE);
-					continue;
-				}
+//                if (elt_list[j].elt.primary->s == NULL)
+//				{
+//					input_error++;
+//					error_string = sformatf(
+//						"Cannot identify primary species for an element in kinetics component %s.",
+//						comp_ptr_save->Get_formula().c_str());
+//					error_msg(error_string, CONTINUE);
+//					continue;
+//				}
 
-                if (elt_list[j].elt.primary->s->type <= H2O)
+                if (elt_list[j].elt.primary->s.type <= H2O)
 				{
 					int l;
 					for (l = 0; l < count_elts_kinetics; l++)
@@ -5534,17 +5562,20 @@ tidy_exchange(void)
 			for (; kit != nd.end(); kit++)
 			{
 				/* Find master species */
-                struct element elt_ptr = element_store(kit->first.c_str());
-                if (&elt_ptr == nullptr || elt_ptr.master == NULL)
-				{
-					input_error++;
-					error_string = sformatf( "Master species not in database "
-							"for %s, skipping element.",
-							kit->first.c_str());
-					error_msg(error_string, CONTINUE);
-					break;
-				}
-			}
+                //                struct element elt_ptr =
+                //                element_store(kit->first.c_str()); if
+                //                (&elt_ptr == nullptr || elt_ptr.master ==
+                //                NULL)
+                //				{
+                input_error++;
+                error_string = sformatf(
+                    "Master species not in database "
+                    "for %s, skipping element.",
+                    kit->first.c_str());
+                error_msg(error_string, CONTINUE);
+                break;
+                //				}
+            }
 		}
 	}
 	return (OK);

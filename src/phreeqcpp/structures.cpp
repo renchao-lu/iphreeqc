@@ -327,7 +327,7 @@ clean_up(void)
 
 /* miscellaneous work space */
 
-	elt_list = (struct elt_list *) free_check_null(elt_list);
+    //	elt_list = (struct elt_list *) free_check_null(elt_list);
     //	trxn.token = (struct rxn_token_temp *) free_check_null(trxn.token);
     mb_unknowns = (struct unknown_list*)free_check_null(mb_unknowns);
     //	line = (char *) free_check_null(line);
@@ -439,61 +439,6 @@ element_compare(const void *ptr1, const void *ptr2)
 /*      return(strcmp_nocase(element_ptr1->name, element_ptr2->name)); */
     return element_ptr1->name == element_ptr2->name;
 
-}
-
-/* ---------------------------------------------------------------------- */
-struct element Phreeqc::
-element_store(std::string element)
-/* ---------------------------------------------------------------------- */
-{
-/*
- *   Function locates the string "element" in the hash table for elements.
- *
- *   If found, pointer to the appropriate element structure is returned.
- *
- *   If the string is not found, a new entry is made at the end of
- *   the elements array (position count_elements) and count_elements is
- *   incremented. A new entry is made in the hash table. Pointer to
- *   the new structure is returned.
- *
- *   Arguments:
- *      element    input, character string to be located or stored.
- *
- *   Returns:
- *      The address of an elt structure that contains the element data.
- */
-	int n;
-	struct element *elts_ptr;
-	ENTRY item, *found_item;
-/*
- *   Search list
- */
-    item.key = element;
-	item.data = NULL;
-//	found_item = hsearch_multi(elements_hash_table, item, FIND);
-//	if (found_item != NULL)
-//	{
-//		elts_ptr = (struct element *) (found_item->data);
-//        return (*elts_ptr);
-//	}
-/*
- *   Save new elt structure and return pointer to it
- */
-    /* initilization object element */
-    elements.emplace_back(element, nullptr, nullptr, 0.0);
-
-/*
- *   Update hash table
- */
-//	item.key = elements[n]->name;
-//	item.data = (void *) elements[n];
-//	found_item = hsearch_multi(elements_hash_table, item, ENTER);
-//	if (found_item == NULL)
-//	{
-//		error_string = sformatf( "Hash table error in element_store.");
-//		error_msg(error_string, CONTINUE);
-//	}
-    return elements[n];
 }
 
 /* **********************************************************************
@@ -639,9 +584,9 @@ elt_list_save(void)
  */
 	if (count_elts > 0)
 	{
-		qsort(elt_list, (size_t) count_elts,
-			  (size_t) sizeof(struct elt_list), elt_list_compare);
-		elt_list_combine();
+        //		qsort(elt_list, (size_t) count_elts,
+        //			  (size_t) sizeof(struct elt_list), elt_list_compare);
+        elt_list_combine();
 	}
 /*
  *   Malloc space and store element data
@@ -683,8 +628,8 @@ NameDouble2elt_list(const cxxNameDouble &nd)
 		int i = 0;
 		for( ; it != nd.end(); it++)
 		{
-			elt_list_ptr[i].elt = element_store(it->first.c_str());
-			elt_list_ptr[i].coef = it->second;
+            //			elt_list_ptr[i].elt = element_store(it->first.c_str());
+            elt_list_ptr[i].coef = it->second;
 			i++;
 		}
 //		elt_list_ptr[i].elt = NULL;
@@ -1180,7 +1125,7 @@ master_bsearch_secondary(std::string ptr)
 		master_ptr = NULL;
 		for (j = master_ptr_primary->number + 1; j < count_master; j++)
 		{
-            if (master[j].s == master_ptr_primary->s)
+//            if (master[j].s == master_ptr_primary->s)
 			{
 //				master_ptr = master[j];
 			}
@@ -1388,7 +1333,6 @@ phase_init(struct phase *phase_ptr)
 	int i;
 
 	phase_ptr->name = NULL;
-	phase_ptr->formula = NULL;
 	phase_ptr->in = FALSE;
 	phase_ptr->lk = 0.0;
 	for (i = 0; i < MAX_LOG_K_INDICES; i++)
@@ -1810,7 +1754,7 @@ cxxChemRxn2rxn(cxxChemRxn &cr)
 }
 /* ---------------------------------------------------------------------- */
 LDBLE Phreeqc::
-rxn_find_coef(struct reaction * r_ptr, const char *str)
+rxn_find_coef(struct reaction * r_ptr, std::string str)
 /* ---------------------------------------------------------------------- */
 {
 /*
@@ -1828,7 +1772,7 @@ rxn_find_coef(struct reaction * r_ptr, const char *str)
 	coef = 0.0;
 	while (r_token->s != NULL)
 	{
-		if (strcmp(r_token->s->name, str) == 0)
+        if (r_token->s->name == str)
 		{
 			coef = r_token->coef;
 			break;
@@ -1937,7 +1881,7 @@ s_compare(const void *ptr1, const void *ptr2)
 	const struct species *s_ptr1, *s_ptr2;
 	s_ptr1 = *(const struct species **) ptr1;
 	s_ptr2 = *(const struct species **) ptr2;
-	return (strcmp(s_ptr1->name, s_ptr2->name));
+    return (s_ptr1->name == s_ptr2->name);
 
 }
 
@@ -1995,7 +1939,6 @@ s_init(struct species *s_ptr)
 /*
  *   set pointers in structure to NULL
  */
-	s_ptr->name = NULL;
 	s_ptr->mole_balance = NULL;
 	s_ptr->in = FALSE;
 	s_ptr->number = 0;
@@ -2364,9 +2307,9 @@ species_list_compare(const void *ptr1, const void *ptr2)
 		if (nptr2->master_s == s_hplus)
 			return (1);
 		*/
-		if ((strcmp(nptr1->master_s->name,"H+") == 0) || (strcmp(nptr1->master_s->name,"H3O+") == 0))
+        if (nptr1->master_s->name == "H+" || nptr1->master_s->name == "H3O+")
 			return (-1);
-		if ((strcmp(nptr2->master_s->name,"H+") == 0) || (strcmp(nptr2->master_s->name,"H3O+") == 0))
+        if (nptr2->master_s->name == "H+" || nptr2->master_s->name == "H3O+")
 			return (1);
 	}
 /*
@@ -2468,9 +2411,9 @@ species_list_compare_master(const void *ptr1, const void *ptr2)
 		if (nptr2->master_s == s_hplus)
 			return (1);
 		*/
-		if ((strcmp(nptr1->master_s->name,"H+") == 0) || (strcmp(nptr1->master_s->name,"H3O+") == 0))
+        if (nptr1->master_s->name == "H+" || nptr1->master_s->name == "H3O+")
 			return (-1);
-		if ((strcmp(nptr2->master_s->name,"H+") == 0) || (strcmp(nptr2->master_s->name,"H3O+") == 0))
+        if (nptr2->master_s->name == "H+" || nptr2->master_s->name == "H3O+")
 			return (1);
 	}
 /*
@@ -2901,7 +2844,7 @@ trxn_find_coef(const char *str, int start)
 	coef = 0.0;
 	for (i = start; i < count_trxn; i++)
 	{
-		if (strcmp(trxn.token[i].s->name, str) == 0)
+        if (trxn.token[i].s->name == str)
 		{
 			coef = trxn.token[i].coef;
 			break;
@@ -3045,7 +2988,7 @@ trxn_swap(const char *token)
  */
 	for (j = 0; j < count_trxn; j++)
 	{
-		if (strcmp(trxn.token[j].s->name, token) == 0)
+        if (trxn.token[j].s->name == token)
 			break;
 	}
 	if (j >= count_trxn)

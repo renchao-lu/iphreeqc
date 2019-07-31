@@ -1778,45 +1778,45 @@ pitzer_initial_guesses(void)
 		if (x[i]->type < CB)
 		{
 			mu_x +=
-                x[i]->moles / mass_water_aq_x * 0.5 * x[i]->master[0]->s->charge *
-                x[i]->master[0]->s->charge;
-			x[i]->master[0]->s->la = log10(x[i]->moles / mass_water_aq_x);
+                x[i]->moles / mass_water_aq_x * 0.5 * x[i]->master[0]->s.charge *
+                x[i]->master[0]->s.charge;
+            x[i]->master[0]->s.la = log10(x[i]->moles / mass_water_aq_x);
 		}
 		else if (x[i]->type == CB)
 		{
-			x[i]->master[0]->s->la =
+            x[i]->master[0]->s.la =
 				log10(0.001 * x[i]->moles / mass_water_aq_x);
 		}
 		else if (x[i]->type == SOLUTION_PHASE_BOUNDARY)
 		{
-			x[i]->master[0]->s->la =
+            x[i]->master[0]->s.la =
 				log10(0.001 * x[i]->moles / mass_water_aq_x);
 		}
 		else if (x[i]->type == EXCH)
 		{
 			if (x[i]->moles <= 0)
 			{
-				x[i]->master[0]->s->la = MIN_RELATED_LOG_ACTIVITY;
+                x[i]->master[0]->s.la = MIN_RELATED_LOG_ACTIVITY;
 			}
 			else
 			{
-				x[i]->master[0]->s->la = log10(x[i]->moles);
+                x[i]->master[0]->s.la = log10(x[i]->moles);
 			}
 		}
 		else if (x[i]->type == SURFACE)
 		{
 			if (x[i]->moles <= 0)
 			{
-				x[i]->master[0]->s->la = MIN_RELATED_LOG_ACTIVITY;
+                x[i]->master[0]->s.la = MIN_RELATED_LOG_ACTIVITY;
 			}
 			else
 			{
-				x[i]->master[0]->s->la = log10(0.1 * x[i]->moles);
+                x[i]->master[0]->s.la = log10(0.1 * x[i]->moles);
 			}
 		}
 		else if (x[i]->type == SURFACE_CB)
 		{
-			x[i]->master[0]->s->la = 0.0;
+            x[i]->master[0]->s.la = 0.0;
 		}
 	}
 	return (OK);
@@ -1904,22 +1904,22 @@ pitzer_revise_guesses(void)
 							   "\n\t%5s  at beginning of set %d: %e\t%e\t%e\n",
 							   x[i]->description, l_iter, (double) x[i]->sum,
 							   (double) x[i]->moles,
-							   (double) x[i]->master[0]->s->la));
+                               (double) x[i]->master[0]->s.la));
 				}
 				if (fabs(x[i]->moles) < 1e-30)
 					x[i]->moles = 0;
 				f = fabs(x[i]->sum);
 				if (f == 0 && x[i]->moles == 0)
 				{
-					x[i]->master[0]->s->la = MIN_RELATED_LOG_ACTIVITY;
+                    x[i]->master[0]->s.la = MIN_RELATED_LOG_ACTIVITY;
 					continue;
 				}
 				else if (f == 0)
 				{
 					repeat = TRUE;
-					x[i]->master[0]->s->la += logd;
-					if (x[i]->master[0]->s->la < -999.)
-						x[i]->master[0]->s->la = MIN_RELATED_LOG_ACTIVITY;
+                    x[i]->master[0]->s.la += logd;
+                    if (x[i]->master[0]->s.la < -999.)
+                        x[i]->master[0]->s.la = MIN_RELATED_LOG_ACTIVITY;
 				}
 				else if (f > d * fabs(x[i]->moles)
 					|| f < 1.0/d * fabs(x[i]->moles))
@@ -1927,12 +1927,12 @@ pitzer_revise_guesses(void)
 					weight = (f < 1.0/d * fabs(x[i]->moles)) ? 0.3 : 1.0;
 					if (x[i]->moles <= 0)
 					{
-						x[i]->master[0]->s->la = MIN_RELATED_LOG_ACTIVITY;
+                        x[i]->master[0]->s.la = MIN_RELATED_LOG_ACTIVITY;
 					}
 					else
 					{
 						repeat = TRUE;
-						x[i]->master[0]->s->la +=
+                        x[i]->master[0]->s.la +=
 							weight * log10(fabs(x[i]->moles / x[i]->sum));
 					}
 					if (debug_set == TRUE)
@@ -1941,7 +1941,7 @@ pitzer_revise_guesses(void)
 								   "\t%5s not converged in set %d: %e\t%e\t%e\n",
 								   x[i]->description, l_iter,
 								   (double) x[i]->sum, (double) x[i]->moles,
-								   (double) x[i]->master[0]->s->la));
+                                   (double) x[i]->master[0]->s.la));
 					}
 				}
 			}
@@ -1957,7 +1957,7 @@ pitzer_revise_guesses(void)
 				{
 					repeat = TRUE;
 					weight = (f < 1.0/d * fabs(x[i]->moles)) ? 0.3 : 1.0;
-					x[i]->master[0]->s->la += weight *
+                    x[i]->master[0]->s.la += weight *
 						log10(fabs(x[i]->moles / x[i]->sum));
 					if (debug_set == TRUE)
 					{
@@ -1965,7 +1965,7 @@ pitzer_revise_guesses(void)
 								   "%s not converged in set. %e\t%e\t%e\n",
 								   x[i]->description, (double) x[i]->sum,
 								   (double) x[i]->moles,
-								   (double) x[i]->master[0]->s->la));
+                                   (double) x[i]->master[0]->s.la));
 					}
 				}
 			}
@@ -2022,12 +2022,12 @@ Restart:
 		case SURFACE_CB:
 		case SURFACE_CB1:
 		case SURFACE_CB2:
-			x[i]->master[0]->s->la += d;
+            x[i]->master[0]->s.la += d;
 			//d2 = d1;
 			d2 = d * LOG_10;
 			break;
 		case AH2O:
-			x[i]->master[0]->s->la += d;
+            x[i]->master[0]->s.la += d;
 			//d2 = d1;
 			d2 = d * LOG_10;
 			break;
@@ -2047,7 +2047,7 @@ Restart:
 			mass_water_aq_x += d1;
 			if (use.Get_surface_in() && dl_type_x == cxxSurface::DONNAN_DL)
 				mass_water_bulk_x += d1;
-			x[i]->master[0]->s->moles = mass_water_aq_x / gfw_water;
+            x[i]->master[0]->s.moles = mass_water_aq_x / gfw_water;
 			//d2 = log(1.0 + d);
 			d2 = d1;
 			break;
@@ -2126,7 +2126,7 @@ Restart:
 		case SURFACE_CB1:
 		case SURFACE_CB2:
 		case AH2O:
-			x[i]->master[0]->s->la -= d;
+            x[i]->master[0]->s.la -= d;
 			break;
 		case MH:
 			s_eminus->la -= d;
@@ -2147,7 +2147,7 @@ Restart:
 			mass_water_aq_x -= d1;
 			if (use.Get_surface_in() && dl_type_x == cxxSurface::DONNAN_DL)
 				mass_water_bulk_x -= d1;
-			x[i]->master[0]->s->moles = mass_water_aq_x / gfw_water;
+            x[i]->master[0]->s.moles = mass_water_aq_x / gfw_water;
 			break;
 		case MU:
 			mu_x -= d2;

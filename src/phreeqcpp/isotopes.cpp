@@ -129,8 +129,8 @@ read_isotopes(void)
 				input_error++;
 				break;
 			}
-            *elt_ptr = element_store(token);
-			master_isotope_ptr = master_isotope_store(token, TRUE);
+            //            *elt_ptr = element_store(token);
+            master_isotope_ptr = master_isotope_store(token, TRUE);
 			master_isotope_ptr->elt = elt_ptr;
 			master_isotope_ptr->minor_isotope = FALSE;
 			master_isotope_ptr->total_is_major = FALSE;
@@ -1003,7 +1003,7 @@ print_isotope_ratios(void)
         master_ptr = master_bsearch(master_isotope[i].name);
 		if (master_ptr == NULL)
 			continue;
-		if (master_ptr->total > 0 || master_ptr->s->moles > 0)
+        if (master_ptr->total > 0 || master_ptr->s.moles > 0)
 		{
 			print_isotope = TRUE;
 			break;
@@ -1065,7 +1065,7 @@ print_isotope_alphas(void)
         master_ptr = master_bsearch(master_isotope[i].name);
 		if (master_ptr == NULL)
 			continue;
-		if (master_ptr->total > 0 || master_ptr->s->moles > 0)
+        if (master_ptr->total > 0 || master_ptr->s.moles > 0)
 		{
 			print_isotope = TRUE;
 			break;
@@ -1185,7 +1185,7 @@ calculate_values(void)
 			isotope_ratio_ptr = isotope_ratio[j];
 			master_isotope_ptr =
 				master_isotope_search(isotope_ratio_ptr->isotope_name);
-			if (master_isotope_ptr->master->s->in == FALSE) continue;
+            if (master_isotope_ptr->master->s.in == FALSE) continue;
 			calculate_value_ptr = calculate_value_search(isotope_ratio_ptr->name);
 			if (calculate_value_ptr->calculated == FALSE)
 			{

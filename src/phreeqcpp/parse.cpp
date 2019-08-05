@@ -43,8 +43,8 @@ void Phreeqc::parse_eq(std::string reaction_equation, struct elt_list** elt_ptr,
 
     // Parse stoichiometric coefficients, species names, and electric charges
     // carried
-    parseExpression<0>(reaction_equation_lhs);
-    parseExpression<1>(reaction_equation_rhs);
+    parseReactionEquationlhs(reaction_equation_lhs);
+    parseReactionEquationrhs(reaction_equation_rhs);
 
     /*
      *   Sort list of reaction species
@@ -58,9 +58,6 @@ void Phreeqc::parse_eq(std::string reaction_equation, struct elt_list** elt_ptr,
     //	replace("(S)", "", token);
     //	replace("(g)", "", token);
     //	replace("(G)", "", token);
-
-    for (auto& token : trxn.token)
-        get_elts_in_species(token.name, token.coef);
 
     /*
      *   Sort elements in reaction and combine
@@ -498,6 +495,8 @@ std::vector<std::string> s_split(std::string const& str)
     while ((beg = str1.find_first_of(delims, pos)) != std::string::npos)
     {
         pos = str1.find_first_of(delims, beg + 1);
+        std::string element_name = str1.substr(beg, pos - beg);
+//        elt_list.emplace_back(element_name, coefficient);
         match_str.push_back(str1.substr(beg, pos - beg));
     }
     return match_str;
@@ -518,45 +517,20 @@ get_elts_in_species(std::string species, double coef)
  *                  output, is next position to start looking
  *         coef     input, coefficient to multiply subscripts by
  */
-    int i, count, l;
-    char c, c1;
-    LDBLE d;
-    //    auto elements = s_split(species);
+    double d;
+    std::vector<std::string> elements;
+    if (species == "e-")
+    {
+        elements.push_back("e");
+        d = 1.0;
+    }
+    else
+    {
+        elements = s_split(species);
+    }
 
     //	while (((c = **t_ptr) != '+') && (c != '-') && (c != '\0'))
-    //	{
-    //		/* close parenthesis */
-    //		if (c == ')')
-    //		{
-    //			paren_count--;
-    //			if (paren_count < 0)
-    //			{
-    //				error_string = sformatf( "Too many right parentheses.");
-    //				error_msg(error_string, CONTINUE);
-    //				return (ERROR);
-    //			}
-    //			(*t_ptr)++;
-    //			return (OK);
-    //		}
-    //		c1 = *((*t_ptr) + 1);
-    //		/* beginning of element name */
-    //		if (isupper((int) c) || (c == 'e' && c1 == '-') || (c == '['))
-    //		{
-    /*
-    // *   Get new element and subscript
-    // */
-    //			if (get_elt(t_ptr, element, &l) == ERROR)
-    //			{
-    //				return (ERROR);
-    //			}
-    //			if (count_elts >= max_elts)
-    //			{
-    //				space((void **) ((void *) &elt_list), count_elts, &max_elts,
-    //					  sizeof(struct elt_list));
-    //			}
-
-    //        auto coefficeint = d * coef;
-    //        elt_list.emplace_back(element_name, coefficeint);
+//    auto coefficeint = d * coef;
 
     //			if (get_num(t_ptr, &d) == ERROR)
     //			{
@@ -1022,8 +996,7 @@ struct species& Phreeqc::getOrcreateSpecies(std::pair<std::string, double> speci
     }
 }
 
-template <bool IsEquationRhs>
-void Phreeqc::parseExpression(std::string& expression)
+void Phreeqc::parseReactionEquationlhs(std::string& expression)
 {
     // split expression into terms
     std::vector<std::string> terms;
@@ -1047,7 +1020,6 @@ void Phreeqc::parseExpression(std::string& expression)
         double coefficient = nondigit_position == 0
                                  ? 1.0
                                  : std::stod(term.substr(0, nondigit_position));
-        coefficient *= IsEquationRhs ? -1.0 : 1.0;
         term.erase(0, nondigit_position);
 
         // parse species names and electronic charges carried
@@ -1057,5 +1029,52 @@ void Phreeqc::parseExpression(std::string& expression)
 
         // initialization
         trxn.token.emplace_back(species_name, charge, coefficient);
+    }
+}
+
+void Phreeqc::parseReactionEquationrhs(std::string& expression)
+{
+    // split expression into terms
+    std::vector<std::string> terms;
+    typedef boost::split_iterator<std::string::iterator> string_split_iterator;
+    for (string_split_iterator It = boost::make_split_iterator(
+             expression, boost::first_finder(" +", boost::is_iequal()));
+         It != string_split_iterator();
+         ++It)
+    {
+        auto term = boost::copy_range<std::string>(*It);
+        // compress the terms trimmed by removing whitespace
+        boost::erase_all(term, " ");
+        terms.push_back(term);
+    }
+
+    int i = 0;
+    for (auto& term : terms)
+    {
+        // extract stoichiometric coefficient
+        std::string::size_type nondigit_position =
+            term.find_first_not_of("0123456789.");
+        double coefficient = nondigit_position == 0
+                                 ? -1.0
+                                 : -1.0 * std::stod(term.substr(0, nondigit_position));
+        term.erase(0, nondigit_position);
+
+        // parse species names and electronic charges carried
+        auto species = parseSpeciesName(term);
+        auto& species_name = species.first;
+        auto& charge = species.second;
+
+        // initialization
+        if (i == 0)
+        {
+            auto it = trxn.token.begin();
+            trxn.token.emplace(it, species_name, charge, coefficient);
+            get_elts_in_species(species_name, coefficient);
+        }
+        else
+        {
+            trxn.token.emplace_back(species_name, charge, coefficient);
+        }
+        ++i;
     }
 }

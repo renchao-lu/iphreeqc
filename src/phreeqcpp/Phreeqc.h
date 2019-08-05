@@ -512,8 +512,8 @@ public:
 	int get_secondary(char **t_ptr, char *element, int *i);
     std::pair<std::string, double> parseSpeciesName(std::string term);
     struct species& getOrcreateSpecies(std::pair<std::string, double> species_name);
-    template <bool IsEquationRhs>
-    void parseExpression(std::string& expression);
+    void parseReactionEquationlhs(std::string& expression);
+    void parseReactionEquationrhs(std::string& expression);
 
 
     // phqalloc.cpp -------------------------------
